@@ -109,3 +109,10 @@ Base à jour (`origin/main` 302199b). Correctifs de la passe 1 relus : justes ; 
 - Nit, low, revue : nom d'outil non textuel (liste) levait TypeError — corrigé (`unknown_tool`), test.
 - Nit, low, coordinateur (Pyright) : `.encode` sur `None` (service l. 468, 478), `**` (l. 220, 390, 472), `tables` non lié (`_bootstrap.py`) — inatteignables (gardes `_check_a_production`, `argument_errors`, `rules is None` ; dans l'enfant, une sortie sans trame est déjà traitée par le parent) — rejeté.
 - Complexité : 0 constat.
+
+### Passe 3 (2026-11-05, SHA revu 216527f)
+
+Base à jour (`origin/main` ancêtre de HEAD). Relu `c1f1ca4..216527f` seulement. Correctifs justes : finitude jugée en float32 dans `write_weights` et `decode_weights` ; journal échappé en ASCII seulement en présence d'un substitut, relu par `journal/reader` (`json.loads`) à l'identique ; `surrogatepass` donne les mêmes octets qu'UTF-8 pour tout code sans substitut, donc l'empreinte journalisée reste celle du fichier gelé (un code à substitut brut est refusé `syntax_error`, jamais gelé) ; substitut dans `types` d'un bloc vérifié : refusé `type_not_in_vocabulary`, pas de chute au gel. Tests à valeurs exactes. Suite complète et ruff verts.
+
+- Nit, low, revue : dans la branche de repli ASCII du journal, une clé secrète non ASCII ne serait plus masquée par `redact` (texte échappé) ; clés réelles en ASCII — admis.
+- Complexité : 0 constat.
