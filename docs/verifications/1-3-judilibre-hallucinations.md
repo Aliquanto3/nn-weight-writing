@@ -2,22 +2,22 @@
 
 Date : 2026-11-05. Périmètre : accès à l'API Judilibre par PISTE, licence de réutilisation, source équivalente pour le Conseil d'État, collecte d'hallucinations de SLM par `slm-quality-bench` (CAP-1, pour CAP-10 et CAP-11). Le compte PISTE d'Anaël n'est pas encore ouvert : aucun appel réel à l'API n'a été fait.
 
-## Verdict : provisoire — en attente du compte PISTE
+## Verdict : feu vert avec réserve (vocabulaire de CAP-1), provisoire — point 1 sans verdict jusqu'au compte PISTE
 
-Au sens de CAP-1 : feu vert avec réserve attendu, aucun blocage relevé.
+Au sens de CAP-1 : **feu vert avec réserve** pour les points 2, 3 et 4, aucun blocage relevé. Le point 1 (accès Judilibre) n'a **pas de verdict** tant que T1 à T8 n'ont pas été joués avec le compte PISTE ; la réserve d'ensemble porte sur ce point, sur la condition 5 de `r_republish` et sur le rendement non mesuré de la collecte (point 4). Le miroir Hugging Face permet à 1-12 et 1-13 d'avancer sans attendre, dans sa fenêtre (avant le 2025-03-19).
 
 | Point | Verdict partiel | En bref |
 |---|---|---|
-| 1. Accès Judilibre (PISTE) | provisoire — en attente du compte PISTE | Procédure, endpoints et champs établis par la documentation officielle ; authentification et quotas restent à confirmer par un appel réel. Un miroir public (Hugging Face, figé au 2025-03-20) permet d'avancer sans compte. |
-| 2. Licence Judilibre | conforme avec réserves | Licence Ouverte 2.0 complétée par les CGU de la Cour de cassation (6 janvier 2022). Republier des références (sans texte ni nom) est permis, avec attribution, date de mise à jour et sans altération. Aucun usage prévu ne touche à l'identité des magistrats. |
-| 3. Conseil d'État | conforme avec réserves | `opendata.justice-administrative.fr` (XML, Licence Ouverte 2.0, CGU du 18 janvier 2022), depuis le 30 septembre 2021 ; JADE (DILA, Licence Ouverte) pour les décisions plus anciennes publiées au Lebon ; ArianeWeb seulement pour des vérifications à la main. Pas de compte requis. |
-| 4. Hallucinations via `slm-quality-bench` | conforme avec réserves | Le dépôt ne contient **aucune** fausse référence juridique (0 sur 14 campagnes, 243 Mo de générations). Il fournit l'infrastructure (client Ollama déterministe, ~35 SLM catalogués) mais pas de jeu de questions juridiques : une collecte dédiée est à écrire et à lancer sur la tour, avec Ollama (ressource d'Anaël). |
+| 1. Accès Judilibre (PISTE) | sans verdict — en attente du compte PISTE | Procédure, endpoints et champs établis par la documentation officielle ; authentification et quotas restent à confirmer par un appel réel. Un miroir public (Hugging Face, figé au 2025-03-20) permet d'avancer sans compte. |
+| 2. Licence Judilibre | feu vert avec réserve | Licence Ouverte 2.0 complétée par les CGU de la Cour de cassation (6 janvier 2022). Republier des références (sans texte ni nom) est permis, avec attribution, date de mise à jour et sans altération. Aucun usage prévu ne touche à l'identité des magistrats. |
+| 3. Conseil d'État | feu vert avec réserve | `opendata.justice-administrative.fr` (XML, Licence Ouverte 2.0, CGU du 18 janvier 2022), depuis le 30 septembre 2021 ; JADE (DILA, Licence Ouverte) pour les décisions plus anciennes publiées au Lebon ; ArianeWeb seulement pour des vérifications à la main. Pas de compte requis. |
+| 4. Hallucinations via `slm-quality-bench` | feu vert avec réserve | Le dépôt ne contient **aucune** fausse référence juridique (0 sur 14 campagnes, 243 Mo de générations). Il fournit l'infrastructure (client Ollama déterministe, ~35 SLM catalogués) mais pas de jeu de questions juridiques : une collecte dédiée est à écrire et à lancer sur la tour, avec Ollama (ressource d'Anaël). |
 
-**`r_republish` : mettre `true`.** Les artefacts de R peuvent aller dans une release publique : la Licence Ouverte 2.0 permet de « communiquer, diffuser, redistribuer, publier » l'information, y compris à titre commercial (CGU Judilibre, § V), sous réserve de mentionner la source et la date de dernière mise à jour, de ne pas altérer les données et de respecter la loi Informatique et libertés. R ne garde que des métadonnées de référence (juridiction, chambre ou formation, siège, date, numéro, ECLI), sans texte ni nom de partie ou de magistrat. Avec `false`, `nnww publish` refuserait toute archive contenant les journaux des séances sur R (AD-18) et le lot 1 ne pourrait pas publier ces séances. Conditions dans la section 2 ; à reconfirmer seulement si les CGU affichées à l'ouverture du compte PISTE diffèrent de la version du 6 janvier 2022.
+**`r_republish` : `true` recommandé, sous les conditions 1 à 5 de la section 2.** La condition 5 (version des CGU relevée au compte PISTE, T8) n'est pas encore remplie : écrire `true` dans `config/publish.toml` seulement après T8, et au plus tard avant la première publication d'un artefact de R (1-14). Les artefacts de R peuvent aller dans une release publique : la Licence Ouverte 2.0 permet de « communiquer, diffuser, redistribuer, publier » l'information, y compris à titre commercial (CGU Judilibre, § V), sous réserve de mentionner la source et la date de dernière mise à jour, de ne pas altérer les données et de respecter la loi Informatique et libertés. R ne garde que des métadonnées de référence (juridiction, chambre ou formation, siège, date, numéro, ECLI), sans texte ni nom de partie ou de magistrat. Avec `false`, `nnww publish` refuserait toute archive contenant les journaux des séances sur R (AD-18) et le lot 1 ne pourrait pas publier ces séances. Si les CGU affichées à l'ouverture du compte PISTE diffèrent de la version du 6 janvier 2022, relire les § V, VI et XIII avant de confirmer.
 
 ## 1. Accès à l'API Judilibre par PISTE
 
-**Verdict partiel : provisoire — en attente du compte PISTE.**
+**Verdict partiel : sans verdict — en attente du compte PISTE.**
 
 ### Inscription et clés
 
@@ -60,49 +60,59 @@ Cour de cassation : environ 550 000 décisions, de 1860 à aujourd'hui pour les 
 
 ### Repli sans compte : miroir Hugging Face
 
-`antoinejeannot/jurisprudence` republie Judilibre sous `etalab-2.0` (Parquet et JSONL, une configuration par juridiction : Cour de cassation 1,7 Go, cours d'appel 2,9 Go, tribunaux judiciaires 0,8 Go), mêmes champs que l'API. Dernière version : **v2025.03.20**, plus mise à jour depuis. Il suffit pour préparer le normaliseur et un premier tirage de vraies références antérieures au 2025-03-19 ; il ne suffit pas pour vérifier l'absence d'une référence datée d'après, ni pour la fraîcheur exigée par les CGU. Lire seulement les colonnes de métadonnées (projection Parquet), jamais `text`.
+`antoinejeannot/jurisprudence` republie Judilibre sous `etalab-2.0` (Parquet et JSONL, une configuration par juridiction : Cour de cassation 1,7 Go, cours d'appel 2,9 Go, tribunaux judiciaires 0,8 Go), mêmes champs que l'API. Dernière version : **v2025.03.20**, plus mise à jour depuis. Il suffit pour préparer le normaliseur et un premier tirage de vraies références antérieures au 2025-03-19 ; il ne suffit pas pour vérifier l'absence d'une référence datée d'après. Une release bâtie sur le miroir dit que ses vraies références en viennent, avec sa date de dernière mise à jour (2025-03-20) : c'est la date que l'attribution exige (section 2, condition 2), la tenue à jour à 72 h n'étant qu'une recommandation. Lire seulement les colonnes de métadonnées (projection Parquet), jamais `text`.
 
 ### Procédure de test, à jouer à l'ouverture du compte PISTE
 
-Variables d'environnement (noms proposés, jamais commitées) : `JUDILIBRE_KEY_ID` pour l'API Key ; `PISTE_CLIENT_ID` et `PISTE_CLIENT_SECRET` pour OAuth. Commandes Git Bash, bac à sable d'abord, puis production en remplaçant la base :
+Variables d'environnement (noms proposés, jamais commitées) : `JUDILIBRE_KEY_ID` pour l'API Key ; `PISTE_CLIENT_ID` et `PISTE_CLIENT_SECRET` pour OAuth. Commandes Git Bash, bac à sable d'abord, puis production en remplaçant la base. Les secrets passent par l'entrée standard de `curl` (`-K -`, `--data @-`) et non par ses arguments, visibles dans la liste des processus :
 
 ```bash
 BASE=https://sandbox-api.piste.gouv.fr/cassation/judilibre/v1.0
+# j : appel avec l'en-tête KeyId lu sur l'entrée standard
+j() { printf 'header = "KeyId: %s"\n' "$JUDILIBRE_KEY_ID" | curl -s -K - "$@"; }
 
 # T1 — connexion par KeyId : attendu HTTP 200
-curl -s -o /dev/null -w "%{http_code}\n" -H "KeyId: $JUDILIBRE_KEY_ID" "$BASE/healthcheck"
+j -o /dev/null -w "%{http_code}\n" "$BASE/healthcheck"
 
-# T2 — si T1 renvoie 401/403 : OAuth client_credentials, puis même appel avec le jeton
-TOKEN=$(curl -s -X POST https://sandbox-oauth.piste.gouv.fr/api/oauth/token \
-  -d grant_type=client_credentials -d client_id="$PISTE_CLIENT_ID" \
-  -d client_secret="$PISTE_CLIENT_SECRET" -d scope=openid | sed -E 's/.*"access_token":"([^"]+)".*/\1/')
-curl -s -o /dev/null -w "%{http_code}\n" -H "Authorization: Bearer $TOKEN" "$BASE/healthcheck"
+# T2 — si T1 renvoie 401/403 : OAuth client_credentials, puis même appel avec le jeton.
+#      URL du jeton en bac à sable relevée chez des clients tiers, non confirmée par une
+#      source officielle : la vérifier dans PISTE avant l'appel.
+TOKEN=$(printf 'grant_type=client_credentials&client_id=%s&client_secret=%s&scope=openid' \
+    "$PISTE_CLIENT_ID" "$PISTE_CLIENT_SECRET" \
+  | curl -s -X POST --data @- https://sandbox-oauth.piste.gouv.fr/api/oauth/token \
+  | sed -nE 's/.*"access_token":"([^"]+)".*/\1/p')
+if [ -z "$TOKEN" ]; then
+  echo "T2 : pas de jeton (identifiants, URL ou scope) ; ne pas poursuivre"
+else
+  printf 'header = "Authorization: Bearer %s"\n' "$TOKEN" \
+    | curl -s -K - -o /dev/null -w "%{http_code}\n" "$BASE/healthcheck"
+fi
+# Si seul T2 passe, remplacer l'en-tête de j par celui du jeton pour T3 à T7.
 
 # T3 — chambres de la Cour de cassation
-curl -s -H "KeyId: $JUDILIBRE_KEY_ID" "$BASE/taxonomy?id=chamber&context_value=cc"
+j "$BASE/taxonomy?id=chamber&context_value=cc"
 
 # T4 — référence connue (Perruche, Ass. plén., 17 nov. 2000, n° 99-13.701, à confirmer) :
 #      attendu jurisdiction=cc, decision_date=2000-11-17, number=99-13.701
-curl -s -H "KeyId: $JUDILIBRE_KEY_ID" "$BASE/search?query=99-13.701&jurisdiction=cc&page_size=5"
+j "$BASE/search?query=99-13.701&jurisdiction=cc&page_size=5"
 
 # T5 — numéro inventé : vérifier qu'aucun résultat n'a ce numéro exact dans number/numbers
 #      (la recherche plein texte peut renvoyer des résultats approchés : la vérification
 #       d'absence compare les champs, pas le total)
-curl -s -H "KeyId: $JUDILIBRE_KEY_ID" "$BASE/search?query=99-99.999&jurisdiction=cc&page_size=5"
+j "$BASE/search?query=99-99.999&jurisdiction=cc&page_size=5"
 
 # T6 — couverture
-curl -s -H "KeyId: $JUDILIBRE_KEY_ID" "$BASE/stats?jurisdiction=cc"
+j "$BASE/stats?jurisdiction=cc"
 
 # T7 — extraction en masse : plafond réel avec compte (1 000 au total ?)
-curl -s -H "KeyId: $JUDILIBRE_KEY_ID" \
-  "$BASE/scan?jurisdiction=cc&date_start=2019-01-01&date_end=2019-12-31&batch_size=1000"
+j "$BASE/scan?jurisdiction=cc&date_start=2019-01-01&date_end=2019-12-31&batch_size=1000"
 ```
 
-T8 : relever dans PISTE les quotas (« Consulter les quotas ») et la version des CGU Judilibre affichée. Consigner les codes HTTP, le mode d'authentification retenu, le plafond de `/scan`, les quotas et la version des CGU dans ce constat, puis passer le verdict à « conforme » ou « conforme avec réserves ». Ne jamais coller d'en-tête ni de jeton dans le constat ou un journal (AD-18 refuse le motif `Bearer `).
+T8 : relever dans PISTE les quotas (« Consulter les quotas ») et la version des CGU Judilibre affichée. Consigner les codes HTTP, le mode d'authentification retenu, le plafond de `/scan`, les quotas et la version des CGU dans ce constat, puis donner au point 1 un verdict au sens de CAP-1 (« feu vert », « feu vert avec réserve » ou « blocage »). Ne jamais coller d'en-tête ni de jeton dans le constat ou un journal (AD-18 refuse le motif `Bearer `).
 
 ## 2. Licence de réutilisation des données Judilibre
 
-**Verdict partiel : conforme avec réserves.**
+**Verdict partiel : feu vert avec réserve.**
 
 Textes : CGU « pour la réutilisation des données issues des décisions de justice de l'ordre judiciaire diffusées en open data par la Cour de cassation », version du 6 janvier 2022 (sur PISTE) ; Licence Ouverte 2.0 (Etalab) ; COJ art. L. 111-13 et R. 111-10 à R. 111-13 ; CRPA art. L. 321-1, L. 322-1, L. 322-2, L. 324-1, L. 326-1 ; Code pénal art. 226-18, 226-24, 226-31. Les citations du COJ et du CRPA ci-dessous viennent des CGU, qui les reproduisent ; le texte consolidé sur Légifrance n'a pas été relu (Incertitudes).
 
@@ -122,7 +132,7 @@ Textes : CGU « pour la réutilisation des données issues des décisions de jus
 **Conditions de `r_republish = true` :**
 
 1. R ne contient que des métadonnées de référence : juridiction, chambre ou formation, siège, date, numéro, ECLI, publication, `update_date`. Ni `text`, ni `zones`, ni nom de partie ou de magistrat.
-2. Attribution dans `NOTICE` et les notes de release, prête à copier : « Vraies références : base Open Data Judilibre de la Cour de cassation, Licence Ouverte 2.0 (https://www.etalab.gouv.fr/licence-ouverte-open-licence), extraction du AAAA-MM-JJ ; données Conseil d'État : base Open Data du Conseil d'État (opendata.justice-administrative.fr) et JADE (DILA), Licence Ouverte 2.0. Fausses références : générées par des SLM, ne correspondent à aucune décision. »
+2. Attribution dans `NOTICE` et les notes de release, prête à copier : « Vraies références : base Open Data Judilibre de la Cour de cassation, Licence Ouverte 2.0 (https://www.etalab.gouv.fr/licence-ouverte-open-licence), extraction du AAAA-MM-JJ [si le jeu vient du miroir : « par le miroir Hugging Face antoinejeannot/jurisprudence, version v2025.03.20, dernière mise à jour le 2025-03-20 »] ; données Conseil d'État : base Open Data du Conseil d'État (opendata.justice-administrative.fr) et JADE (DILA), Licence Ouverte 2.0. Fausses références : générées par des SLM, ne correspondent à aucune décision. »
 3. Chaque ligne porte sa classe et sa source (`judilibre`, `ce-opendata`, `jade`, `slm:<tag>`) ; aucune fausse référence n'est attribuée à une base publique.
 4. Les vraies références ne sont pas modifiées (pas de fausse référence fabriquée par retouche d'une vraie : elles viennent toutes des SLM).
 5. Version des CGU relevée à l'ouverture du compte PISTE (T8) ; si elle a changé, relire les § V, VI et XIII avant de publier.
@@ -131,7 +141,7 @@ Le miroir Hugging Face, qui republie depuis 2024 le texte intégral de plus d'un
 
 ## 3. Source équivalente pour le Conseil d'État
 
-**Verdict partiel : conforme avec réserves.**
+**Verdict partiel : feu vert avec réserve.**
 
 | Source | Accès | Couverture | Format | Licence |
 |---|---|---|---|---|
@@ -145,14 +155,14 @@ Réserves : pas d'API, donc vérification d'absence sur un index local construit
 
 ## 4. Collecte d'hallucinations via `slm-quality-bench`
 
-**Verdict partiel : conforme avec réserves** — faisable, mais rien n'existe encore.
+**Verdict partiel : feu vert avec réserve** — faisable sur le papier, rien n'existe encore. Réserves : le rendement (point 3 ci-dessous) est estimé, non mesuré ; la collecte dépend d'Ollama et du GPU de la tour d'Anaël ; aucune story de `stories.yaml` ne porte le code de collecte (Report, R9). Les ~300 hallucinations ne sont acquises qu'après un lot pilote (par exemple 10 requêtes × 3 modèles) qui mesure le rendement réel.
 
 ### Ce que le dépôt contient
 
 Relevé en lecture seule sur `f6e77e5` (2026-11-05) :
 
 - **Aucune fausse référence juridique.** Sur les 14 campagnes de `data/quality_bench/campaigns/` (243 Mo de `generation.jsonl`), zéro occurrence de « Cour de cassation », « Conseil d'État », « Cass. », « ECLI » ; les 24 « pourvoi » et 21 motifs `NN-NN.NNN` sont des mots de listes et des coordonnées géométriques.
-- Les sept usages du banc (raisonnement, consignes, outils, extraction, RAG, abstention, rédaction) n'ont aucune question de jurisprudence. Les questions privées d'abstention et d'extraction contiennent des articles de contrats et de règlements, pas de références de décisions.
+- Les sept usages du banc (raisonnement, consignes, outils, extraction, RAG, abstention, rédaction) n'ont aucune question de jurisprudence. Les jeux privés ne contiennent aucune question de jurisprudence ni référence de décision.
 - La liste des sources est **fermée** (`questions/schema.py`, `SOURCES`), chaque source avec un correcteur : ajouter des questions juridiques au banc demande un changement de code dans `slm-quality-bench`.
 
 ### Ce qu'il sait produire
@@ -197,7 +207,8 @@ Licences des sorties : les modèles retenus sont sous Apache 2.0, MIT ou des lic
 - Conditions de réutilisation d'ArianeWeb non relues (il n'est pas proposé comme source de données).
 - Couverture exacte de Judilibre par juridiction et période : d'après le miroir HF (mars 2025) et la presse, à remesurer par `/stats`.
 - Licences des sorties des SLM : non relues modèle par modèle.
-- Rendement de la collecte (taux de refus, références par réponse, part de références existantes) : estimation, non mesurée.
+- Rendement de la collecte (taux de refus, références par réponse, part de références existantes) : estimation, non mesurée ; à mesurer par le lot pilote (section 4).
+- URL du jeton OAuth en bac à sable : relevée chez des clients tiers, non confirmée par une source officielle.
 
 ## Report
 
@@ -205,12 +216,13 @@ Corrections de spec proposées, sans modification des fichiers de spec :
 
 - **R1 — `jeux-de-donnees.md`, section R.** Préciser : sources Conseil d'État (`opendata.justice-administrative.fr` et JADE), miroir HF `antoinejeannot/jurisprudence` en repli figé ; champs gardés (métadonnées seules, ni texte ni nom) ; fenêtre de couverture et classe « non vérifiable » exclue ; tirage stratifié des vraies sur la distribution des fausses.
 - **R2 — AD-18.** L'exclusion de `data/` « que les graines suffisent à régénérer » ne vaut pas pour R. Ajouter le jeu R (métadonnées, étiquettes, sources, manifeste daté) aux assets de release quand `r_republish = true`, et l'attribution de la section 2 dans `NOTICE`. Valeur à écrire dans `config/publish.toml` : `r_republish = true`.
-- **R3 — CAP-7 sur R.** Une courbe C jusqu'à N = 8 192 suppose des milliers de fausses références réelles. Proposer : sur R, C jusqu'au N disponible, ou entraînement sur S et évaluation sur R (robustesse hors distribution, déjà une mesure de CAP-12), ou une collecte élargie décidée en 1-12.
+- **R3 — CAP-7 sur R (`SPEC.md`, success de CAP-7 ; `methodes-et-lots.md`, ligne du témoin C).** Une courbe C jusqu'à N = 8 192 suppose des milliers de fausses références réelles. Proposer : sur R, C jusqu'au N disponible, ou entraînement sur S et évaluation sur R (robustesse hors distribution, déjà une mesure de CAP-12), ou une collecte élargie décidée en 1-12.
 - **R4 — Porte des 30 % (`methodes-et-lots.md`).** Fixer avant 1-12 : unité (référence normalisée dédupliquée), règle de décision (estimation ponctuelle, ou borne de l'intervalle de Wilson), traitement des « non vérifiables ».
-- **R5 — Contrainte « pas d'Ollama ni de GPU ».** Préciser que la collecte d'hallucinations tourne hors du projet (dans `slm-quality-bench` ou un script unique sur la tour) et que le projet ne lit qu'un fichier figé avec son sha256. Ajouter à `invoke_dev_with` de 1-12 : collecte préalable, ressource Ollama d'Anaël.
+- **R5 — Contrainte « pas d'Ollama ni de GPU » (`SPEC.md`, contraintes).** Préciser que la collecte d'hallucinations tourne hors du projet (dans `slm-quality-bench` ou un script unique sur la tour) et que le projet ne lit qu'un fichier figé avec son sha256. Le volet `stories.yaml` est en R9.
 - **R6 — Secrets.** Ajouter `JUDILIBRE_KEY_ID` (ou `PISTE_CLIENT_ID` et `PISTE_CLIENT_SECRET`) à la convention de configuration du spine. La clé PISTE n'a pas de préfixe repérable : `nnww publish` devrait aussi refuser une archive contenant la valeur de toute variable de secret connue.
-- **R7 — CAP-11.** « Vérifiée absente de Judilibre » ne couvre pas les références du Conseil d'État : écrire « vérifiée absente de Judilibre ou des bases de la justice administrative, dans leur fenêtre de couverture ».
+- **R7 — CAP-11 (`SPEC.md`, success de CAP-11).** « Vérifiée absente de Judilibre » ne couvre pas les références du Conseil d'État : écrire « vérifiée absente de Judilibre ou des bases de la justice administrative, dans leur fenêtre de couverture ».
 - **R8 — `docs/SOURCES.md`, § 6.** Ajouter la source Conseil d'État, le miroir HF et la licence (Licence Ouverte 2.0 et CGU), et retirer la ligne « À vérifier pendant le cadrage » une fois ce constat fusionné.
+- **R9 — `stories.yaml`, entrée 1-12.** 1-12 dépend d'une collecte que rien ne porte encore. Ajouter une story de collecte placée avant 1-12 (commande `collect` dans `slm-quality-bench`, ou script unique sur la tour), ou l'inclure dans la description de 1-12. Ajouter à `invoke_dev_with` de 1-12 : collecte préalable avec lot pilote qui mesure le rendement ; Ollama et GPU de la tour à demander à Anaël par notification, comme le compte PISTE pour 1-3 ; sortie figée avec son sha256.
 
 ## Sources (consultées le 2026-11-05)
 
@@ -227,3 +239,17 @@ Corrections de spec proposées, sans modification des fichiers de spec :
 - Calendrier de l'open data judiciaire (cours d'appel au 15 avril 2022) : <https://www.lexisveille.fr/open-data-des-decisions-de-cours-dappel-cest-parti>, <https://www.actu-juridique.fr/breves/juridictions/open-data-des-decisions-de-justice-ouverture-a-lensemble-des-juridictions-de-lordre-judiciaire/>
 - Clients tiers montrant l'URL du jeton OAuth PISTE : <https://pylegifrance.github.io/pylegifrance/en/concepts/piste-oauth/>
 - Dépôt voisin `slm-quality-bench`, lu localement sur le commit `f6e77e5` : `README.md`, `slm_quality_bench/questions/schema.py`, `slm_quality_bench/models.yaml`, `slm_quality_bench/ollama/client.py`, `slm_quality_bench/campaigns/`, `data/quality_bench/campaigns/*/generation.jsonl`, `data/quality_bench/private/`.
+
+## Revue
+
+### Passe 1 (2026-11-05, SHA revu 39ef82d)
+
+- Important, medium, second avis 1 : `r_republish = true` recommandé sans condition alors que la condition 5 (CGU relevées en T8) n'est pas remplie. Corrigé (recommandation conditionnelle, `true` écrit après T8 et avant toute publication de R).
+- Important, medium, second avis 2 : fraîcheur du miroir HF (« exigée » en section 1, « recommandée » en section 2) et attribution à Judilibre seul si R vient du miroir. Corrigé (section 1 harmonisée, mention du miroir et de sa date dans l'attribution).
+- Important, medium, second avis 3 : verdict hors vocabulaire de CAP-1 et prévision « attendu ». Corrigé (feu vert avec réserve pour les points 2 à 4, point 1 sans verdict jusqu'à T1-T8).
+- Important, medium, second avis 4 : collecte jugée faisable sur un rendement estimé, dépendance Ollama, aucune story. Corrigé (réserves explicites, lot pilote de mesure, R9).
+- Important, medium, second avis 5 : dépendance de 1-12 à la collecte et à Ollama. Corrigé (Report R9 sur `stories.yaml`, sans modifier le fichier).
+- Nit, low, second avis 6 : secret OAuth en argument de `curl`, jeton vide envoyé si T2 échoue, URL sandbox non confirmée. Corrigé (secrets par l'entrée standard, `sed -n …p` et arrêt si jeton vide, URL marquée non confirmée ; vérifié contre un serveur local).
+- Nit, low, second avis 7 : R3, R5, R7 sans fichier cible. Corrigé.
+- Nit, low, second avis 8 : CJA L. 10 et COJ L. 111-13 non relus sur Légifrance. Rejeté : déjà déclaré (section 2 et Incertitudes) ; pas d'outil web dans cette revue, reste non vérifié.
+- Nit, low, second avis 9 : contenu des jeux privés de `slm-quality-bench`. Corrigé (phrase réduite à l'absence de question de jurisprudence ; aucun autre contenu recopié).
