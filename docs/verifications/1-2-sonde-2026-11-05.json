@@ -1,0 +1,97 @@
+{
+  "model_id": "xiaomi/mimo-v2.6-pro",
+  "model": {
+    "id": "xiaomi/mimo-v2.6-pro",
+    "canonical_slug": "xiaomi/mimo-v2.6-pro-20260921",
+    "context_length": 1050000,
+    "input_per_mtok_usd": 0.435,
+    "output_per_mtok_usd": 0.87,
+    "cache_read_per_mtok_usd": 0.0036,
+    "cache_write_per_mtok_usd": null,
+    "tools": true,
+    "vision": true,
+    "input_modalities": [
+      "text",
+      "image",
+      "video",
+      "audio"
+    ],
+    "endpoints": [
+      "/api/v1/chat/completions",
+      "/api/v1/completions",
+      "/api/v1/messages",
+      "/api/v1/responses"
+    ]
+  },
+  "probe": {
+    "chat_text": {
+      "provider": "DeepInfra",
+      "usage": {
+        "input": 25,
+        "output": 20,
+        "cache_read": 4000,
+        "cache_write": 0,
+        "cost": 3.8295e-05
+      }
+    },
+    "chat_tool_step1": {
+      "provider": "Xiaomi",
+      "usage": {
+        "input": 4126,
+        "output": 45,
+        "cache_read": 0,
+        "cache_write": 0,
+        "cost": 0.00183396
+      },
+      "tool_called": true
+    },
+    "chat_tool_step2": {
+      "provider": "GMICloud",
+      "usage": {
+        "input": 66,
+        "output": 25,
+        "cache_read": 4096,
+        "cache_write": 0,
+        "cost": 5.0133e-05
+      },
+      "answer_has_42": true
+    },
+    "chat_vision": {
+      "provider": "DeepInfra",
+      "usage": {
+        "input": 30,
+        "output": 62,
+        "cache_read": 0,
+        "cache_write": 0,
+        "cost": 6.0156e-05
+      },
+      "answer_mentions_red": true
+    },
+    "messages_tool_step1": {
+      "provider": "DeepInfra",
+      "usage": {
+        "input": 4127,
+        "output": 29,
+        "cache_read": 0,
+        "cache_write": 0,
+        "cost": 0.001619856
+      },
+      "tool_called": true
+    },
+    "messages_tool_step2": {
+      "provider": "GMICloud",
+      "usage": {
+        "input": 68,
+        "output": 18,
+        "cache_read": 4096,
+        "cache_write": 0,
+        "cost": 4.6218e-05
+      },
+      "answer_has_42": true
+    },
+    "paid_calls": 6,
+    "total_billed_usd": 0.00364862,
+    "calls_without_cost": 0,
+    "budget_ok": true
+  }
+}
