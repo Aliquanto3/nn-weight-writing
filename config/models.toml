@@ -35,6 +35,9 @@ driver = "api"
 provider = "anthropic"
 id = "claude-sonnet-5-5"
 effort = "medium"
+# Reste à 16000 (décision 1-8, à confirmer par Anaël) : limite de sortie de Sonnet 5.5 et Fable 5.1
+# non documentée dans le dépôt, et le fournisseur Anthropic n'est pas en flux (délai de 600 s, alors
+# que MiMo a tenu des appels de 634 et 1185 s à 64000). 16000 est la plus haute valeur sûre connue.
 max_tokens = 16000
 
 [models."fable-5.1-api"]
