@@ -68,7 +68,7 @@ Bilan : 3 attestés (1 et 3 par les republications et `SOURCES.md`, 2 par `SOURC
 Corrections proposées, non appliquées, à faire par une story ou une PR à part :
 
 - **`jeux-de-donnees.md`, section S** : ajouter que la liste des 15 types est reconstruite, 3 attestés et 12 de notre fait, avec un renvoi à `docs/verifications/1-1-reconstruction-s.md`. Ajouter que format, proportions et métrique de Nuss sont inconnus et fixés par 1-9.
-- **`jeux-de-donnees.md`, table « À vérifier au cadrage »** : marquer le point « S d'après Nuss » comme traité (feu vert avec réserve) avec le renvoi au constat.
+- **`jeux-de-donnees.md`, table « À vérifier au cadrage »** : marquer le point « S d'après Nuss » comme traité, avec le renvoi au constat et la décision d'Anaël (feu vert avec réserve proposé), une fois prise.
 - **`docs/SOURCES.md`** : ajouter que l'URL du post n'est pas connue et que le post n'est pas lisible sans compte. Signaler le chiffre divergent (97,8 % contre 94,6 %) d'une republication. Le titre de Nuss varie selon la source (« CTO et cofondateur » sur Crunchbase, « Lead AI Engineer » sur son profil LinkedIn) : le noter ou citer la source retenue.
 - **Pour Anaël** : s'il a accès au post avec son compte LinkedIn, en relever le texte exact, la date et l'URL. Le constat pourrait alors passer des types reconstruits à attestés et trancher le chiffre divergent.
 
@@ -100,3 +100,9 @@ Constats du second avis (Haiku), tranchés un par un :
 - Nit, low, second avis 5 : contradiction réelle entre « indépendants des règles connues » et 9 qui transpose 1. Corrigé : dépendance assumée.
 - Nit, low, second avis 6 : la phrase était juste (Nuss reproduit Lauritzen) mais ambiguë. Corrigé : « par Nuss ».
 - Rejeté, low, second avis 7 : la justification du type 1 est l'exemple cité par Nuss ; la phrase sur le bloc de neurones est un complément, pas la preuve.
+
+### Passe 2 (2026-11-05, SHA revu b7ee4eb)
+
+Relecture du correctif de la passe 1 (`abd8cb9..b7ee4eb`) : verdict proposé, réserves, 30 février de second rang et point 3 de 1-9 justes et cohérents avec le reste du constat (chiffre divergent, bilan, écarts).
+
+- Nit, low, reviewer : correctif incomplet, la correction proposée pour `jeux-de-donnees.md` marquait encore le point comme traité « feu vert avec réserve », sans attendre la décision d'Anaël. Corrigé : marquage subordonné à cette décision.
