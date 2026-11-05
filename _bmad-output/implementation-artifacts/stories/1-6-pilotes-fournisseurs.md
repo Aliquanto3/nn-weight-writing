@@ -108,3 +108,12 @@ Rebase sur `main` (d26c6ba, story 1-7) : conflits `cli.py` (sous-commandes des d
 - Nit · low · second avis 6 · corrigé : `NNWW_CLAUDE_CONFIG_DIR` remplace le patch de `DEFAULT_CONFIG_DIR` dans `test_cli_session.py`.
 - Nit · low · orchestrateur · corrigé : identifiants Anthropic confirmés, mention « à confirmer » retirée (D10, `models.toml`).
 - Complexité : 0 constat (dédoublonnage de l'usage par dictionnaire, O(1) par événement).
+
+### Passe 2 (2026-11-05, SHA revu 8cd81e6)
+
+Base à jour (`origin/main` d26c6ba). Rien perdu de 1-7 : `datagen`, `train`, groupe `train` et CI (`uv sync --locked --group train`) intacts, `uv lock --check` propre.
+
+- Important · medium · reviewer · corrigé : le minuteur ne tuait que le processus `claude` ; un descendant qui hérite du tube de sortie bloquait la lecture du flux pour toujours (séance jamais close) et restait orphelin. `_kill_tree` : `taskkill /T /F` sous Windows, groupe de processus (`start_new_session`, `killpg`) sous POSIX ; test avec un petit-enfant du faux `claude`, dont la mort est vérifiée.
+- Nit · low · reviewer · corrigé : `ancestor_memory_files` remonte aussi le chemin logique passé à `claude`, pas seulement le chemin résolu (lien ou jonction vers une racine propre sous un dossier qui porte `CLAUDE.md`) ; test (sauté sans droit de lien sous Windows).
+- Vérifié sans constat : contrôle des parents appelé à chaque séance (`_session`), jusqu'à la racine du disque, casse indifférente sous Windows (`exists`) ; fin `error` avec cause et ligne `closed` au registre sur délai ; verrou à jeton (fenêtre lecture-suppression négligeable devant l'expiration du verrou périmé) ; tests à valeurs exactes.
+- Complexité : 0 constat.

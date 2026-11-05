@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import dataclasses
 import json
+import os
+import subprocess
 import time
 
 import pytest
@@ -187,6 +189,34 @@ def test_process_without_result_ends_in_error(session_env, monkeypatch):
     assert outcome.detail.startswith("claude terminé sans résultat (code 3)")
 
 
+def test_session_timeout_kills_process_tree(session_env, monkeypatch, protocol):
+    """Un descendant de `claude` qui garde le tube ouvert est tué avec lui (aucun orphelin)."""
+    pid_file = session_env.tmp / "child.pid"
+    scenario(monkeypatch, session_env.tmp, {"hang": True, "hang_child": str(pid_file)})
+    fast = dataclasses.replace(protocol, session_timeout_s=3)
+    started = time.monotonic()
+    outcome = session_env.run(claude_model(), method="B", protocol=fast)
+    assert time.monotonic() - started < 30
+    assert (outcome.reason, outcome.detail) == (
+        "error",
+        "délai de séance dépassé (3 s) : claude tué",
+    )
+    assert not _alive(int(pid_file.read_text("utf-8")))
+
+
+def _alive(pid: int) -> bool:
+    if os.name == "nt":
+        out = subprocess.run(
+            ["tasklist", "/FI", f"PID eq {pid}", "/NH"], capture_output=True, text=True, check=False
+        ).stdout
+        return str(pid) in out
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    return True
+
+
 @pytest.mark.parametrize("entry", ["CLAUDE.md", "plugins", "skills"])
 def test_config_dir_not_dedicated_refused_before_launch(session_env, monkeypatch, entry):
     capture = scenario(monkeypatch, session_env.tmp, {"turns": FREEZE_TURNS})
@@ -305,3 +335,17 @@ def test_ancestor_memory_files(tmp_path):
     (tmp_path / "a" / "CLAUDE.md").write_text("x", "utf-8")
     found = ancestor_memory_files(tmp_path / "a" / "b")
     assert (tmp_path / "a" / "CLAUDE.md").resolve() in found
+
+
+def test_ancestor_memory_files_follows_logical_and_resolved_paths(tmp_path):
+    """Un lien vers une racine propre ne masque pas un `CLAUDE.md` au-dessus du lien."""
+    (tmp_path / "propre").mkdir()
+    (tmp_path / "salie").mkdir()
+    (tmp_path / "salie" / "CLAUDE.md").write_text("x", "utf-8")
+    link = tmp_path / "salie" / "lien"
+    try:
+        link.symlink_to(tmp_path / "propre", target_is_directory=True)
+    except OSError:
+        pytest.skip("liens symboliques non permis")
+    assert ancestor_memory_files(tmp_path / "propre") == []
+    assert ancestor_memory_files(link) == [tmp_path / "salie" / "CLAUDE.md"]

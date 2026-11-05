@@ -92,8 +92,32 @@ def config_dir_problems(path: Path) -> list[str]:
 
 def ancestor_memory_files(cwd: Path) -> list[Path]:
     """Fichiers de mémoire présents dans `cwd` ou l'un de ses parents (contamination, AD-14)."""
-    cwd = Path(cwd).resolve()
-    return [d / name for d in (cwd, *cwd.parents) for name in MEMORY_ENTRIES if (d / name).exists()]
+    # Chemin logique (celui passé à `claude`) et chemin résolu (liens, jonctions, noms courts).
+    logical = Path(os.path.abspath(cwd))
+    resolved = logical.resolve()
+    dirs = dict.fromkeys([logical, *logical.parents, resolved, *resolved.parents])
+    return [d / name for d in dirs for name in MEMORY_ENTRIES if (d / name).exists()]
+
+
+def _kill_tree(process: subprocess.Popen) -> None:
+    """Tue `claude` et ses descendants : un petit-enfant qui garderait le tube ouvert bloquerait
+    la lecture du flux après la mort du seul parent."""
+    if process.poll() is not None:
+        return
+    if os.name == "nt":
+        subprocess.run(
+            ["taskkill", "/T", "/F", "/PID", str(process.pid)],
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+    else:
+        try:
+            os.killpg(process.pid, 9)
+        except OSError:
+            pass
+    if process.poll() is None:
+        process.kill()
 
 
 def child_env(config_dir: Path, base: dict[str, str] | None = None) -> dict[str, str]:
@@ -257,6 +281,7 @@ class ClaudeCodeDriver:
             stdin=subprocess.PIPE,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
+            start_new_session=os.name != "nt",
         )
         errors: list[str] = []
         reader = threading.Thread(
@@ -267,7 +292,7 @@ class ClaudeCodeDriver:
 
         def expire() -> None:
             stream.timed_out = True
-            process.kill()
+            _kill_tree(process)
 
         timer = threading.Timer(service.config.session_timeout_s, expire)
         timer.daemon = True
@@ -293,13 +318,15 @@ class ClaudeCodeDriver:
                 self._handle(event, service, tool_names, stream, time.perf_counter() - started)
                 started = time.perf_counter()
                 if stream.contamination:
+                    # Arrêt immédiat du parent, avant tout appel d'outil (sortie de boucle sans
+                    # attendre la fin du tube).
                     process.kill()
                     break
             code = process.wait(timeout=60)
         finally:
             timer.cancel()
             if process.poll() is None:
-                process.kill()
+                _kill_tree(process)
                 process.wait()
         reader.join(timeout=5)
         return code, "".join(errors)[-2000:]

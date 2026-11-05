@@ -5,7 +5,8 @@ Il lit ses arguments, le prompt système et l'entrée standard, se connecte au s
 JSON de `NNWW_FAKE_CLAUDE_SCENARIO` en émettant un flux `stream-json` :
 
     {"init": {...}, "turns": [{"id", "usage", "text", "calls": [[outil, arguments]],
-     "events": n}], "result": {...} | null, "exit_code": 0, "hang": false}
+     "events": n}], "result": {...} | null, "exit_code": 0, "hang": false,
+     "hang_child": chemin du pid | null}
 """
 
 from __future__ import annotations
@@ -13,6 +14,7 @@ from __future__ import annotations
 import asyncio
 import json
 import os
+import subprocess
 import sys
 from pathlib import Path
 
@@ -74,6 +76,10 @@ async def main() -> int:
             **scenario.get("init", {}),
         }
         emit(init)
+        if scenario.get("hang_child"):
+            # Petit-enfant qui hérite du tube de sortie : seul l'arbre entier tué libère la lecture.
+            child = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(3600)"])
+            Path(scenario["hang_child"]).write_text(str(child.pid), "utf-8")
         if scenario.get("hang"):
             await asyncio.sleep(3600)  # `claude` bloqué : le délai de séance doit le tuer
         for n, turn in enumerate(scenario.get("turns", [])):
