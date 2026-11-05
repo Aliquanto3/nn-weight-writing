@@ -1,0 +1,39 @@
+[project]
+name = "nn-weight-writing"
+# Pas encore de release : première version (v0.1.0) quand le premier banc comparatif tourne.
+version = "0.0.0"
+description = "Un LLM écrit tous les poids d'un réseau de neurones, sans entraînement, comparé aux règles en code, à l'entraînement standard, à l'édition de poids et au steering"
+readme = "README.md"
+authors = [{ name = "Anaël Yahi" }]
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.14"
+keywords = ["neural-networks", "weight-writing", "interpretability", "llm"]
+# Dépendances ajoutées par `uv add` au fil des stories, jamais figées de mémoire.
+dependencies = []
+
+[project.urls]
+Homepage = "https://github.com/Aliquanto3/nn-weight-writing"
+
+[build-system]
+requires = ["uv_build>=0.12.23,<0.13.0"]
+build-backend = "uv_build"
+
+[tool.ruff]
+line-length = 100
+target-version = "py314"
+# Code tiers installé (BMAD, agent-cost-kit) : hors de nos règles de style.
+extend-exclude = [".claude", "_bmad"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --tb=short --strict-markers"
+
+[dependency-groups]
+dev = [
+    "pytest>=9.2.0",
+    "ruff>=0.17.3",
+]

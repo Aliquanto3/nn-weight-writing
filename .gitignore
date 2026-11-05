@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+.venv/
+.pytest_cache/
+.ruff_cache/
+
+# Poids et jeux de données : jamais dans le dépôt (voir AGENTS.md)
+data/
+models/
+*.safetensors
+*.bin
+*.pt
+*.npz
+
+# Jeux d'évaluation tenus à l'écart de l'agent qui écrit les poids
+heldout/
+
+# Worktrees des agents
+.claude/worktrees/
+
+.env
