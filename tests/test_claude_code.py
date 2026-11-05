@@ -1,0 +1,351 @@
+"""Pilote Claude Code (AD-14) avec un faux `claude` : contamination, coûts, fins de séance."""
+
+from __future__ import annotations
+
+import dataclasses
+import json
+import os
+import subprocess
+import time
+
+import pytest
+from conftest import claude_model, read_journal, scenario
+
+from nn_weight_writing.budget import ledger
+from nn_weight_writing.session import prompt
+from nn_weight_writing.session.claude_code import (
+    ancestor_memory_files,
+    build_command,
+    child_env,
+    config_dir_problems,
+    init_problems,
+)
+from nn_weight_writing.session.tools import catalogue
+from nn_weight_writing.tasks.io import read_bundle
+
+RULES = 'def predict(raw):\n    return "ok"\n'
+FREEZE_TURNS = [
+    {
+        "id": "msg_1",
+        "usage": {
+            "input_tokens": 1000,
+            "output_tokens": 200,
+            "cache_read_input_tokens": 5000,
+            "cache_creation_input_tokens": 400,
+        },
+        "calls": [["submit_rules", {"code": RULES}]],
+    },
+    {
+        "id": "msg_2",
+        "usage": {"input_tokens": 10, "output_tokens": 20},
+        "calls": [["run_on_examples", {}], ["freeze", {}]],
+    },
+]
+
+
+def types_of(records: list[dict]) -> list[str]:
+    return [r["type"] for r in records]
+
+
+def test_first_request_holds_only_system_prompt_and_task(session_env, monkeypatch):
+    """Test de contamination (AD-14) : ce que reçoit `claude`, et rien d'autre."""
+    monkeypatch.setenv("ANTHROPIC_API_KEY", "sk-ant-test-0123456789abcdef")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-test-0123456789abcdef")
+    monkeypatch.setenv("CLAUDE_CODE_USE_BEDROCK", "1")
+    capture = scenario(monkeypatch, session_env.tmp, {"turns": FREEZE_TURNS})
+    outcome = session_env.run(claude_model(), method="B")
+    seen = json.loads(capture.read_text("utf-8"))
+    run_dir = outcome.run_dir
+    # Prompt système : le fichier commun aux deux pilotes ; entrée standard : la tâche seule.
+    assert seen["system_prompt"] == (run_dir / "system_prompt.md").read_text("utf-8")
+    assert seen["system_prompt"] == prompt.system_prompt("B", 20)
+    assert seen["stdin"] == prompt.task_message(read_bundle(run_dir / "bundle"))
+    assert seen["stdin"].startswith("# Tâche : toy\n\nDire si la référence est plausible.")
+    # Répertoire courant vide, configuration dédiée, aucune clé ni réglage Claude hérité.
+    assert seen["cwd_entries"] == []
+    assert seen["config_dir"] == str(session_env.config_dir)
+    assert seen["sensitive_env"] == []
+    argv = seen["argv"]
+    assert argv[argv.index("--tools") + 1] == ""
+    assert "--strict-mcp-config" in argv
+    assert "--disable-slash-commands" in argv
+    assert argv[argv.index("--model") + 1] == "claude-sonnet-5-5"
+    assert argv[argv.index("--effort") + 1] == "medium"
+    assert argv[argv.index("--max-turns") + 1] == "200"
+    assert argv[argv.index("--output-format") + 1] == "stream-json"
+    assert "--no-session-persistence" in argv and "--verbose" in argv
+    for flag in ("--append-system-prompt", "--settings", "--add-dir", "--agents", "--plugin-dir"):
+        assert flag not in argv
+    assert argv[argv.index("--allowedTools") + 1] == (
+        "mcp__nnww__submit_rules,mcp__nnww__run_on_examples,mcp__nnww__freeze"
+    )
+    # Seul serveur MCP : celui de la séance, en local.
+    servers = seen["mcp_config"]["mcpServers"]
+    assert list(servers) == ["nnww"]
+    assert servers["nnww"]["url"].startswith("http://127.0.0.1:")
+    assert outcome.reason == "frozen"
+
+
+def test_subscription_billed_zero_and_cost_equiv_journaled(session_env, monkeypatch):
+    scenario(monkeypatch, session_env.tmp, {"turns": FREEZE_TURNS})
+    outcome = session_env.run(claude_model(), method="B")
+    records = read_journal(outcome.run_dir)
+    calls = [r for r in records if r["type"] == "model_call"]
+    # 1000×1 + 200×2 + 5000×0.1 + 400×1.25 = 2400 µ$ ; 10×1 + 20×2 = 50 µ$.
+    assert [c["cost_equiv_usd"] for c in calls] == [0.0024, 0.00005]
+    assert [c["billed_usd"] for c in calls] == [0.0, 0.0]
+    assert calls[0]["cache_read_tokens"] == 5000 and calls[0]["cache_write_tokens"] == 400
+    assert calls[0]["provider_cost"] is None
+    end = records[-1]
+    assert end["type"] == "end" and end["reason"] == "frozen"
+    assert end["totals"]["cost_equiv_usd"] == 0.00245 and end["totals"]["billed_usd"] == 0.0
+    assert (outcome.billed_usd, outcome.cost_equiv_usd) == (0.0, 0.00245)
+    # Registre : réservation de 0 $ puis clôture à 0 $ facturé, coût équivalent consigné.
+    rows = ledger.read(session_env.ledger)
+    assert [(r.status, r.reserved_usd, r.billed_usd, r.cost_equiv_usd) for r in rows] == [
+        ("reserved", 0.0, 0.0, 0.0),
+        ("closed", 0.0, 0.0, 0.00245),
+    ]
+    # Les outils passent par le serveur MCP : journalisés par le service, dans l'ordre.
+    tools = [r["tool"] for r in records if r["type"] == "tool_call"]
+    assert tools == ["submit_rules", "run_on_examples", "freeze"]
+    assert types_of(records)[0] == "open" and records[0]["driver"] == "claude_code"
+    assert records[0]["provider"] == "subscription" and records[0]["effort"] == "medium"
+
+
+def test_repeated_events_of_one_message_count_usage_once(session_env, monkeypatch):
+    turns = [
+        {
+            "id": "msg_x",
+            "events": 3,
+            "usage": {"input_tokens": 100, "output_tokens": 10},
+            "calls": [],
+            "text": "Je m'arrête.",
+        }
+    ]
+    scenario(monkeypatch, session_env.tmp, {"turns": turns})
+    outcome = session_env.run(claude_model(), method="B")
+    calls = [r for r in read_journal(outcome.run_dir) if r["type"] == "model_call"]
+    assert [(c["input_tokens"], c["output_tokens"]) for c in calls] == [(100, 10), (0, 0), (0, 0)]
+    assert outcome.reason == "pass_budget"
+    assert outcome.detail == "l'agent a rendu la main sans geler"
+
+
+def test_contaminated_init_ends_in_error(session_env, monkeypatch):
+    init = {"tools": ["Bash", "mcp__nnww__freeze"], "skills": ["review"]}
+    scenario(monkeypatch, session_env.tmp, {"init": init, "turns": FREEZE_TURNS})
+    outcome = session_env.run(claude_model(), method="B")
+    assert outcome.reason == "error"
+    assert outcome.detail.startswith("contamination : outils hors catalogue : ['Bash']")
+    assert "skills chargées : ['review']" in outcome.detail
+    records = read_journal(outcome.run_dir)
+    assert "freeze" not in [r.get("tool") for r in records]
+
+
+def test_usage_limit_ends_in_error_with_cause(session_env, monkeypatch):
+    data = {
+        "turns": [
+            {
+                "id": "msg_1",
+                "model": "<synthetic>",
+                "text": "Claude AI usage limit reached|1762380000",
+                "error": "rate_limit",
+            }
+        ],
+        "result": {"is_error": True, "result": "Claude AI usage limit reached|1762380000"},
+    }
+    scenario(monkeypatch, session_env.tmp, data)
+    outcome = session_env.run(claude_model(), method="B")
+    assert outcome.reason == "error"
+    assert outcome.detail.startswith("usage_limit : rate_limit : Claude AI usage limit reached")
+    records = read_journal(outcome.run_dir)
+    # Message synthétique : pas un appel au modèle.
+    assert "model_call" not in types_of(records)
+    assert ledger.read(session_env.ledger)[-1].status == "closed"
+
+
+def test_max_turns_ends_in_turn_limit(session_env, monkeypatch):
+    data = {
+        "turns": [{"id": "m", "usage": {"input_tokens": 5}, "calls": [["run_on_examples", {}]]}],
+        "result": {"subtype": "error_max_turns", "is_error": True, "result": ""},
+    }
+    scenario(monkeypatch, session_env.tmp, data)
+    outcome = session_env.run(claude_model(), method="B")
+    assert (outcome.reason, outcome.detail) == ("turn_limit", "200 tours")
+
+
+def test_api_error_ends_in_error(session_env, monkeypatch):
+    data = {"result": {"is_error": True, "result": "Not logged in", "terminal_reason": "api_error"}}
+    scenario(monkeypatch, session_env.tmp, data)
+    outcome = session_env.run(claude_model(), method="B")
+    assert outcome.reason == "error"
+    assert outcome.detail == "success : Not logged in | api_error"
+
+
+def test_process_without_result_ends_in_error(session_env, monkeypatch):
+    scenario(monkeypatch, session_env.tmp, {"result": None, "exit_code": 3})
+    outcome = session_env.run(claude_model(), method="B")
+    assert outcome.reason == "error"
+    assert outcome.detail.startswith("claude terminé sans résultat (code 3)")
+
+
+def test_session_timeout_kills_process_tree(session_env, monkeypatch, protocol):
+    """Un descendant de `claude` qui garde le tube ouvert est tué avec lui (aucun orphelin)."""
+    pid_file = session_env.tmp / "child.pid"
+    scenario(monkeypatch, session_env.tmp, {"hang": True, "hang_child": str(pid_file)})
+    fast = dataclasses.replace(protocol, session_timeout_s=3)
+    started = time.monotonic()
+    outcome = session_env.run(claude_model(), method="B", protocol=fast)
+    assert time.monotonic() - started < 30
+    assert (outcome.reason, outcome.detail) == (
+        "error",
+        "délai de séance dépassé (3 s) : claude tué",
+    )
+    assert not _alive(int(pid_file.read_text("utf-8")))
+
+
+def _alive(pid: int) -> bool:
+    if os.name == "nt":
+        out = subprocess.run(
+            ["tasklist", "/FI", f"PID eq {pid}", "/NH"], capture_output=True, text=True, check=False
+        ).stdout
+        return str(pid) in out
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return False
+    return True
+
+
+@pytest.mark.parametrize("entry", ["CLAUDE.md", "plugins", "skills"])
+def test_config_dir_not_dedicated_refused_before_launch(session_env, monkeypatch, entry):
+    capture = scenario(monkeypatch, session_env.tmp, {"turns": FREEZE_TURNS})
+    target = session_env.config_dir / entry
+    if entry.endswith(".md"):
+        target.write_text("# global", "utf-8")
+    else:
+        target.mkdir()
+    outcome = session_env.run(claude_model(), method="B")
+    assert outcome.reason == "error"
+    assert outcome.detail == f"configuration Claude Code non dédiée : {entry} présent"
+    assert not capture.exists()
+
+
+def test_config_dir_problems(tmp_path):
+    missing = tmp_path / "absent"
+    assert config_dir_problems(missing) == [
+        f"{missing} absent : connexion unique d'Anaël requise (voir la spec de 1-6)"
+    ]
+    (tmp_path / "settings.json").write_text('{"$schema": "x"}', "utf-8")
+    assert config_dir_problems(tmp_path) == []
+    (tmp_path / "settings.json").write_text('{"enabledPlugins": {}, "hooks": {}}', "utf-8")
+    assert config_dir_problems(tmp_path) == ["settings.json non vide : ['enabledPlugins', 'hooks']"]
+
+
+def test_child_env_strips_keys_and_claude_settings(tmp_path):
+    base = {
+        "PATH": "p",
+        "ANTHROPIC_API_KEY": "k",
+        "anthropic_base_url": "u",
+        "OPENROUTER_API_KEY": "k",
+        "CLAUDECODE": "1",
+        "CLAUDE_CONFIG_DIR": "ailleurs",
+        "OPENAI_API_KEY": "k",
+    }
+    assert child_env(tmp_path, base) == {"PATH": "p", "CLAUDE_CONFIG_DIR": str(tmp_path)}
+
+
+def test_build_command_without_effort(tmp_path):
+    command = build_command(
+        ("claude",),
+        claude_model(effort=None),
+        7,
+        tmp_path / "s.md",
+        tmp_path / "m.json",
+        ["freeze"],
+    )
+    assert "--effort" not in command
+    assert command[:4] == ["claude", "-p", "--tools", ""]
+    assert command[command.index("--max-turns") + 1] == "7"
+
+
+def test_init_problems():
+    names = [t.name for t in catalogue("B")]
+    good = {
+        "tools": ["mcp__nnww__freeze", "ListMcpResourcesTool"],
+        "mcp_servers": [{"name": "nnww", "status": "connected"}],
+        "plugins": [{"name": "cc-plugin-privacy", "path": "builtin"}],
+    }
+    assert init_problems(good, names) == []
+    bad = {
+        "tools": ["Read"],
+        "mcp_servers": [{"name": "nnww", "status": "failed"}, {"name": "github"}],
+        "plugins": [{"name": "superpowers", "path": "/x"}],
+        "slash_commands": ["/review"],
+    }
+    assert init_problems(bad, names) == [
+        "outils hors catalogue : ['Read']",
+        "serveurs MCP : ['github', 'nnww']",
+        "serveur MCP de la séance injoignable",
+        "commandes chargées : ['/review']",
+        "plugins tiers : ['superpowers']",
+    ]
+
+
+def test_successful_answer_mentioning_rate_limit_is_not_usage_limit(session_env, monkeypatch):
+    data = {"result": {"result": "J'ai lu « rate limit » dans un exemple ; je rends la main."}}
+    scenario(monkeypatch, session_env.tmp, data)
+    outcome = session_env.run(claude_model(), method="B")
+    assert (outcome.reason, outcome.detail) == ("pass_budget", "l'agent a rendu la main sans geler")
+
+
+def test_session_timeout_kills_hung_claude(session_env, monkeypatch, protocol):
+    scenario(monkeypatch, session_env.tmp, {"hang": True})
+    fast = dataclasses.replace(protocol, session_timeout_s=1.5)
+    started = time.monotonic()
+    outcome = session_env.run(claude_model(), method="B", protocol=fast)
+    assert time.monotonic() - started < 60
+    assert (outcome.reason, outcome.detail) == (
+        "error",
+        "délai de séance dépassé (1.5 s) : claude tué",
+    )
+    assert ledger.read(session_env.ledger)[-1].status == "closed"
+
+
+@pytest.mark.parametrize("entry", ["CLAUDE.md", "CLAUDE.local.md", ".claude/CLAUDE.md"])
+def test_memory_file_above_cwd_refused_before_launch(session_env, monkeypatch, entry):
+    """Claude Code charge les `CLAUDE.md` des parents du répertoire courant (AD-14)."""
+    capture = scenario(monkeypatch, session_env.tmp, {"turns": FREEZE_TURNS})
+    parent = session_env.cwd_root / f"parent-{entry.replace('/', '_')}"
+    root = parent / "racine"
+    root.mkdir(parents=True)
+    memory = parent / entry
+    memory.parent.mkdir(exist_ok=True)
+    memory.write_text("# consignes parasites", "utf-8")
+    outcome = session_env.run(claude_model(), method="B", claude_cwd_root=root)
+    assert outcome.reason == "error"
+    assert outcome.detail.startswith("contamination : fichiers de mémoire au-dessus")
+    assert str(memory) in outcome.detail
+    assert not capture.exists()
+
+
+def test_ancestor_memory_files(tmp_path):
+    (tmp_path / "a" / "b").mkdir(parents=True)
+    assert ancestor_memory_files(tmp_path / "a" / "b") == ancestor_memory_files(tmp_path)
+    (tmp_path / "a" / "CLAUDE.md").write_text("x", "utf-8")
+    found = ancestor_memory_files(tmp_path / "a" / "b")
+    assert (tmp_path / "a" / "CLAUDE.md").resolve() in found
+
+
+def test_ancestor_memory_files_follows_logical_and_resolved_paths(tmp_path):
+    """Un lien vers une racine propre ne masque pas un `CLAUDE.md` au-dessus du lien."""
+    (tmp_path / "propre").mkdir()
+    (tmp_path / "salie").mkdir()
+    (tmp_path / "salie" / "CLAUDE.md").write_text("x", "utf-8")
+    link = tmp_path / "salie" / "lien"
+    try:
+        link.symlink_to(tmp_path / "propre", target_is_directory=True)
+    except OSError:
+        pytest.skip("liens symboliques non permis")
+    assert ancestor_memory_files(tmp_path / "propre") == []
+    assert ancestor_memory_files(link) == [tmp_path / "salie" / "CLAUDE.md"]

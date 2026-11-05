@@ -30,3 +30,6 @@ heldout/
 
 # Artefacts de séance et de témoins (AD-12)
 runs/
+
+# Verrou du registre budgétaire (AD-11), transitoire.
+budget/*.lock

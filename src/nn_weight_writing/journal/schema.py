@@ -106,6 +106,8 @@ class EndEvent(Event):
     reason: str
     passes_used: int
     totals: dict = field(default_factory=dict)
+    # Cause d'une fin `error` (limite d'usage, erreur du fournisseur…) ou précision du motif.
+    detail: str | None = None
 
 
 EVENT_TYPES: dict[str, type[Event]] = {

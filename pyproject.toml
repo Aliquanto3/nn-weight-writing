@@ -11,7 +11,10 @@ requires-python = ">=3.14"
 keywords = ["neural-networks", "weight-writing", "interpretability", "llm"]
 # Dépendances ajoutées par `uv add` au fil des stories, jamais figées de mémoire.
 dependencies = [
+    "anthropic>=2.6.0",
+    "mcp>=2.3.0",
     "numpy>=2.5.4",
+    "openai>=3.46.0",
 ]
 
 [project.scripts]

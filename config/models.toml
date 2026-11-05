@@ -1,0 +1,43 @@
+# Modèles de séance (harnais.md, AD-10, AD-14) : nom -> pilote, fournisseur, identifiant.
+# Lu par le seul module nn_weight_writing.config. Le nom sert à l'identifiant de séance (AD-12),
+# l'identifiant est passé tel quel au fournisseur et journalisé dans `open`.
+#
+# driver   : `claude_code` (claude -p, abonnement) ou `api` (boucle de l'ApiLoopDriver).
+# provider : `subscription` (0 $ facturé), `openrouter` ou `anthropic` (facturés).
+# Identifiants Anthropic confirmés par l'orchestrateur le 2026-11-05 (revue de 1-6).
+
+[models."sonnet-5.5"]
+driver = "claude_code"
+provider = "subscription"
+id = "claude-sonnet-5-5"
+effort = "medium"
+
+[models."fable-5.1"]
+driver = "claude_code"
+provider = "subscription"
+id = "claude-fable-5-1"
+effort = "medium"
+
+[models."mimo-v2.6-pro"]
+driver = "api"
+provider = "openrouter"
+id = "xiaomi/mimo-v2.6-pro"
+max_tokens = 16000
+# Fournisseur fixé pour garder le cache et un prix stable (constat 1-2) : Xiaomi, éditeur du
+# modèle, au prix de pricing.toml ; aucun repli vers un autre fournisseur.
+provider_order = ["xiaomi"]
+
+# Repli du pilote Claude Code (harnais.md) : API Anthropic, facturée.
+[models."sonnet-5.5-api"]
+driver = "api"
+provider = "anthropic"
+id = "claude-sonnet-5-5"
+effort = "medium"
+max_tokens = 16000
+
+[models."fable-5.1-api"]
+driver = "api"
+provider = "anthropic"
+id = "claude-fable-5-1"
+effort = "medium"
+max_tokens = 16000

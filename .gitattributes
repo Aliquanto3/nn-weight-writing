@@ -2,3 +2,4 @@
 # octet pour octet.
 * text=auto eol=lf
 _bmad-output/implementation-artifacts/run-autonome.md merge=union
+budget/ledger.csv merge=union
