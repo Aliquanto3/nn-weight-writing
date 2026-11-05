@@ -5,6 +5,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from enum import StrEnum
 
+from nn_weight_writing.providers.types import ToolSchema
+
 
 class Method(StrEnum):
     """Méthodes de l'agent : A-programme, A-littéral, B (règles)."""
@@ -105,6 +107,13 @@ def tools_for(method: Method | str) -> tuple[ToolSpec, ...]:
     """Le catalogue est le même pour tous ; chaque outil déclare ses méthodes autorisées."""
     method = Method(method)
     return tuple(tool for tool in TOOLS if method in tool.methods)
+
+
+def catalogue(method: Method | str) -> tuple[ToolSchema, ...]:
+    """Outils exposés au modèle, identiques pour le pilote API et le serveur MCP (AD-15)."""
+    return tuple(
+        ToolSchema(tool.name, tool.description, tool.input_schema) for tool in tools_for(method)
+    )
 
 
 _TYPES = {

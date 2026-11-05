@@ -1,0 +1,28 @@
+# Tarifs datés (AD-11), en dollars par million de jetons, par identifiant de modèle.
+# cost_equiv_usd = (input × input + output × output + cache_read × cache_read
+#                   + cache_write × cache_write) / 1e6, quel que soit le pilote.
+# Lu par le seul module nn_weight_writing.config.
+
+[models."claude-sonnet-5-5"]
+date = "2026-10-13"
+source = "https://platform.claude.com/docs/en/about-claude/pricing, relevé du 2026-10-13 (mémoire de l'utilisateur, prix-cache-sonnet-haiku) ; écriture du cache à 5 minutes"
+input = 2.0
+output = 10.0
+cache_read = 0.10
+cache_write = 2.50
+
+[models."claude-fable-5-1"]
+date = "2026-10-13"
+source = "https://platform.claude.com/docs/en/about-claude/pricing, relevé du 2026-10-13 (mémoire de l'utilisateur, prix-cache-sonnet-haiku) ; écriture du cache à 5 minutes"
+input = 10.0
+output = 50.0
+cache_read = 0.25
+cache_write = 12.50
+
+[models."xiaomi/mimo-v2.6-pro"]
+date = "2026-11-05"
+source = "docs/verifications/1-2-mimo-openrouter.md : GET /api/v1/models/xiaomi/mimo-v2.6-pro/endpoints, fournisseur Xiaomi (fp8) ; écriture du cache non annoncée"
+input = 0.435
+output = 0.87
+cache_read = 0.0036
+cache_write = 0.0

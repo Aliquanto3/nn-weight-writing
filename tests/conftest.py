@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 import json
+import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import pytest
 
-from nn_weight_writing.config import load_protocol
+from nn_weight_writing.config import ModelConfig, Price, load_protocol
 from nn_weight_writing.session.service import OpenInfo, ToolService
 from nn_weight_writing.tasks.io import materialize_bundle
+from nn_weight_writing.tasks.registry import TaskSpec
 
 ENCODER = "test.len@1"
 VOCABULARY = [
@@ -115,3 +118,86 @@ def write_literal_network(service: ToolService) -> None:
             "write_weights", {"layer": int(layer), "param": param, "row_start": 0, "rows": rows}
         )
         assert "written" in result, result
+
+
+# --- Pilotes et fournisseurs (1-6) ------------------------------------------------------------
+
+FAKE_CLAUDE = Path(__file__).with_name("fake_claude.py")
+TEST_PRICE = Price(input=1.0, output=2.0, cache_read=0.1, cache_write=1.25, date="t", source="t")
+TASK = TaskSpec(
+    name="toy",
+    description="Dire si la référence est plausible.",
+    codec=LenCodec(),
+    vocabulary=tuple(VOCABULARY),
+)
+
+
+def fake_model(**overrides) -> ModelConfig:
+    """Modèle du pilote API servi par le fournisseur `fake` (facturé, comme une API)."""
+    values = {"name": "fake-model", "driver": "api", "provider": "fake", "id": "fake/model"}
+    return ModelConfig(**{**values, **overrides})
+
+
+def claude_model(**overrides) -> ModelConfig:
+    values = {
+        "name": "sonnet-5.5",
+        "driver": "claude_code",
+        "provider": "subscription",
+        "id": "claude-sonnet-5-5",
+        "effort": "medium",
+    }
+    return ModelConfig(**{**values, **overrides})
+
+
+@pytest.fixture
+def session_env(tmp_path, protocol):
+    """Exemples, dossier des séances, registre et dossier de configuration Claude dédiés."""
+    examples = write_examples(tmp_path / "examples.jsonl", EXAMPLES)
+    config_dir = tmp_path / "claude-config"
+    config_dir.mkdir()
+
+    def run(model: ModelConfig, method: str = "B", **kwargs):
+        from nn_weight_writing.session.run import run_session
+
+        params = {
+            "task": TASK,
+            "dataset": "toy-dev",
+            "examples": examples,
+            "method": method,
+            "model": model,
+            "price": TEST_PRICE,
+            "protocol": protocol,
+            "attempt": 1,
+            "seed": 7,
+            "lot": 1,
+            "runs_dir": tmp_path / "runs",
+            "ledger_path": tmp_path / "ledger.csv",
+            "claude_executable": (sys.executable, str(FAKE_CLAUDE)),
+            "claude_config_dir": config_dir,
+            **kwargs,
+        }
+        return run_session(**params)
+
+    return SimpleNamespace(
+        run=run,
+        examples=examples,
+        ledger=tmp_path / "ledger.csv",
+        config_dir=config_dir,
+        tmp=tmp_path,
+    )
+
+
+def scenario(monkeypatch, tmp_path, data: dict) -> Path:
+    """Scénario du faux `claude` et fichier de capture de ce qu'il a reçu."""
+    path = tmp_path / "scenario.json"
+    path.write_text(json.dumps(data), "utf-8")
+    capture = tmp_path / "capture.json"
+    monkeypatch.setenv("NNWW_FAKE_CLAUDE_SCENARIO", str(path))
+    monkeypatch.setenv("NNWW_FAKE_CLAUDE_CAPTURE", str(capture))
+    return capture
+
+
+def read_journal(run_dir: Path) -> list[dict]:
+    return [
+        json.loads(line) for line in (run_dir / "journal.jsonl").read_text("utf-8").splitlines()
+    ]

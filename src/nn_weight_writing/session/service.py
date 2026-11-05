@@ -1,12 +1,15 @@
 """Service d'outils de séance : état (passes, production, gel) et seul écrivain du journal.
 
 Les pilotes (1-6) appellent `call(tool, arguments)` et transmettent les échanges par
-`record_model_call` ; ils n'écrivent jamais le journal eux-mêmes (AD-7).
+`record_model_call` ; ils n'écrivent jamais le journal eux-mêmes (AD-7). Ces entrées sont
+sérialisées par un verrou : le serveur MCP du pilote Claude Code appelle les outils depuis un
+autre fil que le lecteur du flux.
 """
 
 from __future__ import annotations
 
 import re
+import threading
 import time
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -113,6 +116,7 @@ class ToolService:
         self.ended = False
         self._end_after_call = False
         self._started = time.perf_counter()
+        self._lock = threading.RLock()
         self._totals = {
             "input_tokens": 0,
             "output_tokens": 0,
@@ -158,8 +162,18 @@ class ToolService:
     def passes_remaining(self) -> int:
         return max(self.config.pass_budget - self.passes_used, 0)
 
+    @property
+    def totals(self) -> dict:
+        """Totaux de jetons et de coûts des `model_call` transmis jusqu'ici."""
+        with self._lock:
+            return dict(self._totals)
+
     def call(self, tool: str, arguments: object = None) -> dict:
         """Exécute un outil ; tout appel est journalisé (`tool_call`), refus compris."""
+        with self._lock:
+            return self._call(tool, arguments)
+
+    def _call(self, tool: str, arguments: object) -> dict:
         arguments = {} if arguments is None else arguments
         if self.ended:
             # Le journal est clos par `end` : le refus est renvoyé sans être écrit.
@@ -177,6 +191,10 @@ class ToolService:
         return result
 
     def record_model_call(self, event: ModelCallEvent) -> None:
+        with self._lock:
+            self._record_model_call(event)
+
+    def _record_model_call(self, event: ModelCallEvent) -> None:
         if self.ended:
             raise RuntimeError("séance close")
         for key in ("input_tokens", "output_tokens", "cache_read_tokens", "cache_write_tokens"):
@@ -187,16 +205,22 @@ class ToolService:
         self._totals["billed_usd"] = round(self._totals["billed_usd"] + event.billed_usd, 6)
         self.journal.write(event)
 
-    def end(self, reason: EndReason) -> None:
+    def end(self, reason: EndReason, detail: str | None = None) -> None:
         """Écrit l'événement `end` et ferme le journal ; une seule fois par séance."""
-        if self.ended:
-            raise RuntimeError("séance déjà close")
-        self.ended = True
-        totals = {**self._totals, "duration_s": round(time.perf_counter() - self._started, 6)}
-        self.journal.write(
-            EndEvent(reason=str(EndReason(reason)), passes_used=self.passes_used, totals=totals)
-        )
-        self.journal.close()
+        with self._lock:
+            if self.ended:
+                raise RuntimeError("séance déjà close")
+            self.ended = True
+            totals = {**self._totals, "duration_s": round(time.perf_counter() - self._started, 6)}
+            self.journal.write(
+                EndEvent(
+                    reason=str(EndReason(reason)),
+                    passes_used=self.passes_used,
+                    totals=totals,
+                    detail=None if detail is None else detail[:DETAIL_LIMIT],
+                )
+            )
+            self.journal.close()
 
     # --- Aiguillage ------------------------------------------------------------------------
 
