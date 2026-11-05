@@ -148,6 +148,9 @@ def _request(path: str, body: dict[str, Any] | None, key: str | None) -> dict[st
     except urllib.error.HTTPError as err:
         text = redact(err.read().decode("utf-8", "replace"), key)
         return {"_error": {"status": err.code, "body": text[:500]}}
+    except (urllib.error.URLError, TimeoutError) as err:
+        # Coupure ou délai en cours de sonde : le résumé des appels déjà facturés reste imprimé.
+        return {"_error": {"status": None, "body": redact(str(err), key)[:500]}}
 
 
 _SYSTEM = "Tu es un assistant concis. " + "Contexte de remplissage pour le cache. " * 400

@@ -15,6 +15,7 @@ branch: feat/1-2-sonde-mimo
 
 - `src/nn_weight_writing/providers/probe.py` : sonde (`uv run python -m nn_weight_writing.providers.probe`, `--models-only` gratuit). Fonctions pures de lecture de `/models` et de `usage` séparées du réseau (`urllib`, aucune dépendance ajoutée).
 - `tests/test_probe.py` : tests hors ligne, dont l'absence de la clé dans la sortie.
+- `docs/verifications/1-2-sonde-2026-11-05.json` : sortie du second passage de la sonde, sans clé.
 - `docs/verifications/1-2-mimo-openrouter.md` : verdict **conforme avec réserves**, `xiaomi/mimo-v2.6-pro`, recommandation de garder chat completions pour 1-6.
 
 ## Critères d'acceptation
@@ -30,7 +31,7 @@ Sonde réelle, deux passages de 6 appels payants (développement, puis revue) : 
 ## Reports
 
 - Écriture de cache non observée (toujours 0) ; à revérifier par 1-6.
-- Vision par `/messages`, `parallel_tool_calls`, `reasoning` et fournisseur sous-jacent non sondés.
+- Vision par `/messages`, `parallel_tool_calls` et `reasoning` non sondés ; fournisseur sous-jacent relevé par appel (champ `provider`), son épinglage reste à vérifier par 1-6.
 - Le registre `budget/ledger.csv` n'existe pas encore : l'écriture de la ligne `probe-1-2` revient à 1-6.
 
 ## Revue
@@ -49,3 +50,12 @@ Base : `main` à jour (00f3622). Constats du second avis (Haiku) repris un par u
 - Nit · low · second avis 8 · corrigé : sortie JSON en ASCII (`ensure_ascii` par défaut), plus d'erreur d'encodage possible sous cp1252.
 - Nit · low · second avis 9 · corrigé : détection par mot entier (`mentions_word`) : `hundred` ne compte plus pour `red`, ni `1420` pour `42`.
 - Complexité : 0 constat (aucune structure qui grossit pendant l'exécution au-delà de 6 appels).
+
+### Passe 2 (2026-11-05, SHA revu 04d35b2)
+
+Base : rebasée sur `origin/main` (3a3b2d3, PR de docs 1-1), sans conflit. Relu : correctifs de la passe 1 (7f61638..825fded).
+
+- Correctifs de la passe 1 confirmés : normalisation `input = prompt_tokens - cached_tokens - cache_write_tokens` conforme à `Usage` de AD-10 (même sens que `input_tokens` de Messages), tests à valeurs exactes ; arrêt sans appel payant vérifié ; somme des 6 `cost` du JSON = 0,00364862, total 0,00816209 et calculs à l'unité (1833,96 et 1619,856 µUSD) exacts ; aucune clé dans le JSON ni l'historique ; `pyproject.toml` et `uv.lock` intacts ; aucun appel réseau dans les tests.
+- Nit · low · revue · corrigé : une coupure réseau ou un délai (`URLError`, `TimeoutError`) en cours de sonde levait une exception et perdait le résumé des appels déjà facturés ; `_request` les rend en entrée `_error` (corps expurgé). Test `test_request_network_error_becomes_error_entry`.
+- Nit · low · revue · corrigé : Reports et Livrables de la story réalignés (fournisseur désormais relevé, JSON de sortie listé).
+- Complexité : 0 constat.

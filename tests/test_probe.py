@@ -262,3 +262,12 @@ def test_run_paid_probe_http_error_keeps_going():
     out = probe.run_paid_probe("sk-or-x", request=failing)
     assert out["chat_text"]["error"]["status"] == 402
     assert out["calls_without_cost"] == out["paid_calls"] == 4
+
+
+def test_request_network_error_becomes_error_entry(monkeypatch):
+    def down(req, timeout):
+        raise probe.urllib.error.URLError("hors ligne")
+
+    monkeypatch.setattr(probe.urllib.request, "urlopen", down)
+    out = probe._request("/chat/completions", {"x": 1}, "sk-or-x")
+    assert out == {"_error": {"status": None, "body": "<urlopen error hors ligne>"}}
