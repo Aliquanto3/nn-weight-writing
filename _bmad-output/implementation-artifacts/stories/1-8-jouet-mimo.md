@@ -47,3 +47,9 @@ Rebase sur `origin/main` 1110500 (état du run seulement), sans conflit.
 - Pre-existing · low · revue · reporté : l'événement `open` ne journalise pas `max_tokens` (AD-10 « paramètres d'échantillonnage ») ; la séance perdue (16000) et sa reprise (64000) ont le même `open`. À ajouter au schéma `open` dans une story du harnais.
 - Nit · low · revue · reporté : une réponse coupée par `max_tokens` qui porte des appels d'outil (arguments JSON tronqués) n'est pas traitée en `error` ; elle passe par le refus de décodage des arguments. Aucun cas observé.
 - Complexité : 0 constat.
+
+### Passe 2 (2026-11-06, SHA revu eeb9ebc)
+
+Relu `6caa74a..eeb9ebc` seulement. Correctifs de la passe 1 tenus : `verify_frozen` passe avant toute lecture de `heldout/` (rejoué : 9 × 400/400, séance perdue refusée `no_freeze_record` sans lecture du réservé) ; aucun fichier écrit par le script ; `scripts/` hors paquet, importé par aucun module (`test_boundary.py` et `test_api_driver.py` verts) ; les 9 `tree_sha256` du compte rendu égalent ceux des événements `freeze` de `runs/1/` ; D4 identique dans la spec, le compte rendu et `config/models.toml`, marquée « à confirmer par Anaël ».
+
+- Aucun constat nouveau. Complexité : 0 constat.
