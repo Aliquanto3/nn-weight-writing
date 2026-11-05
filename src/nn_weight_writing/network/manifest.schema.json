@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Aliquanto3/nn-weight-writing/network/manifest.schema.json",
+  "title": "Manifeste d'un réseau nn-weight-writing (AD-3)",
+  "description": "Couches denses en chaîne ; poids dans weights.npz sous les clés L{i}.W (forme in x out) et L{i}.b (forme out), en float32 ; y = activation(x @ W + b). Les blocs n'apparaissent qu'après le gel.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "encoder",
+    "layers"
+  ],
+  "properties": {
+    "encoder": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 200
+    },
+    "layers": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 16,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "type",
+          "in",
+          "out",
+          "activation"
+        ],
+        "properties": {
+          "type": {
+            "enum": [
+              "dense"
+            ]
+          },
+          "in": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "out": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 100000
+          },
+          "activation": {
+            "enum": [
+              "identity",
+              "relu",
+              "sigmoid",
+              "tanh"
+            ]
+          }
+        }
+      }
+    },
+    "blocks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "rule",
+          "types",
+          "units"
+        ],
+        "properties": {
+          "rule": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 2000
+          },
+          "types": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "units": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "array",
+              "prefixItems": [
+                {
+                  "type": "integer",
+                  "minimum": 0
+                },
+                {
+                  "type": "integer",
+                  "minimum": 0
+                }
+              ],
+              "minItems": 2,
+              "maxItems": 2
+            }
+          }
+        }
+      },
+      "description": "Partition des unités cachées (toutes les sorties de toutes les couches sauf la dernière) ; liste vide si le réseau n'a pas de couche cachée."
+    }
+  }
+}
