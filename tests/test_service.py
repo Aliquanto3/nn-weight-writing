@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import ast
 import subprocess
 
 import pytest
@@ -368,11 +369,16 @@ def test_write_weights_refuses_non_numbers_without_crashing(make_service, rows):
 
 
 @pytest.mark.parametrize("tool", ["submit_rules", "submit_script"])
-def test_too_complex_code_is_refused_not_raised(make_service, tool):
+@pytest.mark.parametrize("error", [RecursionError, MemoryError])
+def test_too_complex_code_is_refused_not_raised(make_service, tool, monkeypatch, error):
     service = make_service("B" if tool == "submit_rules" else "A-program")
     service.call("declare_network", {"manifest": MANIFEST}) if tool == "submit_script" else None
-    code = "x = " + "+".join(["1"] * 60_000)
-    assert service.call(tool, {"code": code})["refused"] == RefusalCode.CODE_TOO_COMPLEX
+
+    def failing_parse(*args, **kwargs):
+        raise error("forcé")
+
+    monkeypatch.setattr(ast, "parse", failing_parse)
+    assert service.call(tool, {"code": "x = 1"})["refused"] == RefusalCode.CODE_TOO_COMPLEX
 
 
 # --- Revue de 1-5, passe 2 -------------------------------------------------------------

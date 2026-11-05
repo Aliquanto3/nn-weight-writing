@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import ast
+
 import pytest
 
 from nn_weight_writing.sandbox.filter import (
@@ -208,14 +210,14 @@ def test_mro_attribute_refused():
     assert codes("o = str.mro()", "B") == ["forbidden_attribute"]
 
 
-@pytest.mark.parametrize(
-    "code",
-    [
-        "x = " + "+".join(["1"] * 60_000),
-        "x = " + "-" * 100_000 + "1",
-    ],
-    ids=["somme-longue", "unaires-imbriques"],
-)
-def test_code_too_complex_for_parser_is_refused(code):
-    assert codes(code, "A") == ["code_too_complex"]
-    assert codes(code, "B") == ["code_too_complex"]
+@pytest.mark.parametrize("error", [RecursionError, MemoryError])
+def test_parser_failure_becomes_code_too_complex(monkeypatch, error):
+    # Exception forcée à la frontière stdlib : la pile de l'analyseur dépend de la plateforme.
+    def failing_parse(*args, **kwargs):
+        raise error("forcé")
+
+    monkeypatch.setattr(ast, "parse", failing_parse)
+    for profile in ("A", "B"):
+        violations = check("x = 1", Profile(profile))
+        assert [v.code for v in violations] == ["code_too_complex"]
+        assert error.__name__ in violations[0].detail
