@@ -53,6 +53,18 @@ def make_session_id(task: str, method: str, model: str, attempt: int, now: datet
     return f"{task}-{method}-{model_slug(model)}-t{attempt}-{now.strftime('%Y%m%dT%H%M%SZ')}"
 
 
+def _only_numbers(rows: list) -> bool:
+    """Listes imbriquées de `int` ou `float` seulement (parcours itératif, sans récursion)."""
+    stack: list[object] = [rows]
+    while stack:
+        item = stack.pop()
+        if type(item) is list:
+            stack.extend(item)
+        elif type(item) not in (int, float):
+            return False
+    return True
+
+
 @dataclass(frozen=True)
 class OpenInfo:
     """Champs de l'événement `open` fournis par l'appelant (pilote et modèle : 1-6)."""
@@ -256,9 +268,12 @@ class ToolService:
         target = self._pending[key]
         if row_start + len(rows) > target.shape[0]:
             raise ToolRefusal(RefusalCode.INVALID_WEIGHTS, f"{key} a {target.shape[0]} lignes")
+        if not _only_numbers(rows):
+            # Ni chaîne ni booléen : NumPy convertirait `"1.0"` et `True` en 1.0.
+            raise ToolRefusal(RefusalCode.INVALID_WEIGHTS, "valeurs non numériques")
         try:
             values = np.asarray(rows, dtype=np.float64)
-        except (TypeError, ValueError) as exc:
+        except (TypeError, ValueError, OverflowError) as exc:
             raise ToolRefusal(
                 RefusalCode.INVALID_WEIGHTS, f"valeurs non numériques : {exc}"
             ) from exc

@@ -17,6 +17,7 @@ class RefusalCode(StrEnum):
     ATTRIBUTE_STORE = "attribute_store"
     FITTING_FUNCTION = "fitting_function"
     LITERALS_TOO_LARGE = "literals_too_large"
+    CODE_TOO_COMPLEX = "code_too_complex"
     # Catalogue et arguments (AD-15).
     UNKNOWN_TOOL = "unknown_tool"
     METHOD_NOT_ALLOWED = "method_not_allowed"

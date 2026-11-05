@@ -83,7 +83,7 @@ def audit(code: str, examples: Sequence[tuple[str, str]]) -> list[dict]:
     """
     try:
         tree = ast.parse(code)
-    except SyntaxError, ValueError:
+    except SyntaxError, ValueError, RecursionError, MemoryError:
         return []
     flags = []
     overlap = _fragment_overlap(_string_literals(tree), examples)

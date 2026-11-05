@@ -146,3 +146,76 @@ def test_numeric_literal_limit():
 
 def test_syntax_error():
     assert codes("def (", "A") == ["syntax_error"]
+
+
+# --- Revue de 1-5 ----------------------------------------------------------------------
+
+NEW_FITTING = (
+    "tensorsolve",
+    "tensorinv",
+    "svdvals",
+    "eigvals",
+    "eigvalsh",
+    "qr",
+    "cholesky",
+    "matrix_rank",
+)
+
+
+def test_every_linalg_solver_or_decomposition_is_a_fitting_function():
+    import numpy as np
+
+    admitted = {"det", "slogdet", "norm", "matrix_norm", "vector_norm", "cond", "trace"}
+    linalg = {n for n in dir(np.linalg) if not n.startswith("_")}
+    assert set(NEW_FITTING) <= linalg
+    for name in NEW_FITTING:
+        assert name in FITTING_FUNCTIONS
+    assert not admitted & FITTING_FUNCTIONS
+    assert {"matmul", "dot", "einsum"}.isdisjoint(FITTING_FUNCTIONS)
+
+
+@pytest.mark.parametrize("name", NEW_FITTING)
+def test_new_fitting_functions_refused_in_profile_a(name):
+    assert codes(f"import numpy as np\nnp.linalg.{name}(1)", "A") == ["fitting_function"]
+    assert "fitting_function" in codes(f"from numpy.linalg import {name} as f", "A")
+    assert codes(f"import numpy.linalg as la\nla.{name}(1)", "A") == ["fitting_function"]
+
+
+@pytest.mark.parametrize("name", sorted(FITTING_FUNCTIONS))
+def test_fitting_functions_refused_in_profile_b(name):
+    assert codes(f"import math\nmath.{name}(1)", "B") == ["fitting_function"]
+    assert codes(f"{name} = 1", "B") == ["fitting_function"]
+
+
+@pytest.mark.parametrize(
+    "code",
+    [
+        "import numpy as np\np = np.polynomial.Polynomial.fit([0, 1], [0, 1], 1)",
+        "import numpy as np\nc = np.polynomial.chebyshev.chebfit([0, 1], [0, 1], 1)",
+        "import numpy as np\nf = np.linalg\ng = f.lstsq",
+    ],
+)
+def test_polynomial_fits_and_lstsq_alias_refused(code):
+    assert "fitting_function" in codes(code, "A")
+
+
+def test_admitted_linalg_functions():
+    code = "import numpy as np\nx = np.linalg.det(1) + np.linalg.norm(1) + np.matmul(1, 1)"
+    assert codes(code + "\ny = np.dot(1, 1) + np.einsum('i', 1)", "A") == []
+
+
+def test_mro_attribute_refused():
+    assert codes("o = str.mro()", "B") == ["forbidden_attribute"]
+
+
+@pytest.mark.parametrize(
+    "code",
+    [
+        "x = " + "+".join(["1"] * 60_000),
+        "x = " + "-" * 100_000 + "1",
+    ],
+    ids=["somme-longue", "unaires-imbriques"],
+)
+def test_code_too_complex_for_parser_is_refused(code):
+    assert codes(code, "A") == ["code_too_complex"]
+    assert codes(code, "B") == ["code_too_complex"]

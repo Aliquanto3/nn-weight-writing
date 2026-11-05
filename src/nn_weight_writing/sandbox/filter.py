@@ -83,12 +83,44 @@ FORBIDDEN_ATTRIBUTES = frozenset(
         "io",
         "pickle",
         "marshal",
+        # Revue de 1-5 : `str.mro()` expose `object` ; fermé par prudence.
+        "mro",
     }
 )
 
-# Fonctions d'ajustement de AD-19 : refusées comme nom, attribut ou import.
+# Fonctions d'ajustement de AD-19 : refusées comme nom, attribut ou import. Liste étendue
+# à la revue de 1-5 (décision de l'orchestrateur, à confirmer) : tous les solveurs et
+# décompositions de `numpy.linalg` de NumPy 2.5, et les ajustements de `numpy.polynomial`.
 FITTING_FUNCTIONS = frozenset(
-    {"lstsq", "svd", "pinv", "eig", "eigh", "solve", "inv", "polyfit", "cov", "corrcoef"}
+    {
+        # Liste de AD-19.
+        "lstsq",
+        "svd",
+        "pinv",
+        "eig",
+        "eigh",
+        "solve",
+        "inv",
+        "polyfit",
+        "cov",
+        "corrcoef",
+        # Solveurs et décompositions de `numpy.linalg`.
+        "tensorsolve",
+        "tensorinv",
+        "svdvals",
+        "eigvals",
+        "eigvalsh",
+        "qr",
+        "cholesky",
+        "matrix_rank",
+        # `numpy.polynomial` et ses ajustements (jamais exposé, refusé dès le filtre).
+        "polynomial",
+        "chebfit",
+        "legfit",
+        "lagfit",
+        "hermfit",
+        "hermefit",
+    }
 )
 
 MAX_STRING_BYTES = 8 * 1024
@@ -103,6 +135,7 @@ FORBIDDEN_STATEMENT = "forbidden_statement"
 ATTRIBUTE_STORE = "attribute_store"
 FITTING_FUNCTION = "fitting_function"
 LITERALS_TOO_LARGE = "literals_too_large"
+CODE_TOO_COMPLEX = "code_too_complex"
 FILTER_CODES = frozenset(
     {
         SYNTAX_ERROR,
@@ -113,6 +146,7 @@ FILTER_CODES = frozenset(
         ATTRIBUTE_STORE,
         FITTING_FUNCTION,
         LITERALS_TOO_LARGE,
+        CODE_TOO_COMPLEX,
     }
 )
 
@@ -185,6 +219,9 @@ def check(code: str, profile: Profile) -> list[Violation]:
         tree = ast.parse(code, filename="<agent>", mode="exec")
     except (SyntaxError, ValueError) as exc:
         return [Violation(SYNTAX_ERROR, str(exc), getattr(exc, "lineno", 0) or 0)]
+    except (RecursionError, MemoryError) as exc:
+        # Expression trop longue ou trop imbriquée pour l'analyseur de CPython.
+        return [Violation(CODE_TOO_COMPLEX, f"code trop complexe : {type(exc).__name__}")]
     out: list[Violation] = []
     string_bytes = 0
     numbers = 0

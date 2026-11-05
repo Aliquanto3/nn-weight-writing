@@ -107,6 +107,38 @@ PROFILE_MODULES = {
 }
 
 MAX_LABEL_CHARS = 1000
+LOG_LIMIT = 20_000
+TRUNCATED = "\n[log tronqué]"
+
+
+class _CappedLog(io.TextIOBase):
+    """Tampon du `log` plafonné à `LOG_LIMIT` caractères : le reste est jeté, marqueur ajouté."""
+
+    def __init__(self, limit):
+        super().__init__()
+        self._parts = []
+        self._size = 0
+        self._limit = limit
+        self._truncated = False
+
+    def writable(self):
+        return True
+
+    def write(self, s):
+        if not isinstance(s, str):
+            raise TypeError("write() attend une chaîne")
+        room = self._limit - self._size
+        if room > 0:
+            kept = s[:room]
+            self._parts.append(kept)
+            self._size += len(kept)
+        if len(s) > max(room, 0):
+            self._truncated = True
+        return len(s)
+
+    def getvalue(self):
+        text = "".join(self._parts)
+        return text + TRUNCATED if self._truncated else text
 
 
 def _public_attributes(module, drop):
@@ -227,7 +259,7 @@ def main():
         _warm_up_numpy(numpy)
 
     frame = {"ok": False, "error": None, "value": None}
-    log = io.StringIO()
+    log = _CappedLog(LOG_LIMIT)
     try:
         # 2. Compilation.
         compiled = compile(request["code"], "<agent>", "exec")

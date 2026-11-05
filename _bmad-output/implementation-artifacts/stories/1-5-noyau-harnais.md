@@ -58,6 +58,9 @@ Quatre couches, toutes actives :
 8. **Secrets** : le journal masque, avant écriture, les motifs de clé (`sk-ant-`, `sk-or-`, `sk-…`, `Authorization`, `x-api-key`, `Bearer`) et les valeurs de `ANTHROPIC_API_KEY` et `OPENROUTER_API_KEY` ; les flottants non finis y sont écrits en texte (JSON strict).
 9. **Manifeste** : validation écrite à la main, alignée sur `manifest.schema.json` par un test (pas de dépendance `jsonschema`). Sans couche cachée, la liste de blocs doit être vide.
 
+- D13 (revue, décision de l'orchestrateur, à confirmer par Anaël, réversible avant toute séance mesurée) : la liste AD-19 des fonctions d'ajustement est étendue, par prudence, à tous les solveurs et décompositions de `numpy.linalg` de NumPy 2.5 (`tensorsolve`, `tensorinv`, `svdvals`, `eigvals`, `eigvalsh`, `qr`, `cholesky`, `matrix_rank`) et à `numpy.polynomial` et ses ajustements (`polynomial`, `chebfit`, `legfit`, `lagfit`, `hermfit`, `hermefit`). Motif : chacune permet de résoudre ou d'ajuster sur les exemples, ce que AD-19 interdit ; la liste nominale de AD-19 n'en était qu'un échantillon. Restent admises : `det`, `slogdet`, `norm`, `matrix_norm`, `vector_norm`, `cond`, `trace`, `matmul`, `dot`, `einsum`. Effet de bord accepté : ces noms sont aussi refusés comme noms de variables (comme ceux de AD-19).
+- D14 (revue) : code trop long ou trop imbriqué pour l'analyseur (RecursionError, MemoryError) refusé `code_too_complex` ; `write_weights` n'admet que des `int` et `float` (ni chaîne, ni booléen, ni entier hors float64) ; log du sous-processus plafonné côté enfant à 20 000 caractères, marqueur `[log tronqué]` ; attribut `mro` refusé.
+
 ## Critères d'acceptation (tests)
 
 - Frontière de confiance par l'AST (AD-1) : aucun import de `torch`, `jax`, `evaluation`, `baselines`, `report`, `datasets`, `publish` (relatifs compris) côté séance ; ni `labels.jsonl` ni `heldout` dans ces sources.
@@ -77,5 +80,22 @@ Quatre couches, toutes actives :
 - **Témoins** (AD-3) : implémentation PyTorch de `dense` et des activations, et test de parité ; d'ici là le registre `network.layers` n'a que l'implémentation NumPy.
 - **1-14** : mesures de `eval.json` (jeu réservé, par type, ablation des blocs), exécution de B en évaluation par `sandbox.run`.
 - Audit : le recouvrement de fragments ne porte que sur les `raw` textuels ; les jeux d'images (lot 2) demanderont un audit des littéraux numériques. La détection de boucles est statique (`range(K)` ou littéral de taille K).
-- Fonctions de type ajustement absentes de la liste AD-19 (`svdvals`, `eigvals`, `eigvalsh`, `qr`, `cholesky`, `tensorsolve`, `tensorinv`) : admises ; à trancher comme décision de protocole avant la première séance mesurée.
 - Pas de limite mémoire du sous-processus (seul le délai borne une exécution) ; à poser si une séance réelle le demande.
+
+## Revue
+
+### Passe 1 (2026-11-05, SHA revu a062d67)
+
+Rebasée sur `origin/main` (302199b), sans conflit ; `pyproject.toml` sans recouvrement.
+
+- Important, medium, second avis 1 : `write_weights` levait OverflowError (`[[10**400]]`) hors de `call()` — corrigé (refus `invalid_weights`, journalisé), test paramétré.
+- Important, medium, second avis 2 : RecursionError (somme de 60 000 termes) et MemoryError (100 000 unaires) de `ast.parse` remontaient par le filtre et l'audit — corrigé (refus `code_too_complex`, audit sans drapeau), tests filtre A et B et service.
+- Important, medium, second avis 3 : liste AD-19 étendue (D13) — corrigé, tests paramétrés A et B, alias, `np.polynomial`.
+- Important, medium, second avis 4 : log du sous-processus sans plafond — corrigé (tampon plafonné dans `_bootstrap.py`, marqueur), test.
+- Nit, low, second avis 5 : coercion de `"1.0"` et `True` en 1.0 — corrigé (`_only_numbers`, itératif), test.
+- Nit, low, second avis 6 : `str.mro()` — corrigé (attribut `mro` refusé), test.
+- Important, medium, revue : `manifest_errors` levait TypeError sur `type` ou `activation` non hachable (liste JSON), la séance tombait — corrigé, tests.
+- Nit, low, revue : un argument non sérialisable en JSON (ensemble Python) fait lever `journal.write` ; inatteignable par un pilote JSON — reporté à 1-6 (pilotes : n'envoyer que du JSON décodé).
+- Nit, low, revue : `np.roots` calcule les valeurs propres d'une matrice compagnon ; ne donne pas d'ajustement sur données — admis, à revoir avec D13.
+- Complexité : 0 constat (journal en ajout O(1), décompte de `write_weights` borné par 1 M paramètres).
+- Report (inchangé) : pas de limite mémoire du sous-processus.

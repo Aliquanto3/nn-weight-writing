@@ -350,3 +350,26 @@ def test_no_key_pattern_in_journal(make_service, monkeypatch):
     for needle in ("sk-or-", "sk-ant-", "Bearer abcdefgh", "valeur-secrete", "Authorization:"):
         assert needle not in text
     assert "[secret masqué]" in text
+
+
+@pytest.mark.parametrize(
+    "rows",
+    [[[10**400, 1, 1]], [["1.0", 1, 1]], [[True, 1, 1]], [[None, 1, 1]], [[[1], 1, 1]]],
+    ids=["entier-hors-float", "chaine", "booleen", "none", "imbrique"],
+)
+def test_write_weights_refuses_non_numbers_without_crashing(make_service, rows):
+    service = make_service("A-literal")
+    service.call("declare_network", {"manifest": MANIFEST})
+    write = {"layer": 0, "param": "W", "row_start": 0, "rows": rows}
+    assert service.call("write_weights", write)["refused"] == RefusalCode.INVALID_WEIGHTS
+    calls = [r for r in journal_records(service) if r["type"] == "tool_call"]
+    assert calls[-1]["tool"] == "write_weights"
+    assert refusals(service) == ["invalid_weights"]
+
+
+@pytest.mark.parametrize("tool", ["submit_rules", "submit_script"])
+def test_too_complex_code_is_refused_not_raised(make_service, tool):
+    service = make_service("B" if tool == "submit_rules" else "A-program")
+    service.call("declare_network", {"manifest": MANIFEST}) if tool == "submit_script" else None
+    code = "x = " + "+".join(["1"] * 60_000)
+    assert service.call(tool, {"code": code})["refused"] == RefusalCode.CODE_TOO_COMPLEX

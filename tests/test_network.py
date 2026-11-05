@@ -42,6 +42,8 @@ def test_schema_matches_registry():
         ({"encoder": "e", "layers": [dense(2, 3), dense(4, 1)]}, "in différent"),
         ({"encoder": "e", "layers": [dense(2000, 1000)]}, "paramètres"),
         ({"encoder": "e", "layers": [dense(True, 1)]}, "entiers"),
+        ({"encoder": "e", "layers": [dense(2, 1, ["relu"])]}, "activation inconnue"),
+        ({"encoder": "e", "layers": [{**dense(2, 1), "type": ["dense"]}]}, "type inconnu"),
     ],
 )
 def test_manifest_errors(manifest, fragment):

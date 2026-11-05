@@ -135,3 +135,18 @@ def test_parse_frames_rejects(stdout, message):
 def test_decode_weights_validates_keys_shape_dtype(value):
     with pytest.raises(FrameError):
         decode_weights(value)
+
+
+def test_log_capped_in_child_with_marker():
+    from nn_weight_writing.sandbox import _bootstrap
+    from nn_weight_writing.sandbox.runner import LOG_LIMIT
+
+    assert _bootstrap.LOG_LIMIT == LOG_LIMIT
+    code = (
+        "def build():\n    for i in range(200_000):\n        print('x' * 50)\n"
+        "    return {'L0.W': [[1.0]], 'L0.b': [0.0]}"
+    )
+    result = _spawn(code, "A", None, 30)
+    assert result.ok is True
+    assert result.log.endswith(_bootstrap.TRUNCATED)
+    assert len(result.log) == LOG_LIMIT + len(_bootstrap.TRUNCATED)

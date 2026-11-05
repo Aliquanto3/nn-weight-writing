@@ -49,9 +49,9 @@ def manifest_errors(manifest: object, *, with_blocks: bool = False) -> list[str]
         if not isinstance(layer, dict) or set(layer) != LAYER_KEYS:
             errors.append(f"couche {i} : clés attendues {sorted(LAYER_KEYS)}")
             continue
-        if layer["type"] not in LAYER_TYPES:
+        if not isinstance(layer["type"], str) or layer["type"] not in LAYER_TYPES:
             errors.append(f"couche {i} : type inconnu {layer['type']!r}")
-        if layer["activation"] not in ACTIVATIONS:
+        if not isinstance(layer["activation"], str) or layer["activation"] not in ACTIVATIONS:
             errors.append(f"couche {i} : activation inconnue {layer['activation']!r}")
         if not (_is_int(layer["in"], 1, MAX_UNITS) and _is_int(layer["out"], 1, MAX_UNITS)):
             errors.append(f"couche {i} : in et out entiers de 1 à {MAX_UNITS}")

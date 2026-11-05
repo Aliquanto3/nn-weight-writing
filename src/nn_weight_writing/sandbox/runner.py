@@ -33,7 +33,7 @@ from nn_weight_writing.sandbox.filter import (
 
 BOOTSTRAP = Path(__file__).with_name("_bootstrap.py")
 FRAME_PREFIX = b"\x1eNNWW-FRAME "
-LOG_LIMIT = 20_000
+LOG_LIMIT = 20_000  # égal à `_bootstrap.LOG_LIMIT` (plafond posé côté enfant)
 MAX_WEIGHT_VALUES = 2_000_000
 WEIGHT_KEY = re.compile(r"^L(0|[1-9][0-9]{0,3})\.(W|b)$")
 ENV_KEEP = ("SYSTEMROOT", "PATH")
@@ -112,7 +112,7 @@ def _spawn(code: str, profile: Profile, payload: dict | None, timeout_s: float) 
         return SandboxResult(
             ok=False, error=f"trame invalide : {exc}; {stderr}", duration_s=duration
         )
-    log = str(frame.get("log", ""))[:LOG_LIMIT]
+    log = str(frame.get("log", ""))[: LOG_LIMIT + 100]  # marge pour le marqueur
     if not frame.get("ok"):
         value = frame.get("value") if profile is Profile.B else None
         try:
