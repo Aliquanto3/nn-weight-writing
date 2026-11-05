@@ -22,7 +22,9 @@ effort = "medium"
 driver = "api"
 provider = "openrouter"
 id = "xiaomi/mimo-v2.6-pro"
-max_tokens = 16000
+# 64000 (16000 en 1-6) : MiMo raisonne avant de répondre ; à 16000 la première séance (parité,
+# A-programme) a été coupée sans sortie visible (1-8).
+max_tokens = 64000
 # Fournisseur fixé pour garder le cache et un prix stable (constat 1-2) : Xiaomi, éditeur du
 # modèle, au prix de pricing.toml ; aucun repli vers un autre fournisseur.
 provider_order = ["xiaomi"]
@@ -33,6 +35,9 @@ driver = "api"
 provider = "anthropic"
 id = "claude-sonnet-5-5"
 effort = "medium"
+# Reste à 16000 (décision 1-8, à confirmer par Anaël) : limite de sortie de Sonnet 5.5 et Fable 5.1
+# non documentée dans le dépôt, et le fournisseur Anthropic n'est pas en flux (délai de 600 s, alors
+# que MiMo a tenu des appels de 634 et 1185 s à 64000). 16000 est la plus haute valeur sûre connue.
 max_tokens = 16000
 
 [models."fable-5.1-api"]

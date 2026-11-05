@@ -72,6 +72,18 @@ def test_answer_without_tool_call_ends_in_pass_budget(session_env):
     assert (outcome.reason, outcome.detail) == ("pass_budget", "l'agent a rendu la main sans geler")
 
 
+@pytest.mark.parametrize("stop", ["length", "max_tokens"])
+def test_truncated_answer_is_error_not_pass_budget(session_env, stop):
+    provider = FakeProvider([dataclasses.replace(reply(), stop_reason=stop)])
+    outcome = session_env.run(fake_model(), method="B", provider=provider)
+    assert outcome.reason == "error"
+    assert outcome.detail.startswith(f"réponse tronquée ({stop}) à ")
+    # La réservation est levée sur ce chemin aussi (ligne `closed`, appel facturé compté).
+    rows = ledger.read(session_env.ledger)
+    assert [r.status for r in rows] == ["reserved", "closed"]
+    assert rows[-1].billed_usd == outcome.billed_usd
+
+
 def test_money_budget_stops_at_session_cap(session_env, protocol):
     capped = dataclasses.replace(protocol, max_session_usd=0.003)
     looping = [reply(calls=[("run_on_examples", {})], usage=CALL_USAGE) for _ in range(10)]

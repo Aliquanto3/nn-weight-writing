@@ -65,6 +65,9 @@ def model_call_event(
     )
 
 
+TRUNCATED_STOPS = ("length", "max_tokens")
+
+
 class ApiLoopDriver:
     name = DRIVER
 
@@ -126,6 +129,12 @@ class ApiLoopDriver:
             sent = len(messages)
             if max_session_usd > 0 and service.totals["billed_usd"] >= max_session_usd:
                 return EndReason.MONEY_BUDGET, f"plafond de séance {max_session_usd:.6f} $ atteint"
+            if not response.message.tool_calls and response.stop_reason in TRUNCATED_STOPS:
+                # Réponse coupée par `max_tokens` (raisonnement non rendu compris) : ce n'est pas
+                # l'agent qui rend la main ; séance perdue par le harnais, à rejouer (AD-14).
+                return EndReason.ERROR, (
+                    f"réponse tronquée ({response.stop_reason}) à {self.model.max_tokens} jetons"
+                )
             if not response.message.tool_calls:
                 return EndReason.PASS_BUDGET, "l'agent a rendu la main sans geler"
             for call in response.message.tool_calls:
