@@ -188,7 +188,12 @@ def decode_weights(value: object) -> dict[str, np.ndarray]:
             raise FrameError(f"{key} : taille {len(data) if isinstance(data, list) else '?'}")
         if not all(type(x) in (int, float) and math.isfinite(x) for x in data):
             raise FrameError(f"{key} : valeur non finie ou non numérique")
-        out[key] = np.asarray(data, dtype=np.float32).reshape(shape)
+        with np.errstate(over="ignore"):
+            array = np.asarray(data, dtype=np.float32).reshape(shape)
+        if not np.isfinite(array).all():
+            # `1e300` est fini en float64 mais devient `inf` en float32.
+            raise FrameError(f"{key} : valeur hors de la plage float32")
+        out[key] = array
     return out
 
 

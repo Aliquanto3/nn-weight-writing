@@ -252,7 +252,8 @@ def check(code: str, profile: Profile) -> list[Violation]:
                     out.append(violation)
         elif isinstance(node, ast.Constant):
             if isinstance(node.value, str):
-                string_bytes += len(node.value.encode("utf-8"))
+                # `'\ud800'` échappé dans le source : constante à substitut isolé.
+                string_bytes += len(node.value.encode("utf-8", "surrogatepass"))
             elif isinstance(node.value, bytes):
                 string_bytes += len(node.value)
             elif _numeric(node.value):

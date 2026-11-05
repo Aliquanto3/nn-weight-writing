@@ -201,7 +201,7 @@ class ToolService:
     # --- Aiguillage ------------------------------------------------------------------------
 
     def _dispatch(self, tool: str, arguments: object) -> dict:
-        spec = TOOLS_BY_NAME.get(tool)
+        spec = TOOLS_BY_NAME.get(tool) if isinstance(tool, str) else None
         if spec is None:
             raise ToolRefusal(RefusalCode.UNKNOWN_TOOL, f"outil inconnu : {tool!r}")
         if self.method not in spec.methods:
@@ -230,7 +230,8 @@ class ToolService:
         self.journal.write(
             ScriptRunEvent(
                 tool=tool,
-                code_sha256=netio.sha256_bytes(code.encode("utf-8")),
+                # Un code à substitut isolé est refusé par le filtre, mais journalisé.
+                code_sha256=netio.sha256_bytes(code.encode("utf-8", "surrogatepass")),
                 ok=result.ok,
                 log=result.log,
                 flags=flags,
@@ -278,11 +279,14 @@ class ToolService:
                 RefusalCode.INVALID_WEIGHTS, f"valeurs non numériques : {exc}"
             ) from exc
         expected = (len(rows), *target.shape[1:])
+        with np.errstate(over="ignore"):
+            # Finitude jugée en float32 : `1e300`, fini en float64, deviendrait `inf`.
+            values = values.astype(np.float32)
         if values.shape != expected or not np.isfinite(values).all():
             raise ToolRefusal(
-                RefusalCode.INVALID_WEIGHTS, f"forme attendue {expected}, valeurs finies"
+                RefusalCode.INVALID_WEIGHTS, f"forme attendue {expected}, valeurs finies en float32"
             )
-        target[row_start : row_start + len(rows)] = values.astype(np.float32)
+        target[row_start : row_start + len(rows)] = values
         self._written[key][row_start : row_start + len(rows)] = True
         remaining = int(sum((~mask).sum() for mask in self._written.values()))
         return {"written": len(rows), "rows_remaining": remaining}

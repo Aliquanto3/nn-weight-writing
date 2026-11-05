@@ -66,6 +66,15 @@ def manifest_errors(manifest: object, *, with_blocks: bool = False) -> list[str]
     return errors
 
 
+def _utf8(text: str) -> bool:
+    """Faux pour un substitut isolé (légal en JSON) : le manifeste gelé est écrit en UTF-8."""
+    try:
+        text.encode("utf-8")
+    except UnicodeEncodeError:
+        return False
+    return True
+
+
 def _block_shape_errors(blocks: object) -> list[str]:
     if not isinstance(blocks, list):
         return ["blocks : liste attendue"]
@@ -75,7 +84,7 @@ def _block_shape_errors(blocks: object) -> list[str]:
             errors.append(f"bloc {j} : clés attendues {sorted(BLOCK_KEYS)}")
             continue
         rule, types, units = block["rule"], block["types"], block["units"]
-        if not isinstance(rule, str) or not 1 <= len(rule.strip()) <= 2000:
+        if not isinstance(rule, str) or not 1 <= len(rule.strip()) <= 2000 or not _utf8(rule):
             errors.append(f"bloc {j} : règle en texte requise")
         if not isinstance(types, list) or not types or not all(isinstance(t, str) for t in types):
             errors.append(f"bloc {j} : types, liste non vide d'identifiants")

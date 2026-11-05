@@ -67,7 +67,13 @@ class JournalWriter:
             "type": event.TYPE,
             **json_safe(asdict(event)),
         }
-        line = redact(json.dumps(record, ensure_ascii=False, allow_nan=False))
+        line = json.dumps(record, ensure_ascii=False, allow_nan=False)
+        try:
+            line.encode("utf-8")
+        except UnicodeEncodeError:
+            # Substitut isolé (échappement JSON `\ud800`) : échappé, le journal reste UTF-8.
+            line = json.dumps(record, ensure_ascii=True, allow_nan=False)
+        line = redact(line)
         self._handle.write(line + "\n")
         self._handle.flush()
         self.seq += 1

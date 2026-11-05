@@ -127,6 +127,7 @@ def test_parse_frames_rejects(stdout, message):
         {"L0.W": {"shape": [1], "dtype": "float64", "data": [1.0]}},
         {"L0.W": {"shape": [2], "dtype": "float32", "data": [1.0]}},
         {"L0.W": {"shape": [1], "dtype": "float32", "data": ["1"]}},
+        {"L0.W": {"shape": [1], "dtype": "float32", "data": [1e300]}},
         {"L0.W": {"shape": [-1], "dtype": "float32", "data": []}},
         {"L0.W": {"shape": [1], "dtype": "float32", "data": [1.0], "extra": 1}},
         {},

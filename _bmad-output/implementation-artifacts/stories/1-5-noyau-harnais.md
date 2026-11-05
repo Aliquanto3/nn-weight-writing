@@ -99,3 +99,13 @@ Rebasée sur `origin/main` (302199b), sans conflit ; `pyproject.toml` sans recou
 - Nit, low, revue : `np.roots` calcule les valeurs propres d'une matrice compagnon ; ne donne pas d'ajustement sur données — admis, à revoir avec D13.
 - Complexité : 0 constat (journal en ajout O(1), décompte de `write_weights` borné par 1 M paramètres).
 - Report (inchangé) : pas de limite mémoire du sous-processus.
+
+### Passe 2 (2026-11-05, SHA revu c1f1ca4)
+
+Base à jour (`origin/main` 302199b). Correctifs de la passe 1 relus : justes ; `code_too_complex` présent dans `RefusalCode` ; aucun refus ne court-circuite le décompte (`run_on_examples` décompte avant `_execute`, qui ne lève pas).
+
+- Important, medium, revue : `write_weights` jugeait la finitude en float64 ; `1e300` devenait `inf` en float32, écrit puis gelé — corrigé (finitude après conversion float32), test ; même garde dans `decode_weights` (défense en profondeur, l'enfant convertit déjà en float32), test.
+- Important, medium, revue : un substitut isolé (`"\ud800"`, légal en JSON) dans un argument faisait tomber la séance (`UnicodeEncodeError` dans `_script_run`, `journal.write`, le filtre pour `'\ud800'` échappé dans le source, et au gel par la règle d'un bloc) — corrigé (ligne du journal échappée en ASCII dans ce cas, empreinte en `surrogatepass`, règle de bloc refusée `invalid_blocks`), tests.
+- Nit, low, revue : nom d'outil non textuel (liste) levait TypeError — corrigé (`unknown_tool`), test.
+- Nit, low, coordinateur (Pyright) : `.encode` sur `None` (service l. 468, 478), `**` (l. 220, 390, 472), `tables` non lié (`_bootstrap.py`) — inatteignables (gardes `_check_a_production`, `argument_errors`, `rules is None` ; dans l'enfant, une sortie sans trame est déjà traitée par le parent) — rejeté.
+- Complexité : 0 constat.

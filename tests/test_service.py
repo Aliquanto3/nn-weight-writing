@@ -373,3 +373,53 @@ def test_too_complex_code_is_refused_not_raised(make_service, tool):
     service.call("declare_network", {"manifest": MANIFEST}) if tool == "submit_script" else None
     code = "x = " + "+".join(["1"] * 60_000)
     assert service.call(tool, {"code": code})["refused"] == RefusalCode.CODE_TOO_COMPLEX
+
+
+# --- Revue de 1-5, passe 2 -------------------------------------------------------------
+
+SURROGATE = chr(0xD800)  # légal en JSON (`"\ud800"`), non encodable en UTF-8
+
+
+def test_write_weights_refuses_values_beyond_float32(make_service):
+    service = make_service("A-literal")
+    service.call("declare_network", {"manifest": MANIFEST})
+    write = {"layer": 0, "param": "b", "row_start": 0, "rows": [1e300, 0, 0]}
+    assert service.call("write_weights", write)["refused"] == RefusalCode.INVALID_WEIGHTS
+    assert not service._written["L0.b"].any()
+
+
+@pytest.mark.parametrize("tool", ["submit_rules", "submit_script"])
+def test_raw_surrogate_in_code_is_refused_and_journaled(make_service, tool):
+    service = make_service("B" if tool == "submit_rules" else "A-program")
+    if tool == "submit_script":
+        service.call("declare_network", {"manifest": MANIFEST})
+    result = service.call(tool, {"code": f"x = '{SURROGATE}'"})
+    assert result["refused"] == RefusalCode.SYNTAX_ERROR
+    calls = [r for r in journal_records(service) if r["type"] == "tool_call"]
+    assert calls[-1]["arguments"]["code"] == f"x = '{SURROGATE}'"
+    assert refusals(service) == ["syntax_error"]
+
+
+def test_escaped_surrogate_in_rules_output_does_not_crash(make_service):
+    service = make_service("B")
+    code = "def predict(raw):\n    print(chr(0xD800))\n    return '\\ud800'\n"
+    assert service.call("submit_rules", {"code": code}) == {"ok": True}
+    result = service.call("run_on_examples", {})
+    assert result["pass"] == 1
+    assert {o["label"] for o in result["outputs"]} == {SURROGATE}
+    passes = [r for r in journal_records(service) if r["type"] == "pass"]
+    assert passes[0]["outputs"][0]["label"] == SURROGATE
+
+
+def test_block_rule_with_surrogate_is_refused_at_freeze(make_service):
+    service = make_service("A-literal")
+    write_literal_network(service)
+    blocks = [{**BLOCKS[0], "rule": SURROGATE}, BLOCKS[1]]
+    assert service.call("freeze", {"blocks": blocks})["refused"] == RefusalCode.INVALID_BLOCKS
+    assert service.call("freeze", {"blocks": BLOCKS}) == {"frozen": True}
+
+
+def test_non_string_tool_name_is_refused(make_service):
+    service = make_service("B")
+    assert service.call(["run_on_examples"], {})["refused"] == RefusalCode.UNKNOWN_TOOL
+    assert refusals(service) == ["unknown_tool"]
