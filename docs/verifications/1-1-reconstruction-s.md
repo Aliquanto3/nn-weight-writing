@@ -4,16 +4,16 @@ Story 1-1 (CAP-1, point « S d'après Nuss » de `jeux-de-donnees.md`). Recherch
 
 ## Verdict : conforme avec écarts
 
-Équivalent CAP-1 : **feu vert avec réserve**.
+Équivalent CAP-1 proposé : **feu vert avec réserve**. La décision revient à Anaël (CAP-1).
 
-Ce que `jeux-de-donnees.md` dit de S correspond à ce qu'on peut vérifier : les trois juridictions, les trois exemples d'erreurs et les repères chiffrés (environ 97 000 paramètres, 40 exemples non annotés, 97,7 % contre 82,8 %, 4 000 et 8 192 références). Le post original n'est pas lisible sans compte LinkedIn, et aucune trace publique ne donne la liste des 15 types : **3 types sont attestés, 12 sont reconstruits**. S reste donc une reconstruction de l'esprit du jeu de Nuss, pas une copie. Le rapport du lot 1 doit le dire, sans en faire un blocage.
+Ce que `jeux-de-donnees.md` dit de S correspond à ce qu'on peut vérifier : les trois juridictions, les trois exemples d'erreurs et les repères chiffrés (environ 97 000 paramètres, 40 exemples non annotés, 97,7 % contre 82,8 %, 4 000 et 8 192 références). Le post original n'est pas lisible sans compte LinkedIn, et aucune trace publique ne donne la liste des 15 types : **3 types sont attestés (dont un, le « 30 février », par `docs/SOURCES.md` seulement), 12 sont reconstruits**. S reste donc une reconstruction de l'esprit du jeu de Nuss, pas une copie, et ses scores ne se comparent à ceux de Nuss qu'en ordre de grandeur ; le chiffre de référence lui-même diverge selon les republications (97,7 % contre 82,8 %, ou 97,8 % contre 94,6 %, voir plus bas). Réserves à porter au rapport du lot 1 : liste des types, format, proportions et chiffre de référence non vérifiables. Ce constat ne propose pas de blocage, parce que la question du lot 1 (un LLM écrit-il de bons poids sur une tâche de cohérence de références) ne dépend pas d'une copie exacte du jeu de Nuss ; s'il retient un blocage, Anaël le consigne comme décision (CAP-1).
 
 ## Accès à la source
 
 - **Post de Jorick Nuss** (LinkedIn, vers le 2026-11-04) : pas accessible. Son URL n'a pas été trouvée. Le profil `fr.linkedin.com/in/jorick-nuss-7725251a1` et les profils qui republient le post renvoient HTTP 999 (blocage des robots par LinkedIn). On le connaît seulement par les extraits que la recherche web donne de republications (Jérôme Ramette, Luc Legay, Simon Biffe, Alain Issarni) et par le relevé de `docs/SOURCES.md`. Le présent constat ne cite aucun contenu du post au-delà de ces extraits.
 - **Fil de Jacob Lauritzen** (X, 2026-11-03) : la page renvoie HTTP 402. Le texte du message principal apparaît dans les résultats de recherche : « Got fable to hand-write weights of a 100k param model to recognize real versus fake legal citations. Basically one-shotted a full NN that's better than training it ». Une réponse ajoute que les deux approches convergent quand on entraîne plus longtemps. Le fil ne décrit aucun type d'erreur et porte sur des citations dont le droit n'est pas précisé, probablement pas français.
 - **Code, données ou générateur** : rien trouvé, ni chez Nuss ni chez Lauritzen (recherches GitHub et web).
-- **Ce que les traces publiques confirment** : la reproduction de l'expérience de Lauritzen sur le droit français (Cour de cassation, Conseil d'État, cours d'appel) avec Claude Sonnet 5.5 ; environ 97 000 paramètres, la description de la tâche, 40 exemples non annotés et aucune descente de gradient ; 97,7 % sur 4 000 références jamais vues contre 82,8 % pour un entraînement sur 8 192 exemples annotés ; « 15 types d'erreurs » avec, parmi les exemples, un pourvoi formé après la décision et une chambre inexistante ; une règle lisible fondée sur l'écart entre l'année du pourvoi et celle de la décision ; et la réserve de l'auteur : données synthétiques, filtre de cohérence et non d'existence.
+- **Ce que les traces publiques confirment** : la reproduction, par Nuss, de l'expérience de Lauritzen sur le droit français (Cour de cassation, Conseil d'État, cours d'appel) avec Claude Sonnet 5.5 ; environ 97 000 paramètres, la description de la tâche, 40 exemples non annotés et aucune descente de gradient ; 97,7 % sur 4 000 références jamais vues contre 82,8 % pour un entraînement sur 8 192 exemples annotés ; « 15 types d'erreurs » avec, parmi les exemples, un pourvoi formé après la décision et une chambre inexistante ; une règle lisible fondée sur l'écart entre l'année du pourvoi et celle de la décision ; et la réserve de l'auteur : données synthétiques, filtre de cohérence et non d'existence.
 
 ## Les 15 types
 
@@ -26,7 +26,7 @@ Rappel des formats (connaissance générale, à figer en 1-9) :
 | # | Type | Statut | Source ou justification |
 |---|---|---|---|
 | 1 | Pourvoi formé après la décision (année `AA` du n° de pourvoi postérieure à l'année de la décision) | **attesté** | Exemple cité par Nuss (SOURCES.md, republications Ramette et Legay). Le bloc de neurones qu'il décrit, sur l'écart entre l'année du pourvoi et celle de la décision, en est la règle. |
-| 2 | Date calendaire impossible (30 février, 31 avril, 31 juin…) | **attesté** (exemple « 30 février ») | Exemple cité par Nuss d'après SOURCES.md. Les extraits de republications accessibles ne le reprennent pas mot pour mot. L'extension aux autres dates impossibles est de notre fait. |
+| 2 | Date calendaire impossible (30 février, 31 avril, 31 juin…) | **attesté**, second rang (exemple « 30 février ») | Exemple cité par Nuss d'après `docs/SOURCES.md`, relevé du post fait par Anaël (source primaire de second rang). Aucune source consultée accessible ne le confirme : les extraits de republications accessibles ne le reprennent pas mot pour mot. L'extension aux autres dates impossibles est de notre fait. |
 | 3 | Chambre inexistante à la Cour de cassation (« 4e chambre civile », « 2e chambre commerciale ») | **attesté** | Exemple cité par Nuss (SOURCES.md, republications Ramette et Legay). Les exemples entre parenthèses sont les nôtres. |
 | 4 | Cour d'appel inexistante (siège sans cour d'appel : « CA Lille », « CA Marseille », « CA Strasbourg ») | reconstruit | Erreur fréquente des LLM : ils confondent tribunal judiciaire et cour d'appel (Douai, Aix-en-Provence, Colmar). C'est l'analogue de 3 au niveau de la juridiction. |
 | 5 | Formation incompatible avec la juridiction (« CE, 1re chambre civile », « CA Paris, assemblée plénière ») | reconstruit | Mélange des vocabulaires des deux ordres de juridiction, voisin de 3. À distinguer de 3 dans le générateur : formation qui existe ailleurs, et non formation qui n'existe nulle part. |
@@ -41,7 +41,7 @@ Rappel des formats (connaissance générale, à figer en 1-9) :
 | 14 | Recueil de publication incompatible (« Lebon » pour la Cour de cassation, « Bull. crim. » pour une chambre civile) | reconstruit | N'existe que si le format de S porte la publication. Même incertitude que 13. |
 | 15 | ECLI incohérent avec la référence (année ou juridiction différente) | reconstruit | N'existe que si le format de S porte un ECLI. Même incertitude que 13. |
 
-Bilan : 3 attestés, 12 reconstruits. Les types 13 à 15 dépendent de champs dont on ne sait pas s'ils figurent chez Nuss. Si 1-9 retient un format sans solution, sans publication ou sans ECLI, il faut les remplacer par des types reconstruits sur les champs gardés (par exemple, pour le CE, un numéro de requête incompatible avec l'année, puisque les numéros sont croissants dans le temps).
+Bilan : 3 attestés (1 et 3 par les republications et `SOURCES.md`, 2 par `SOURCES.md` seul), 12 reconstruits. Les types 13 à 15 dépendent de champs dont on ne sait pas s'ils figurent chez Nuss. Si 1-9 retient un format sans solution, sans publication ou sans ECLI, il faut les remplacer par des types reconstruits sur les champs gardés (par exemple, pour le CE, un numéro de requête incompatible avec l'année, puisque les numéros sont croissants dans le temps).
 
 ## Écarts connus avec l'original
 
@@ -59,7 +59,7 @@ Bilan : 3 attestés, 12 reconstruits. Les types 13 à 15 dépendent de champs do
 
 1. **Générateur de S** : coder les 15 types du tableau, chacun avec son identifiant `#` et son statut (attesté ou reconstruit) dans les métadonnées du générateur, pour que le rapport puisse séparer les scores par statut. Figer d'abord le format des références : si la solution, la publication ou l'ECLI n'y figurent pas, remplacer les types 13 à 15 comme indiqué plus haut.
 2. **Vérifier les faits juridiques avant de les coder** : liste des 36 cours d'appel, chambres et dates de création, formations du CE, formats de numéros. Le générateur ne doit pas fabriquer de « vraies » références fausses par erreur de connaissance.
-3. **S-réservé (10 connus, 5 tenus à l'écart)** : les 3 types attestés restent dans les 10 connus, puisqu'ils sont publics et qu'une description de tâche inspirée de Nuss les citerait. Proposition pour les 5 tenus à l'écart : **4, 7, 9, 11, 12**. Ils portent sur des champs toujours présents et restent indépendants des règles connues : 9 teste le transfert de la règle 1 aux cours d'appel, 12 un calcul que les types connus n'enseignent pas. Il faut écarter des 5 tout type qui dépend d'un champ optionnel (13 à 15). Le test de 1-9 vérifie que la description de tâche de S-réservé ne nomme aucun des 5 types et n'en emploie pas le vocabulaire (« dimanche », « férié », « RG », « création »…).
+3. **S-réservé (10 connus, 5 tenus à l'écart)** : les 3 types attestés restent dans les 10 connus, puisqu'ils sont publics et qu'une description de tâche inspirée de Nuss les citerait. Proposition, à confirmer quand 1-9 aura figé le format, pour les 5 tenus à l'écart : **4, 7, 9, 11, 12**. Ils portent sur la juridiction, la formation, la date et le numéro, présents dans toute référence des trois formats rappelés plus haut. Ils ne sont pas tous indépendants des règles connues, et c'est voulu : 9 teste le transfert de la règle 1 aux cours d'appel, 12 un calcul que les types connus n'enseignent pas. Les 10 connus comprennent 13 à 15 tant qu'ils ne sont pas remplacés (point 1). Il faut écarter des 5 tout type qui dépend d'un champ optionnel (13 à 15). Le test de 1-9 vérifie que la description de tâche de S-réservé ne nomme aucun des 5 types et n'en emploie pas le vocabulaire (« dimanche », « férié », « RG », « création »…).
 4. **Proportions** : à fixer et à journaliser, faute de repère chez Nuss. Proposition : vraies et fausses à parts égales, types uniformes parmi les fausses, juridictions à parts égales. On rapporte l'exactitude et la précision.
 5. **Tailles** : reprendre 4 000 références d'évaluation, 8 192 exemples annotés pour C et 40 exemples non annotés pour le paquet de l'agent, afin que les chiffres se comparent à ceux de Nuss.
 
@@ -86,3 +86,17 @@ Corrections proposées, non appliquées, à faire par une story ou une PR à par
 | Reprise de Matt Stockton | <https://x.com/mstockton/status/2117695754278142357> | Extrait de recherche : contexte seulement |
 | Fiche Crunchbase de Haiku | <https://www.crunchbase.com/organization/haiku-5135> | Extrait de recherche : Nuss, CTO et cofondateur |
 | Recherches web (Nuss, Lauritzen, « 15 types d'erreurs », code GitHub) | — | Aucun code, aucune donnée, aucune liste des 15 types |
+
+## Revue
+
+### Passe 1 (2026-11-05, SHA revu abd8cb9)
+
+Constats du second avis (Haiku), tranchés un par un :
+
+- Nit, low (proposé high), second avis 1 : « 30 février » attesté par `SOURCES.md` seul. Corrigé : statut « attesté, second rang », SOURCES.md nommé source primaire de second rang, bilan détaillé. Pas une invention, d'où la sévérité abaissée.
+- Important, medium, second avis 2 : verdict présenté comme acquis et « sans en faire un blocage » préjugeant la décision d'Anaël. Corrigé : verdict proposé, réserves nommées (types, format, proportions, chiffre divergent), motif de l'absence de blocage, décision renvoyée à Anaël. « Feu vert avec réserve » maintenu : S est une reconstruction déclarée.
+- Rejeté, medium, second avis 3 : 4, 7, 9, 11 et 12 reposent sur juridiction, formation, date et numéro, présents dans les trois formats rappelés ; seuls 13 à 15 dépendent de champs optionnels. Précisé : proposition conditionnelle au format de 1-9.
+- Rejeté, medium, second avis 4 : le remplacement de 13 à 15 si le format ne les porte pas est déjà prévu (bilan, point 1). Renvoi ajouté au point 3.
+- Nit, low, second avis 5 : contradiction réelle entre « indépendants des règles connues » et 9 qui transpose 1. Corrigé : dépendance assumée.
+- Nit, low, second avis 6 : la phrase était juste (Nuss reproduit Lauritzen) mais ambiguë. Corrigé : « par Nuss ».
+- Rejeté, low, second avis 7 : la justification du type 1 est l'exemple cité par Nuss ; la phrase sur le bloc de neurones est un complément, pas la preuve.
