@@ -35,8 +35,8 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 ## Brief
 
 - **Tâche du run** : run autonome sur le lot 1 de `stories.yaml`, 1-1 à 1-6 d'abord ; 1-2 et 1-3 attendent la clé OpenRouter et le compte PISTE d'Anaël ; conforme à ARCHITECTURE-SPINE.md ; topic GitHub passé à `status-dev`.
-- **Intention courante** : 1-1 à 1-7 fusionnées (1-3 provisoire) ; suite complète verte sur main 1e62860 ; 1-8 moitié MiMo en cours (9 séances jouet, plafond 3 $ facturés).
-- **Plan des vagues restantes** : V2 = 1-8 moitié MiMo (revue puis PR) ; ensuite, après Anaël : 1-8 moitié Sonnet + recalibrage unique du budget de passes, 1-9 (après décision CAP-1 sur S), 1-12 (après PISTE, Ollama, collecte).
+- **Intention courante** : run en pause depuis le 2026-11-06 : 1-1 à 1-7 et la moitié MiMo de 1-8 fusionnées (1-3 provisoire), suite complète verte sur main aec4924 ; reprise sur les attentes d'Anaël ci-dessous.
+- **Plan des vagues restantes** : 1-8 moitié Sonnet + recalibrage unique du budget de passes (décision au journal, avant 1-9) ; 1-9 (après décision CAP-1 sur S) ; 1-10 et 1-11 ensuite ; 1-12 (après PISTE, Ollama, collecte) ; 1-13, 1-14 et v0.1.0.
 - **Artefacts utiles** : constats dans `docs/verifications/` ; specs de story dans `_bmad-output/implementation-artifacts/stories/` ; décisions D1-D12 de 1-5 dans sa spec de story.
 - **Attentes Anaël** : connexion `CLAUDE_CONFIG_DIR=~/.nnww/claude-config` + `NNWW_CLAUDE_CWD_ROOT=C:
 nww-cwd` (procédure dans la spec 1-6) ; `ANTHROPIC_API_KEY` si repli API ; compte PISTE (1-3 T1-T8) ; Ollama + GPU pour la collecte (avant 1-12) et place de la story de collecte (R9) ; décisions CAP-1 sur S (1-1), MNIST A-D (1-4), D13 linalg (1-5), `max_session_usd = 5`, `session_timeout_s = 7200`, effort medium Sonnet/Fable (1-6).
@@ -149,3 +149,14 @@ nww-cwd` (procédure dans la spec 1-6) ; `ANTHROPIC_API_KEY` si repli API ; comp
 - 2026-11-05 23:41 · run · décision · suite complète locale sur main 1e62860 : verte ; ruff OK · 1e62860
 - 2026-11-05 23:41 · run · décision · 1-8 avancée en partie (moitié MiMo, 9 séances jouet par OpenRouter, plafond 3 $ facturés pour la nuit) ; moitié Sonnet et recalibrage du budget de passes en attente de la connexion Claude Code ; 1-9 en attente de la décision CAP-1 sur S · —
 - 2026-11-05 23:41 · 1-8 · dev · lancé (dev-story Sonnet, worktree, séances MiMo) · 1e62860
+- 2026-11-06 00:35 · 1-8 · dev · moitié MiMo finie : 9/9 séances gelées, 400/400 sur le réservé chacune, 0 à 2 passes, aucun drapeau ; 0,2815 $ facturés (une séance perdue rejouée) ; défaut du harnais corrigé (réponse tronquée comptée en pass_budget → error ; max_tokens MiMo 16000 → 64000) · 7d8886f
+- 2026-11-06 00:35 · 1-8 · second-avis · lancé · 7d8886f
+- 2026-11-06 00:36 · 1-8 · second-avis · 2 medium (empreintes du gel absentes du compte rendu, max_tokens MiMo seul à 64000), 2 low ; registre cohérent, rien de commité hors périmètre · 7d8886f
+- 2026-11-06 00:36 · 1-8 · décision · max_tokens : plafond technique identique pour tous les modèles du pilote API quand ils le permettent, consigné comme décision (à confirmer par Anaël) · —
+- 2026-11-06 00:36 · 1-8 · review · lancé (reviewer Opus) · 7d8886f
+- 2026-11-06 00:42 · 1-8 · review · passe 1 : 2 medium corrigés (empreintes au compte rendu + scripts/exactitude_reserve.py, D4 max_tokens consignée : MiMo 64000, Sonnet et Fable API 16000 faute de limite documentée et d'appel en flux), 3 low corrigés, 2 reportés · eeb9ebc
+- 2026-11-06 00:42 · 1-8 · review · passe 2 lancée · eeb9ebc
+- 2026-11-06 00:47 · 1-8 · review · passe 2 : rien · 6ab43a0
+- 2026-11-06 00:48 · 1-8 · fusion · #12 fusionnée (moitié MiMo), MERGED vérifié · aec4924
+- 2026-11-06 00:48 · 1-8 · attente humaine · moitié Sonnet et recalibrage unique du budget de passes : connexion CLAUDE_CONFIG_DIR + NNWW_CLAUDE_CWD_ROOT ; décision D4 max_tokens · aec4924
+- 2026-11-06 00:48 · run · report · run en pause : tout ce qui ne demande pas Anaël est fusionné ; worktrees gardés (runs/ de 1-8 dans .claude/worktrees/1-8) · aec4924
