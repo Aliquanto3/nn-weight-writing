@@ -24,3 +24,6 @@ heldout/
 .claude/worktrees/
 
 .env
+
+# Compteur du contrôle rapide (agent-cost-kit)
+.claude/cost-kit/.blocages
