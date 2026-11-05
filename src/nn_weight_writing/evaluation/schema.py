@@ -19,6 +19,7 @@ class RunRecord:
     files: dict
     tree_sha256: str
     schema_version: int = RUN_SCHEMA_VERSION
+    dataset: dict = field(default_factory=dict)  # jeu d'entraînement : chemin relatif et sha256
 
 
 @dataclass(frozen=True)

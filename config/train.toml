@@ -1,0 +1,21 @@
+# Protocole d'entraînement des témoins C (AD-17) : architecture de référence fixe par tâche.
+# Lu par `baselines/train.py` seul. Les N du jouet sont bornés par la taille du jeu de séance.
+
+[defaults]
+optimizer = "adam"
+learning_rate = 0.01
+epochs = 400
+batch_size = 64
+n_values = [64, 256]
+seeds = [0, 1, 2]
+
+# `hidden` : tailles des couches cachées (activation relu) ; la sortie est une couche dense
+# identity à une unité par classe de la tâche.
+[tasks.parity]
+hidden = [32]
+
+[tasks.compare]
+hidden = [16]
+
+[tasks.automaton]
+hidden = [32]
