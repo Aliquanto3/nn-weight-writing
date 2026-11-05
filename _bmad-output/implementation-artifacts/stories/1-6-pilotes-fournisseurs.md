@@ -33,7 +33,7 @@ Port fournisseur avec adaptateurs OpenRouter, Anthropic (repli) et simulé ; pil
 - D7 OpenRouter : fournisseur fixé à `xiaomi` (`provider.order`, `allow_fallbacks: false`), éditeur du modèle, au prix catalogue relevé par 1-2 (0,435 / 0,87 / 0,0036 $ par Mtok). Effort transmis en `reasoning.effort` s'il est configuré (aucun pour MiMo). Cache : `prompt_tokens_details.cached_tokens`, automatique.
 - D8 Anthropic : points de cache sur le système, le dernier outil et le dernier bloc de la conversation ; effort en `output_config.effort` (même effort que par Claude Code). Prix des écritures du cache : tarif à 5 minutes.
 - D9 Tarifs Anthropic : page officielle non lue dans cette story (pas d'outil web) ; repris du relevé du 2026-10-13 sur `platform.claude.com/docs/en/about-claude/pricing` (mémoire de l'utilisateur `prix-cache-sonnet-haiku`), cohérent avec le `CLAUDE.md` global : Sonnet 5.5 2 / 10 / lecture 0,10 / écriture 2,50 ; Fable 5.1 10 / 50 / 0,25 / 12,50. Source citée dans `pricing.toml`.
-- D10 Identifiants Anthropic `claude-sonnet-5-5` et `claude-fable-5-1` : déduits de `claude-opus-5-5`, à confirmer par le test live de Claude Code. Effort `medium` pour les modèles Claude (proposé, à confirmer).
+- D10 Identifiants Anthropic `claude-sonnet-5-5`, `claude-opus-5-5`, `claude-haiku-5-5` et `claude-fable-5-1` : confirmés par l'orchestrateur (revue, 2026-11-05). Effort `medium` pour les modèles Claude (proposé, à confirmer).
 - D11 Pilote Claude Code, en plus de AD-14 : `--allowedTools` limité aux outils MCP du catalogue (sans autorisation, `-p` refuse les appels MCP) et `--disable-slash-commands` (aucune skill ni commande). Environnement : toutes les variables `ANTHROPIC_*`, `CLAUDE*`, `OPENROUTER_*`, `OPENAI_*`, `AWS_BEARER*` retirées (une clé d'API ferait facturer la séance), puis `CLAUDE_CONFIG_DIR`. Le dossier dédié est refusé avant lancement s'il contient `CLAUDE.md`, `plugins`, `skills`, `agents`, `commands`, `output-styles`, `hooks`, `settings.local.json` ou un `settings.json` non vide. L'événement `system/init` du flux est contrôlé : outils hors catalogue (sauf `ListMcpResourcesTool`, `ReadMcpResourceTool`, inoffensifs), autre serveur MCP, skills, commandes ou plugins non intégrés → arrêt `error` (« contamination »).
 - D12 Flux `stream-json` : un `model_call` par événement `assistant` ; l'usage d'un même identifiant de message n'est compté qu'une fois (delta par champ), les messages `<synthetic>` (« Not logged in », limite d'usage) ne sont pas des appels. Description de tâche écrite en octets UTF-8 sur l'entrée standard (sans traduction des fins de ligne sous Windows ; défaut trouvé par le test de contamination).
 - D13 Limite d'usage : motif `usage limit|limit reached|hit your limit|rate limit|out of extra usage` dans l'erreur de l'API, le résultat ou `terminal_reason`, ou `api_error_status` 429 → `error`, détail `usage_limit : …`. Toute autre erreur (`is_error`, sous-type autre que `success`, processus sans résultat) → `error` avec la cause.
@@ -80,7 +80,7 @@ Remove-Item Env:ANTHROPIC_API_KEY -ErrorAction SilentlyContinue
 claude   # puis /login avec le compte de l'abonnement, puis /exit
 ```
 
-N'y copier aucun réglage, plugin, skill ni `CLAUDE.md`. Vérifier ensuite, dans le dépôt : `uv run pytest -m live tests/test_live.py -k claude_code -s` (une séance de 2 tours, 0 $ facturé ; confirme aussi l'identifiant `claude-sonnet-5-5` et les options cachées `--max-turns` et `--system-prompt-file`, acceptées par Claude Code 2.1.318 lors d'un essai sans identifiants).
+N'y copier aucun réglage, plugin, skill ni `CLAUDE.md`. Choisir aussi une racine de répertoire courant dont aucun parent ne porte `CLAUDE.md`, `CLAUDE.local.md`, `.claude/CLAUDE.md` ni `.claude/rules` (le dossier temporaire est sous `$HOME`, qui porte `.claude\CLAUDE.md` : la séance serait refusée), par exemple `New-Item -ItemType Directory -Force C:\nnww-cwd`, puis `$env:NNWW_CLAUDE_CWD_ROOT = "C:\nnww-cwd"` (à poser aussi pour `nnww session`). Vérifier ensuite, dans le dépôt : `uv run pytest -m live tests/test_live.py -k claude_code -s` (une séance de 2 tours, 0 $ facturé ; confirme aussi les options cachées `--max-turns` et `--system-prompt-file`, acceptées par Claude Code 2.1.318 lors d'un essai sans identifiants).
 
 ## Reports
 
@@ -89,5 +89,22 @@ N'y copier aucun réglage, plugin, skill ni `CLAUDE.md`. Vérifier ensuite, dans
 - **Usage du flux Claude Code** : comparer, à la première séance réelle, la somme des `model_call` à l'`usage` de l'événement `result` (jetons de sortie possiblement partiels dans les événements `assistant`). Les messages émis après le gel ne sont plus journalisés (journal clos).
 - **Raisonnement MiMo** : les champs `reasoning` d'OpenRouter ne sont ni journalisés ni renvoyés au modèle ; à revoir si la première séance le demande.
 - **Porte de coût** (médiane > 2 $ → 2 tentatives) : calcul sur le registre, story 1-8.
-- **Tâches** : inscription au registre `tasks.registry` avec 1-7 (jouet) et 1-9 (S).
-- Confirmation par Anaël de D4 (`max_session_usd = 5`) et D10 (effort `medium`, identifiants).
+- **Tâche S** : inscription au registre `tasks.registry` avec 1-9 (les tâches jouet de 1-7 y sont inscrites depuis la revue).
+- Confirmation par Anaël de D4 (`max_session_usd = 5`, `session_timeout_s = 7200`) et D10 (effort `medium`).
+- **Mémoire de Claude Code** : `--safe-mode` (documenté dans `claude --help` 2.1.318) désactive les `CLAUDE.md`, mais aussi « MCP servers » : à essayer au premier test live ; s'il garde le serveur de `--mcp-config`, l'ajouter à `build_command` en plus du refus par les parents. `--bare` est exclu (ni OAuth ni trousseau, donc pas d'abonnement). À vérifier aussi au premier test live que `.claude/CLAUDE.md` d'un parent est bien lu (refus prudent en attendant).
+
+## Revue
+
+### Passe 1 (2026-11-05, SHA revu 04652cb)
+
+Rebase sur `main` (d26c6ba, story 1-7) : conflits `cli.py` (sous-commandes des deux côtés) et `uv.lock` (repris de `main` puis `uv lock` ; `uv sync --locked --group train` vérifié).
+
+- Important · high · orchestrateur (second avis 5) · corrigé : Claude Code charge les fichiers de mémoire des parents du répertoire courant ; sous `%TEMP%`, `C:\Users\<user>\.claude\CLAUDE.md` est dans un parent (vérifié sur le poste). Refus avant lancement (`ancestor_memory_files`, cause journalisée), racine par `NNWW_CLAUDE_CWD_ROOT` ou `cwd_root` ; tests avec `CLAUDE.md`, `CLAUDE.local.md` et `.claude/CLAUDE.md` posés dans un parent. `--safe-mode` non retenu sans essai live (voir Reports).
+- Important · medium · second avis 1 · corrigé : le texte final d'une séance réussie n'est plus cherché pour la limite d'usage ; test.
+- Important · medium (relevé de low) · second avis 2 · corrigé : `session_timeout_s` (7200 s) dans `protocol.toml` ; un minuteur tue `claude`, fin `error` avec la cause ; test avec le faux `claude` bloqué. Change `protocol_sha256` (aucune séance mesurée).
+- Important · medium · orchestrateur · corrigé : tâches jouet de 1-7 inscrites au registre de séance ; séance jouet complète par le pilote API et `fake` (A-literal, solution écrite à la main, 100 % sur le jeu réservé par `score_frozen`) pour les trois tâches.
+- Nit · low · second avis 3 · corrigé : verrou du registre à jeton, seul son propriétaire le supprime ; test.
+- Nit · low · second avis 4 · rejeté : un `model_call` par événement, usage compté une fois par identifiant de message, totaux justes (`test_repeated_events_of_one_message_count_usage_once`) ; commenté dans `_Stream`.
+- Nit · low · second avis 6 · corrigé : `NNWW_CLAUDE_CONFIG_DIR` remplace le patch de `DEFAULT_CONFIG_DIR` dans `test_cli_session.py`.
+- Nit · low · orchestrateur · corrigé : identifiants Anthropic confirmés, mention « à confirmer » retirée (D10, `models.toml`).
+- Complexité : 0 constat (dédoublonnage de l'usage par dictionnaire, O(1) par événement).

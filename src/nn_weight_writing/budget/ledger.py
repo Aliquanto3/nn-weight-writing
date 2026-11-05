@@ -13,6 +13,7 @@ import io
 import json
 import os
 import time
+import uuid
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
@@ -118,10 +119,15 @@ def spend(rows: list[LedgerRow], lot: int | None = None) -> Spend:
 
 
 class _Lock:
-    """Verrou par création exclusive d'un fichier voisin ; un verrou abandonné expire."""
+    """Verrou par création exclusive d'un fichier voisin ; un verrou abandonné expire.
+
+    Le fichier porte un jeton : à la sortie, seul son propre verrou est supprimé (un verrou
+    brisé comme périmé puis repris par un autre écrivain reste en place).
+    """
 
     def __init__(self, path: Path) -> None:
         self.path = path.with_name(path.name + ".lock")
+        self.token = uuid.uuid4().hex.encode("ascii")
 
     def __enter__(self) -> _Lock:
         deadline = time.monotonic() + LOCK_TIMEOUT_S
@@ -139,11 +145,18 @@ class _Lock:
                     raise TimeoutError(f"registre verrouillé : {self.path}") from None
                 time.sleep(0.05)
             else:
-                os.close(fd)
+                try:
+                    os.write(fd, self.token)
+                finally:
+                    os.close(fd)
                 return self
 
     def __exit__(self, *exc: object) -> None:
-        self.path.unlink(missing_ok=True)
+        try:
+            if self.path.read_bytes() == self.token:
+                self.path.unlink(missing_ok=True)
+        except FileNotFoundError:
+            pass
 
 
 def append(

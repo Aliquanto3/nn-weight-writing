@@ -23,6 +23,7 @@ class ProtocolConfig:
     pass_budget: int
     turn_limit: int
     exec_timeout_s: float
+    session_timeout_s: float
     max_freeze_attempts: int
     journal_schema_version: int
     protocol_sha256: str
@@ -78,6 +79,7 @@ def load_protocol(path: Path | None = None) -> ProtocolConfig:
         pass_budget=_positive_int(session, "pass_budget"),
         turn_limit=_positive_int(session, "turn_limit"),
         exec_timeout_s=float(_positive_int(session, "exec_timeout_s")),
+        session_timeout_s=_positive_number(session, "session_timeout_s"),
         max_freeze_attempts=_positive_int(session, "max_freeze_attempts"),
         journal_schema_version=_positive_int(journal, "schema_version"),
         protocol_sha256=hashlib.sha256(raw).hexdigest(),

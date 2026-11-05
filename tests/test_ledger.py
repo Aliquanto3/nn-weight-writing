@@ -141,3 +141,17 @@ def test_repository_ledger_holds_the_probe_line():
 def test_ledger_merges_by_union():
     attributes = (ROOT / ".gitattributes").read_text("utf-8").splitlines()
     assert "budget/ledger.csv merge=union" in attributes
+
+
+def test_lock_released_only_by_its_owner(tmp_path):
+    """Un écrivain dont le verrou a été brisé comme périmé ne supprime pas celui d'un autre."""
+    path = tmp_path / "ledger.csv"
+    first = ledger._Lock(path)
+    first.__enter__()
+    first.path.unlink()  # brisé comme périmé par un autre écrivain…
+    second = ledger._Lock(path)
+    second.__enter__()  # … qui l'a repris
+    first.__exit__(None, None, None)
+    assert second.path.exists()
+    second.__exit__(None, None, None)
+    assert not second.path.exists()

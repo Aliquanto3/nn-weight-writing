@@ -9,7 +9,6 @@ from conftest import EXAMPLES, FAKE_CLAUDE, TASK, scenario, write_examples
 
 from nn_weight_writing import cli
 from nn_weight_writing.budget import ledger
-from nn_weight_writing.session import claude_code
 from nn_weight_writing.tasks import registry
 
 
@@ -40,18 +39,19 @@ def args(tmp_path, *extra: str) -> list[str]:
     ]
 
 
-def setup(tmp_path, monkeypatch):
+def setup(tmp_path, monkeypatch, cwd_root):
     monkeypatch.setitem(registry.TASKS, "toy", TASK)
     examples = tmp_path / "data" / "toy" / "toy-dev" / "examples.jsonl"
     examples.parent.mkdir(parents=True)
     write_examples(examples, EXAMPLES)
     config_dir = tmp_path / "claude-config"
     config_dir.mkdir()
-    monkeypatch.setattr(claude_code, "DEFAULT_CONFIG_DIR", config_dir)
+    monkeypatch.setenv("NNWW_CLAUDE_CONFIG_DIR", str(config_dir))
+    monkeypatch.setenv("NNWW_CLAUDE_CWD_ROOT", str(cwd_root))
 
 
-def test_session_command_runs_claude_code_session(tmp_path, monkeypatch, capsys):
-    setup(tmp_path, monkeypatch)
+def test_session_command_runs_claude_code_session(tmp_path, monkeypatch, capsys, claude_cwd_root):
+    setup(tmp_path, monkeypatch, claude_cwd_root)
     rules = {"code": 'def predict(raw):\n    return "ok"\n'}
     calls = [["submit_rules", rules], ["freeze", {}]]
     turns = [{"id": "m1", "usage": {"input_tokens": 1000}, "calls": calls}]
@@ -66,8 +66,8 @@ def test_session_command_runs_claude_code_session(tmp_path, monkeypatch, capsys)
     assert [r.status for r in rows] == ["reserved", "closed"]
 
 
-def test_session_command_refused_by_cap(tmp_path, monkeypatch, capsys):
-    setup(tmp_path, monkeypatch)
+def test_session_command_refused_by_cap(tmp_path, monkeypatch, capsys, claude_cwd_root):
+    setup(tmp_path, monkeypatch, claude_cwd_root)
     path = tmp_path / "ledger.csv"
     ledger.append(ledger.LedgerRow("t", "x", 1, ledger.Status.CLOSED, billed_usd=99.0), path)
     monkeypatch.setenv("OPENROUTER_API_KEY", "sk-or-v1-test-0000000000")

@@ -5,7 +5,7 @@ Il lit ses arguments, le prompt système et l'entrée standard, se connecte au s
 JSON de `NNWW_FAKE_CLAUDE_SCENARIO` en émettant un flux `stream-json` :
 
     {"init": {...}, "turns": [{"id", "usage", "text", "calls": [[outil, arguments]],
-     "events": n}], "result": {...} | null, "exit_code": 0}
+     "events": n}], "result": {...} | null, "exit_code": 0, "hang": false}
 """
 
 from __future__ import annotations
@@ -74,6 +74,8 @@ async def main() -> int:
             **scenario.get("init", {}),
         }
         emit(init)
+        if scenario.get("hang"):
+            await asyncio.sleep(3600)  # `claude` bloqué : le délai de séance doit le tuer
         for n, turn in enumerate(scenario.get("turns", [])):
             calls = turn.get("calls", [])
             content = [{"type": "text", "text": turn["text"]}] if turn.get("text") else []

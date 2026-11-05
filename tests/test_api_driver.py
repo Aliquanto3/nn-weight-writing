@@ -7,7 +7,15 @@ import dataclasses
 import json
 
 import pytest
-from conftest import EXAMPLES, claude_model, fake_model, read_journal, scenario, write_examples
+from conftest import (
+    EXAMPLES,
+    TEST_PRICE,
+    claude_model,
+    fake_model,
+    read_journal,
+    scenario,
+    write_examples,
+)
 
 from nn_weight_writing.budget import ledger
 from nn_weight_writing.providers.fake import FakeProvider, reply
@@ -208,3 +216,67 @@ def test_no_key_reaches_the_journal(session_env, monkeypatch):
     outcome = session_env.run(fake_model(), method="B", provider=provider)
     text = (outcome.run_dir / "journal.jsonl").read_text("utf-8")
     assert key not in text and "[secret masqué]" in text
+
+
+@pytest.mark.parametrize("task_name", ["parity", "compare", "automaton"])
+def test_toy_session_through_api_driver(tmp_path, protocol, task_name):
+    """Séance jouet complète (tâche inscrite par 1-7) par le pilote API et le fournisseur `fake` :
+    l'agent scripté écrit les poids de la solution à la main, gèle, et le réseau gelé fait 100 %
+    sur le jeu réservé par le chemin d'évaluation."""
+    from nn_weight_writing.baselines import handmade
+    from nn_weight_writing.datasets.toy import generate
+    from nn_weight_writing.evaluation.score import score_frozen
+    from nn_weight_writing.network import io as netio
+    from nn_weight_writing.session.run import run_session
+    from nn_weight_writing.tasks.registry import examples_path, get_task
+
+    _, held = generate(task_name, seed=3, n=32, n_heldout=64, root=tmp_path)
+    task = get_task(task_name)
+    manifest, weights = handmade.build(task_name)
+    writes = [
+        (
+            "write_weights",
+            {
+                "layer": int(key[1:].split(".")[0]),
+                "param": key.split(".")[1],
+                "row_start": 0,
+                "rows": value.tolist(),
+            },
+        )
+        for key, value in sorted(weights.items())
+    ]
+    units = sorted([list(u) for u in netio.hidden_units(manifest)])
+    types = [entry["id"] for entry in task.vocabulary]
+    blocks = [{"rule": "solution écrite à la main", "types": types, "units": units}]
+    provider = FakeProvider(
+        [
+            reply(calls=[("declare_network", {"manifest": manifest}), *writes], usage=CALL_USAGE),
+            reply(
+                calls=[("run_on_examples", {}), ("freeze", {"blocks": blocks})], usage=CALL_USAGE
+            ),
+        ]
+    )
+    outcome = run_session(
+        task=task,
+        dataset="toy",
+        examples=examples_path(task_name, "toy", tmp_path / "data"),
+        method="A-literal",
+        model=fake_model(),
+        price=TEST_PRICE,
+        protocol=protocol,
+        attempt=1,
+        seed=3,
+        lot=1,
+        runs_dir=tmp_path / "runs",
+        ledger_path=tmp_path / "ledger.csv",
+        provider=provider,
+    )
+    assert (outcome.reason, outcome.billed_usd) == ("frozen", 0.0024)
+    records = read_journal(outcome.run_dir)
+    assert records[0]["task"] == task_name and records[0]["provider"] == "fake"
+    assert "heldout" not in json.dumps(records)
+    score = score_frozen(
+        outcome.run_dir, task.codec, held / "examples.jsonl", held / "labels.jsonl"
+    )
+    assert (score.n, score.accuracy) == (64, 1.0)
+    assert [r.status for r in ledger.read(tmp_path / "ledger.csv")] == ["reserved", "closed"]

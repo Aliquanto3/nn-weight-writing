@@ -15,9 +15,10 @@ def test_protocol_values():
         config.pass_budget,
         config.turn_limit,
         config.exec_timeout_s,
+        config.session_timeout_s,
         config.max_freeze_attempts,
         config.journal_schema_version,
-    ) == (20, 200, 60.0, 3, 1)
+    ) == (20, 200, 60.0, 7200.0, 3, 1)
     assert config.protocol_sha256 == hashlib.sha256(PROTOCOL_PATH.read_bytes()).hexdigest()
 
 

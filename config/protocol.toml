@@ -9,6 +9,8 @@ pass_budget = 20
 turn_limit = 200
 # Délai maximal d'une exécution dans le bac à sable, en secondes.
 exec_timeout_s = 60
+# Durée maximale d'une séance Claude Code, en secondes : au-delà, `claude` est tué (fin `error`).
+session_timeout_s = 7200
 # Tentatives de gel par séance (refus au-delà).
 max_freeze_attempts = 3
 

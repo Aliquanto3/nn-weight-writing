@@ -1,6 +1,6 @@
 """Registre des tâches de séance : nom -> description, codec et vocabulaire fermé (AD-2, AD-4).
 
-Les tâches réelles s'y inscrivent avec leur story (1-7 : jouet ; 1-9 : S). `nnww session` lit
+Les tâches jouet (1-7) y sont inscrites ; la tâche S s'y inscrira avec 1-9. `nnww session` lit
 les exemples non annotés dans `data/<task>/<dataset>/examples.jsonl` (AD-12).
 """
 
@@ -40,3 +40,14 @@ def get_task(name: str) -> TaskSpec:
 
 def examples_path(task: str, dataset: str, data_dir: Path | None = None) -> Path:
     return Path(data_dir or DATA_DIR) / task / dataset / EXAMPLES_NAME
+
+
+def _register_toy() -> None:
+    """Tâches jouet de 1-7 : chacune est son propre codec (`encoder_id`, `encode`, `decode`)."""
+    from nn_weight_writing.tasks.toy import TASKS as TOY
+
+    for toy in TOY.values():
+        register(TaskSpec(toy.name, toy.description, toy, tuple(toy.vocabulary)))
+
+
+_register_toy()

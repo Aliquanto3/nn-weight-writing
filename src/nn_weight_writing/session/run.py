@@ -75,6 +75,7 @@ def run_session(
     provider: ModelProvider | None = None,
     claude_executable: Sequence[str] = ("claude",),
     claude_config_dir: Path | None = None,
+    claude_cwd_root: Path | None = None,
     now: datetime | None = None,
 ) -> SessionOutcome:
     """Mène une séance ; `ledger.BudgetRefused` si les plafonds refusent l'ouverture."""
@@ -115,7 +116,11 @@ def run_session(
         task_text = prompt.task_message(bundle)
         if model.driver == "claude_code":
             ClaudeCodeDriver(
-                model, price, executable=claude_executable, config_dir=claude_config_dir
+                model,
+                price,
+                executable=claude_executable,
+                config_dir=claude_config_dir,
+                cwd_root=claude_cwd_root,
             ).run(service, system_path, task_text)
         else:
             ApiLoopDriver(provider or make_provider(model), model, price).run(

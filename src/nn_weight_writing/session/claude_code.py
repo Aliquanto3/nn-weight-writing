@@ -1,6 +1,8 @@
 """Pilote Claude Code (`ClaudeCodeDriver`, AD-14) : `claude -p` par l'abonnement d'Anaël.
 
-`claude` tourne depuis un répertoire courant temporaire vide, avec un `CLAUDE_CONFIG_DIR` dédié
+`claude` tourne depuis un répertoire courant temporaire vide, sous une racine dont aucun dossier
+parent ne porte de fichier de mémoire (`CLAUDE.md`, que Claude Code charge en remontant
+l'arborescence ; refus avant lancement sinon), avec un `CLAUDE_CONFIG_DIR` dédié
 (connexion unique, aucun réglage ni plugin), sans outil intégré (`--tools ""`), avec le seul
 serveur MCP de la séance (`--strict-mcp-config`), le prompt système du pilote API
 (`--system-prompt-file`) et la description de tâche sur l'entrée standard. Le pilote lit le flux
@@ -32,6 +34,18 @@ from nn_weight_writing.session.tools import catalogue
 
 DRIVER = "claude_code"
 DEFAULT_CONFIG_DIR = Path.home() / ".nnww" / "claude-config"
+# Surcharges par l'environnement : dossier de configuration dédié et racine du répertoire courant
+# (défaut : dossier temporaire du système ; sous Windows, il est sous le dossier utilisateur).
+CONFIG_DIR_ENV = "NNWW_CLAUDE_CONFIG_DIR"
+CWD_ROOT_ENV = "NNWW_CLAUDE_CWD_ROOT"
+# Fichiers de mémoire que Claude Code lit dans le répertoire courant et chacun de ses parents.
+MEMORY_ENTRIES = (
+    "CLAUDE.md",
+    "CLAUDE.local.md",
+    ".claude/CLAUDE.md",
+    ".claude/CLAUDE.local.md",
+    ".claude/rules",
+)
 # Variables jamais transmises à `claude` : clés d'API (la séance serait facturée à l'API) et
 # réglages qui changeraient le compte, le modèle ou le point d'accès.
 STRIPPED_ENV_PREFIXES = ("ANTHROPIC_", "CLAUDE", "OPENROUTER_", "OPENAI_", "AWS_BEARER")
@@ -74,6 +88,12 @@ def config_dir_problems(path: Path) -> list[str]:
         if extra:
             problems.append(f"settings.json non vide : {extra}")
     return problems
+
+
+def ancestor_memory_files(cwd: Path) -> list[Path]:
+    """Fichiers de mémoire présents dans `cwd` ou l'un de ses parents (contamination, AD-14)."""
+    cwd = Path(cwd).resolve()
+    return [d / name for d in (cwd, *cwd.parents) for name in MEMORY_ENTRIES if (d / name).exists()]
 
 
 def child_env(config_dir: Path, base: dict[str, str] | None = None) -> dict[str, str]:
@@ -153,10 +173,14 @@ class _Stream:
     """État de lecture du flux : usage déjà transmis par identifiant de message."""
 
     def __init__(self) -> None:
+        # Claude Code émet un événement `assistant` par bloc de contenu, chacun avec l'usage du
+        # message : un `model_call` par événement, mais l'usage n'est compté qu'une fois par
+        # identifiant de message (les totaux restent justes).
         self.recorded: dict[str, dict[str, int]] = {}
         self.result: dict | None = None
         self.api_errors: list[str] = []
         self.contamination: list[str] = []
+        self.timed_out = False
 
 
 class ClaudeCodeDriver:
@@ -169,11 +193,13 @@ class ClaudeCodeDriver:
         *,
         executable: Sequence[str] = ("claude",),
         config_dir: Path | None = None,
+        cwd_root: Path | None = None,
     ) -> None:
         self.model = model
         self.price = price
         self.executable = tuple(executable)
-        self.config_dir = Path(config_dir or DEFAULT_CONFIG_DIR)
+        self.config_dir = Path(config_dir or os.environ.get(CONFIG_DIR_ENV) or DEFAULT_CONFIG_DIR)
+        self.cwd_root = Path(cwd_root or os.environ.get(CWD_ROOT_ENV) or tempfile.gettempdir())
 
     def run(self, service: ToolService, system_prompt_path: Path, task_text: str) -> None:
         """Mène la séance jusqu'à sa fin ; `service.end` est toujours appelé."""
@@ -187,9 +213,19 @@ class ClaudeCodeDriver:
         problems = config_dir_problems(self.config_dir)
         if problems:
             return EndReason.ERROR, "configuration Claude Code non dédiée : " + "; ".join(problems)
+        memory = ancestor_memory_files(self.cwd_root)
+        if memory:
+            return EndReason.ERROR, (
+                "contamination : fichiers de mémoire au-dessus du répertoire courant : "
+                + ", ".join(str(p) for p in memory)
+                + f" ; choisir une autre racine ({CWD_ROOT_ENV})"
+            )
         tool_names = [tool.name for tool in catalogue(service.method)]
         stream = _Stream()
-        with McpToolServer(service) as server, tempfile.TemporaryDirectory() as tmp:
+        with (
+            tempfile.TemporaryDirectory(dir=self.cwd_root) as tmp,
+            McpToolServer(service) as server,
+        ):
             cwd = Path(tmp) / "cwd"
             cwd.mkdir()
             mcp_config = Path(tmp) / "mcp.json"
@@ -228,6 +264,14 @@ class ClaudeCodeDriver:
             daemon=True,
         )
         reader.start()
+
+        def expire() -> None:
+            stream.timed_out = True
+            process.kill()
+
+        timer = threading.Timer(service.config.session_timeout_s, expire)
+        timer.daemon = True
+        timer.start()
         try:
             try:
                 # Octets UTF-8 tels quels : pas de traduction des fins de ligne sous Windows.
@@ -253,6 +297,7 @@ class ClaudeCodeDriver:
                     break
             code = process.wait(timeout=60)
         finally:
+            timer.cancel()
             if process.poll() is None:
                 process.kill()
                 process.wait()
@@ -318,9 +363,18 @@ class ClaudeCodeDriver:
             return EndReason.FROZEN, None
         if stream.contamination:
             return EndReason.ERROR, "contamination : " + "; ".join(stream.contamination)
+        if stream.timed_out:
+            return EndReason.ERROR, (
+                f"délai de séance dépassé ({service.config.session_timeout_s:g} s) : claude tué"
+            )
         result = stream.result
         causes = [*stream.api_errors]
-        if result is not None:
+        failed = result is not None and (
+            result.get("is_error") or result.get("subtype") != "success"
+        )
+        if failed:
+            # Le texte final ne compte que d'une séance en erreur : une réponse réussie qui
+            # parle de « rate limit » n'est pas une limite d'usage.
             causes.append(str(result.get("result") or ""))
             causes.append(str(result.get("terminal_reason") or ""))
         joined = " | ".join(c for c in causes if c)

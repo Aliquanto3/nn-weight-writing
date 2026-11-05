@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import json
+import shutil
 import sys
+import uuid
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -149,8 +151,34 @@ def claude_model(**overrides) -> ModelConfig:
     return ModelConfig(**{**values, **overrides})
 
 
+@pytest.fixture(scope="session")
+def claude_cwd_root(tmp_path_factory):
+    """Racine du répertoire courant de `claude` sans fichier de mémoire au-dessus (AD-14).
+
+    Sous Windows, le dossier temporaire est sous le dossier utilisateur, qui peut porter un
+    `.claude/CLAUDE.md` : repli sur un dossier à la racine du disque, supprimé à la fin.
+    """
+    from nn_weight_writing.session.claude_code import ancestor_memory_files
+
+    base = tmp_path_factory.mktemp("claude-cwd")
+    if not ancestor_memory_files(base):
+        yield base
+        return
+    fallback = Path(base.anchor) / f"nnww-pytest-{uuid.uuid4().hex[:8]}"
+    try:
+        fallback.mkdir()
+    except OSError as exc:
+        pytest.skip(f"aucune racine sans CLAUDE.md au-dessus : {exc}")
+    try:
+        if ancestor_memory_files(fallback):
+            pytest.skip(f"CLAUDE.md au-dessus de {fallback}")
+        yield fallback
+    finally:
+        shutil.rmtree(fallback, ignore_errors=True)
+
+
 @pytest.fixture
-def session_env(tmp_path, protocol):
+def session_env(tmp_path, protocol, claude_cwd_root):
     """Exemples, dossier des séances, registre et dossier de configuration Claude dédiés."""
     examples = write_examples(tmp_path / "examples.jsonl", EXAMPLES)
     config_dir = tmp_path / "claude-config"
@@ -174,6 +202,7 @@ def session_env(tmp_path, protocol):
             "ledger_path": tmp_path / "ledger.csv",
             "claude_executable": (sys.executable, str(FAKE_CLAUDE)),
             "claude_config_dir": config_dir,
+            "claude_cwd_root": claude_cwd_root,
             **kwargs,
         }
         return run_session(**params)
@@ -183,6 +212,7 @@ def session_env(tmp_path, protocol):
         examples=examples,
         ledger=tmp_path / "ledger.csv",
         config_dir=config_dir,
+        cwd_root=claude_cwd_root,
         tmp=tmp_path,
     )
 

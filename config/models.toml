@@ -4,7 +4,7 @@
 #
 # driver   : `claude_code` (claude -p, abonnement) ou `api` (boucle de l'ApiLoopDriver).
 # provider : `subscription` (0 $ facturé), `openrouter` ou `anthropic` (facturés).
-# Identifiants Anthropic à confirmer par le test live de Claude Code (story 1-6).
+# Identifiants Anthropic confirmés par l'orchestrateur le 2026-11-05 (revue de 1-6).
 
 [models."sonnet-5.5"]
 driver = "claude_code"

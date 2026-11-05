@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
+import dataclasses
 import json
+import time
 
 import pytest
 from conftest import claude_model, read_journal, scenario
@@ -10,6 +12,7 @@ from conftest import claude_model, read_journal, scenario
 from nn_weight_writing.budget import ledger
 from nn_weight_writing.session import prompt
 from nn_weight_writing.session.claude_code import (
+    ancestor_memory_files,
     build_command,
     child_env,
     config_dir_problems,
@@ -257,3 +260,48 @@ def test_init_problems():
         "commandes chargées : ['/review']",
         "plugins tiers : ['superpowers']",
     ]
+
+
+def test_successful_answer_mentioning_rate_limit_is_not_usage_limit(session_env, monkeypatch):
+    data = {"result": {"result": "J'ai lu « rate limit » dans un exemple ; je rends la main."}}
+    scenario(monkeypatch, session_env.tmp, data)
+    outcome = session_env.run(claude_model(), method="B")
+    assert (outcome.reason, outcome.detail) == ("pass_budget", "l'agent a rendu la main sans geler")
+
+
+def test_session_timeout_kills_hung_claude(session_env, monkeypatch, protocol):
+    scenario(monkeypatch, session_env.tmp, {"hang": True})
+    fast = dataclasses.replace(protocol, session_timeout_s=1.5)
+    started = time.monotonic()
+    outcome = session_env.run(claude_model(), method="B", protocol=fast)
+    assert time.monotonic() - started < 60
+    assert (outcome.reason, outcome.detail) == (
+        "error",
+        "délai de séance dépassé (1.5 s) : claude tué",
+    )
+    assert ledger.read(session_env.ledger)[-1].status == "closed"
+
+
+@pytest.mark.parametrize("entry", ["CLAUDE.md", "CLAUDE.local.md", ".claude/CLAUDE.md"])
+def test_memory_file_above_cwd_refused_before_launch(session_env, monkeypatch, entry):
+    """Claude Code charge les `CLAUDE.md` des parents du répertoire courant (AD-14)."""
+    capture = scenario(monkeypatch, session_env.tmp, {"turns": FREEZE_TURNS})
+    parent = session_env.cwd_root / f"parent-{entry.replace('/', '_')}"
+    root = parent / "racine"
+    root.mkdir(parents=True)
+    memory = parent / entry
+    memory.parent.mkdir(exist_ok=True)
+    memory.write_text("# consignes parasites", "utf-8")
+    outcome = session_env.run(claude_model(), method="B", claude_cwd_root=root)
+    assert outcome.reason == "error"
+    assert outcome.detail.startswith("contamination : fichiers de mémoire au-dessus")
+    assert str(memory) in outcome.detail
+    assert not capture.exists()
+
+
+def test_ancestor_memory_files(tmp_path):
+    (tmp_path / "a" / "b").mkdir(parents=True)
+    assert ancestor_memory_files(tmp_path / "a" / "b") == ancestor_memory_files(tmp_path)
+    (tmp_path / "a" / "CLAUDE.md").write_text("x", "utf-8")
+    found = ancestor_memory_files(tmp_path / "a" / "b")
+    assert (tmp_path / "a" / "CLAUDE.md").resolve() in found
