@@ -22,7 +22,9 @@ effort = "medium"
 driver = "api"
 provider = "openrouter"
 id = "xiaomi/mimo-v2.6-pro"
-max_tokens = 16000
+# 64000 (16000 en 1-6) : MiMo raisonne avant de répondre ; à 16000 la première séance (parité,
+# A-programme) a été coupée sans sortie visible (1-8).
+max_tokens = 64000
 # Fournisseur fixé pour garder le cache et un prix stable (constat 1-2) : Xiaomi, éditeur du
 # modèle, au prix de pricing.toml ; aucun repli vers un autre fournisseur.
 provider_order = ["xiaomi"]
