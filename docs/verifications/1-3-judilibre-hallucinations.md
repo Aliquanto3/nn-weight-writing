@@ -215,7 +215,7 @@ Licences des sorties : les modèles retenus sont sous Apache 2.0, MIT ou des lic
 Corrections de spec proposées, sans modification des fichiers de spec :
 
 - **R1 — `jeux-de-donnees.md`, section R.** Préciser : sources Conseil d'État (`opendata.justice-administrative.fr` et JADE), miroir HF `antoinejeannot/jurisprudence` en repli figé ; champs gardés (métadonnées seules, ni texte ni nom) ; fenêtre de couverture et classe « non vérifiable » exclue ; tirage stratifié des vraies sur la distribution des fausses.
-- **R2 — AD-18.** L'exclusion de `data/` « que les graines suffisent à régénérer » ne vaut pas pour R. Ajouter le jeu R (métadonnées, étiquettes, sources, manifeste daté) aux assets de release quand `r_republish = true`, et l'attribution de la section 2 dans `NOTICE`. Valeur à écrire dans `config/publish.toml` : `r_republish = true`.
+- **R2 — AD-18.** L'exclusion de `data/` « que les graines suffisent à régénérer » ne vaut pas pour R. Ajouter le jeu R (métadonnées, étiquettes, sources, manifeste daté) aux assets de release quand `r_republish = true`, et l'attribution de la section 2 dans `NOTICE`. Valeur à écrire dans `config/publish.toml` : `r_republish = true`, après T8 (condition 5 de la section 2).
 - **R3 — CAP-7 sur R (`SPEC.md`, success de CAP-7 ; `methodes-et-lots.md`, ligne du témoin C).** Une courbe C jusqu'à N = 8 192 suppose des milliers de fausses références réelles. Proposer : sur R, C jusqu'au N disponible, ou entraînement sur S et évaluation sur R (robustesse hors distribution, déjà une mesure de CAP-12), ou une collecte élargie décidée en 1-12.
 - **R4 — Porte des 30 % (`methodes-et-lots.md`).** Fixer avant 1-12 : unité (référence normalisée dédupliquée), règle de décision (estimation ponctuelle, ou borne de l'intervalle de Wilson), traitement des « non vérifiables ».
 - **R5 — Contrainte « pas d'Ollama ni de GPU » (`SPEC.md`, contraintes).** Préciser que la collecte d'hallucinations tourne hors du projet (dans `slm-quality-bench` ou un script unique sur la tour) et que le projet ne lit qu'un fichier figé avec son sha256. Le volet `stories.yaml` est en R9.
@@ -253,3 +253,8 @@ Corrections de spec proposées, sans modification des fichiers de spec :
 - Nit, low, second avis 7 : R3, R5, R7 sans fichier cible. Corrigé.
 - Nit, low, second avis 8 : CJA L. 10 et COJ L. 111-13 non relus sur Légifrance. Rejeté : déjà déclaré (section 2 et Incertitudes) ; pas d'outil web dans cette revue, reste non vérifié.
 - Nit, low, second avis 9 : contenu des jeux privés de `slm-quality-bench`. Corrigé (phrase réduite à l'absence de question de jurisprudence ; aucun autre contenu recopié).
+
+### Passe 2 (2026-11-05, SHA revu 46d35fa)
+
+- Nit, low, reviewer : R2 donnait `r_republish = true` sans la condition T8 posée en tête. Corrigé (R2 renvoie à T8).
+- Aucun secret ni contenu privé de `slm-quality-bench` trouvé ; verdicts conformes au vocabulaire de CAP-1 ; aucun Important.
