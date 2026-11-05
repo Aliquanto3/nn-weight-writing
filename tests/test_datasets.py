@@ -57,10 +57,32 @@ def test_labelers_on_known_values():
     assert LABELERS["automaton"]("1100110011") == "reject"
 
 
-def test_compare_equal_class_is_capped_by_its_domain():
-    data, held = generate_rows("compare", 1, 1500, 1500)
-    assert sum(r.label == "equal" for r in data + held) == 1000
-    assert len({r.raw for r in data + held}) == 3000
+def _spread(rows):
+    counts = Counter(r.label for r in rows)
+    return max(counts.values()) - min(counts.values()), len(counts)
+
+
+@pytest.mark.parametrize(
+    ("task", "n", "h"),
+    [("parity", 512, 512), ("automaton", 352, 350), ("compare", 1500, 1501), ("compare", 1, 7)],
+)
+def test_both_sets_are_balanced_up_to_the_domain_limit(task, n, h):
+    data, held = generate_rows(task, 4, n, h)
+    k = len(get_task(task).class_ids)
+    for rows, size in ((data, n), (held, h)):
+        assert len(rows) == size
+        spread, present = _spread(rows)
+        assert spread <= 1 and present == min(k, size)
+    assert len({r.raw for r in data + held}) == n + h
+
+
+@pytest.mark.parametrize(
+    ("task", "n", "h"),
+    [("parity", 513, 512), ("automaton", 352, 352), ("compare", 1500, 1502), ("compare", 2000, 2000)],
+)
+def test_size_that_cannot_be_balanced_is_refused(task, n, h):
+    with pytest.raises(ValueError, match="domaine trop petit"):
+        generate_rows(task, 4, n, h)
 
 
 def test_domain_too_small_is_refused():
@@ -87,7 +109,7 @@ def test_generate_writes_layout_and_fingerprints(tmp_path):
         meta = json.loads((directory / "dataset.json").read_text("utf-8"))
         assert meta == {
             "generator": "toy.parity",
-            "version": 1,
+            "version": 2,
             "seed": 2,
             "n": count,
             "files": {

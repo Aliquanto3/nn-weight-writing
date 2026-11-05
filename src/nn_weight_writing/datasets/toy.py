@@ -1,9 +1,8 @@
 """Générateurs des jeux jouet (CAP-8, AD-16).
 
-Un tirage unique par graine donne, par classe, des chaînes distinctes ; elles sont entrelacées
-classe après classe (jeu équilibré tant qu'une classe n'est pas épuisée), puis coupées : les `n`
-premières forment le jeu de séance, les `n_heldout` suivantes le jeu réservé. Aucune chaîne ni
-aucun identifiant n'est donc commun aux deux jeux.
+Un tirage unique par graine donne, par classe, des chaînes distinctes ; chaque classe fournit
+d'abord sa part du jeu de séance, puis sa part du jeu réservé, entrelacées classe après classe.
+Les deux jeux sont équilibrés séparément, et aucune chaîne ni aucun identifiant ne leur est commun.
 """
 
 from __future__ import annotations
@@ -19,7 +18,7 @@ from nn_weight_writing.tasks.toy import TASKS, automaton, get_task, parity
 from nn_weight_writing.tasks.toy import compare as compare_task
 
 DATASET = "toy"
-GENERATOR_VERSION = 1
+GENERATOR_VERSION = 2  # 2 : jeu réservé équilibré à part
 
 
 def label_parity(raw: str) -> str:
@@ -73,25 +72,44 @@ def _pool(task_name: str, label: str, rng, count: int) -> list[str]:
     return _enumerated_pool(task_name, length, label, rng, count)
 
 
+def _quotas(class_ids: tuple[str, ...], size: int) -> dict[str, int]:
+    """Répartition équilibrée de `size` exemples : les premières classes reçoivent le reste."""
+    base, extra = divmod(size, len(class_ids))
+    return {cid: base + (i < extra) for i, cid in enumerate(class_ids)}
+
+
+def _interleave(
+    class_ids: tuple[str, ...], pools: dict[str, list[str]], start: dict[str, int], quotas: dict
+) -> list[tuple[str, str]]:
+    out: list[tuple[str, str]] = []
+    for rank in range(max(quotas.values())):
+        for cid in class_ids:
+            if rank < quotas[cid]:
+                out.append((pools[cid][start[cid] + rank], cid))
+    return out
+
+
 def generate_rows(task_name: str, seed: int, n: int, n_heldout: int) -> tuple[list[Row], list[Row]]:
-    """Jeu de séance (`n` lignes) et jeu réservé (`n_heldout`), déterministes pour `seed`."""
+    """Jeu de séance (`n` lignes) et jeu réservé (`n_heldout`), déterministes pour `seed`.
+
+    Chaque jeu est équilibré séparément (écart d'au plus un exemple entre classes) ; une taille
+    que le domaine d'une classe ne permet pas d'équilibrer est refusée.
+    """
     if n < 1 or n_heldout < 1:
         raise ValueError("n et n_heldout doivent être au moins 1")
     task = get_task(task_name)
+    class_ids = tuple(task.class_ids)
     rng = np.random.default_rng(seed)
-    total = n + n_heldout
-    pools = {cid: _pool(task_name, cid, rng, total) for cid in task.class_ids}
-    interleaved: list[tuple[str, str]] = []
-    cursors = dict.fromkeys(task.class_ids, 0)
-    while len(interleaved) < total:
-        progressed = False
-        for cid in task.class_ids:
-            if len(interleaved) < total and cursors[cid] < len(pools[cid]):
-                interleaved.append((pools[cid][cursors[cid]], cid))
-                cursors[cid] += 1
-                progressed = True
-        if not progressed:
-            raise ValueError(f"{task_name} : domaine trop petit pour {total} exemples distincts")
+    q_data, q_held = _quotas(class_ids, n), _quotas(class_ids, n_heldout)
+    pools = {cid: _pool(task_name, cid, rng, q_data[cid] + q_held[cid]) for cid in class_ids}
+    for cid in class_ids:
+        if len(pools[cid]) < q_data[cid] + q_held[cid]:
+            raise ValueError(
+                f"{task_name} : domaine trop petit pour {n} + {n_heldout} exemples distincts"
+                f" équilibrés (classe {cid} : {len(pools[cid])} chaînes)"
+            )
+    data_items = _interleave(class_ids, pools, dict.fromkeys(class_ids, 0), q_data)
+    held_items = _interleave(class_ids, pools, q_data, q_held)
 
     def rows(items: list[tuple[str, str]], prefix: str) -> list[Row]:
         return [
@@ -99,7 +117,7 @@ def generate_rows(task_name: str, seed: int, n: int, n_heldout: int) -> tuple[li
             for i, (raw, label) in enumerate(items, start=1)
         ]
 
-    return rows(interleaved[:n], "d"), rows(interleaved[n:], "h")
+    return rows(data_items, "d"), rows(held_items, "h")
 
 
 def generate(
