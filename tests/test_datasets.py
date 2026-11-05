@@ -78,7 +78,12 @@ def test_both_sets_are_balanced_up_to_the_domain_limit(task, n, h):
 
 @pytest.mark.parametrize(
     ("task", "n", "h"),
-    [("parity", 513, 512), ("automaton", 352, 352), ("compare", 1500, 1502), ("compare", 2000, 2000)],
+    [
+        ("parity", 513, 512),
+        ("automaton", 352, 352),
+        ("compare", 1500, 1502),
+        ("compare", 2000, 2000),
+    ],
 )
 def test_size_that_cannot_be_balanced_is_refused(task, n, h):
     with pytest.raises(ValueError, match="domaine trop petit"):

@@ -24,17 +24,18 @@ Trois tâches jouet à solution exacte (parité, comparaison de nombres, petit a
 
 ## Critères d'acceptation (tests)
 
-- Solution à la main : exacte sur tout le domaine de parité et de l'automate (1 024 chaînes), sur bords et grille dense de comparaison, 100 % sur le jeu réservé par `score_frozen` (empreintes vérifiées) et `nnww evaluate` ; poids modifié refusé `fingerprint_mismatch`.
+- Solution à la main : exacte sur tout le domaine de parité et de l'automate (1 024 chaînes), sur bords et grille dense de comparaison, 100 % sur le jeu réservé par `score_frozen` (empreintes vérifiées) ; `nnww evaluate` accepte le dossier gelé (exactitude dans `eval.json` : 1-14) ; poids modifié refusé `fingerprint_mismatch`.
 - Témoin B : règles acceptées par le filtre profil B, 100 % sur le jeu réservé via `sandbox.run`.
-- Jeux : même graine, mêmes octets ; graines différentes, jeux différents ; aucun `id` ni `raw` commun ; équilibre des classes ; refus d'un jeu existant, d'un domaine trop petit.
+- Jeux : même graine, mêmes octets ; graines différentes, jeux différents ; aucun `id` ni `raw` commun ; chaque jeu équilibré séparément (écart <= 1), aux tailles limites ; refus d'un jeu existant, d'une taille que le domaine ne permet pas d'équilibrer.
 - Témoin C : parité PyTorch/NumPy (4 activations, rtol 1e-5), format AD-17, déterminisme par graine, compare > 85 % sur le réservé (mesuré 96 %).
 - AD-13 : seuls `baselines/train.py` et `baselines/torch_layers.py` importent torch ; `cli` sans import de `baselines` en tête ; import de `cli` et du côté séance ne charge pas torch (sous-processus).
 
 ## Décisions
 
 - Le réseau de la solution à la main est testé hors évaluation par la même fonction que C et A (`score_frozen`) ; les mesures complètes de `eval.json` restent en 1-14.
-- `compare` plafonne la classe `equal` à 1 000 paires (domaine) ; au-delà les autres classes complètent.
-- Sur le jouet, C n'a de sens qu'avec N <= taille du jeu de séance (`n_values` = 64 et 256) ; mesuré, seed 0 : parité 45 %/52 %, comparaison 93 %/96 %, automate 68 %/90 % (N=64/256).
+- Chaque jeu (séance, réservé) est équilibré séparément ; une taille non équilibrable est refusée (générateur v2). Maxima : parité 1 024 au total, automate 351 par classe (rejet), comparaison 1 000 `equal`, soit 3 000 au total.
+- `nnww train` refuse un dossier sous `heldout/` ; `run.json` porte `dataset` (chemin relatif `data/<task>/<jeu>` et sha256 des deux fichiers).
+- Sur le jouet, C n'a de sens qu'avec N <= taille du jeu de séance (`n_values` = 64 et 256) ; mesuré (générateur v2, `datagen --seed 0 --n 256 --n-heldout 400`, `train --seed 0`, Windows, CPU) : parité 46 %/48 %, comparaison 93 %/94 %, automate 74 %/91 % (N=64/256). Déterminisme garanti par graine sur une même plateforme ; entre OS, les noyaux CPU de torch peuvent différer à l'ulp (pas de `torch.use_deterministic_algorithms`), d'où des poids non identiques au bit près.
 
 ## Reports
 
@@ -42,3 +43,18 @@ Trois tâches jouet à solution exacte (parité, comparaison de nombres, petit a
 - 1-11 : courbe C complète (N jusqu'à 8 192, F), « même réseau » (AD-17).
 - 1-14 : mesures de `eval.json` (réservé, par type, ablation).
 - Pas de `nnww` pour exécuter le témoin B en `runs/` ; B n'est ici qu'une fonction (`score_rules`), la séance B est en 1-8/1-10.
+
+## Revue
+
+### Passe 1 (2026-11-05, SHA revu be9f7b9)
+
+- Important, medium, second avis 1 : jeu réservé déséquilibré au-delà de l'épuisement d'une classe (comparaison 2000/2000 : 333/834/833 ; automate 400/400 : 249/151). Corrigé : quotas équilibrés par jeu, taille non équilibrable refusée, tests aux bornes exactes.
+- Important, medium, second avis 2 : `nnww train` acceptait `heldout/<task>/toy` et `run.json` ne liait pas le jeu. Corrigé : refus sous `heldout/`, champ `dataset` (chemin relatif, sha256) dans `run.json`, tests.
+- Rejeté, second avis 3 : la graine (AD-16 l'impose dans `dataset.json`) n'atteint pas `bundle/` : `materialize_bundle` ne recopie que `id`/`raw` et les champs fournis par la tâche ; la reconstruction par lecture du dépôt est hors du modèle de menace.
+- Nit, low, second avis 4 : critère « 100 % par `nnww evaluate` » non mesuré par `evaluate`. Corrigé : spec réalignée (mesures en 1-14).
+- Nit, low, second avis 5 : reproductibilité de C entre OS non garantie. Corrigé : documenté dans les décisions.
+- Nit, low, second avis 6 : chiffres de C non reproductibles. Corrigé : remesurés avec graines et tailles précisées.
+- Rejeté, low, second avis 7 : recouvrement entre graines différentes : `datagen` écrit séance et réservé d'un même tirage et refuse un jeu existant ; mélanger deux graines demande une manipulation manuelle.
+- Nit, low, second avis 8 : `except ImportError` trop large dans `_train`. Corrigé : `ModuleNotFoundError` limité à `torch`.
+- Rejeté, low, second avis 9 : coût CI de torch mesuré à 27-68 s par job, acceptable.
+- Complexité : 0 constat (génération O(n), pas de structure qui grossit par événement).

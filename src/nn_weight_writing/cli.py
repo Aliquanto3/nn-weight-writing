@@ -44,7 +44,9 @@ def _datagen(args: argparse.Namespace) -> int:
 def _train(args: argparse.Namespace) -> int:
     try:
         from nn_weight_writing.baselines.train import train  # PyTorch : groupe `train` (AD-13)
-    except ImportError as exc:
+    except ModuleNotFoundError as exc:
+        if exc.name != "torch":
+            raise
         print(f"torch absent ({exc}) : uv sync --group train", file=sys.stderr)
         return 2
     try:

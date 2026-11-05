@@ -20,11 +20,13 @@ from nn_weight_writing.config import CONFIG_DIR
 from nn_weight_writing.evaluation.labels import read_labels
 from nn_weight_writing.evaluation.score import check_alignment
 from nn_weight_writing.evaluation.verify import evaluate
+from nn_weight_writing.network.io import sha256_file
 from nn_weight_writing.tasks.io import read_examples
 from nn_weight_writing.tasks.toy import ToyTask, get_task
 
 TRAIN_PATH = CONFIG_DIR / "train.toml"
 BASELINE = "C"
+HELDOUT_DIR = "heldout"  # AD-12 : jamais lu pour entraîner (protocole-ecriture.md)
 
 
 @dataclass(frozen=True)
@@ -106,6 +108,8 @@ def train(
     task = get_task(task_name)
     config = load_train_config(task_name, config_path)
     data_dir = Path(data_dir)
+    if HELDOUT_DIR in data_dir.resolve().parts:
+        raise ValueError(f"jeu réservé refusé pour l'entraînement : {data_dir}")
     examples = read_examples(data_dir / "examples.jsonl")
     labels = read_labels(data_dir / "labels.jsonl")
     check_alignment(examples, labels)
@@ -118,6 +122,12 @@ def train(
     manifest = reference_manifest(task, config)
     weights = train_network(manifest, inputs, targets, config, seed)
     run_dir = Path(runs_root) / lot / "train" / run_id(task_name, BASELINE, n, seed)
-    freeze_run(run_dir, manifest, weights, baseline=BASELINE, n=n, seed=seed)
+    dataset = {
+        "path": "/".join(data_dir.resolve().parts[-3:]),
+        "files": {
+            name: sha256_file(data_dir / name) for name in ("examples.jsonl", "labels.jsonl")
+        },
+    }
+    freeze_run(run_dir, manifest, weights, baseline=BASELINE, n=n, seed=seed, dataset=dataset)
     evaluate(run_dir)
     return run_dir

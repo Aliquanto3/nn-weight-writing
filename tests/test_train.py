@@ -88,6 +88,9 @@ def test_train_writes_the_common_format_and_learns(compare_data):
     run = json.loads((run_dir / "run.json").read_text("utf-8"))
     assert (run["baseline"], run["n"], run["seed"]) == ("C", 256, 0)
     assert run["run_id"] == "compare-C-n256-s0"
+    assert run["dataset"]["path"] == "data/compare/toy"
+    meta = json.loads((data / "dataset.json").read_text("utf-8"))
+    assert run["dataset"]["files"] == meta["files"]
     kind, _, tree, _ = verify_frozen(run_dir)
     assert (kind, tree) == ("baseline", run["tree_sha256"])
     score = score_frozen(
@@ -113,6 +116,16 @@ def test_train_refuses_n_out_of_range(compare_data):
         train("compare", data, n=257, seed=0, runs_root=root / "r", lot="x")
     with pytest.raises(ValueError, match="n=0 hors"):
         train("compare", data, n=0, seed=0, runs_root=root / "r", lot="x")
+
+
+def test_train_refuses_the_heldout_set(compare_data, capsys):
+    _, held, root = compare_data
+    with pytest.raises(ValueError, match="jeu réservé refusé"):
+        train("compare", held, n=64, seed=0, runs_root=root / "h", lot="x")
+    argv = ["train", "compare", "--data", str(held), "--n", "64", "--seed", "0"]
+    assert main([*argv, "--runs-root", str(root / "h")]) == 1
+    assert "jeu réservé refusé" in capsys.readouterr().err
+    assert not (root / "h").exists()
 
 
 def test_cli_train_then_refuses_second_run(compare_data, capsys):
