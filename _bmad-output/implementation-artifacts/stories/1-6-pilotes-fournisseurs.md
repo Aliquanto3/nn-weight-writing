@@ -117,3 +117,12 @@ Base à jour (`origin/main` d26c6ba). Rien perdu de 1-7 : `datagen`, `train`, gr
 - Nit · low · reviewer · corrigé : `ancestor_memory_files` remonte aussi le chemin logique passé à `claude`, pas seulement le chemin résolu (lien ou jonction vers une racine propre sous un dossier qui porte `CLAUDE.md`) ; test (sauté sans droit de lien sous Windows).
 - Vérifié sans constat : contrôle des parents appelé à chaque séance (`_session`), jusqu'à la racine du disque, casse indifférente sous Windows (`exists`) ; fin `error` avec cause et ligne `closed` au registre sur délai ; verrou à jeton (fenêtre lecture-suppression négligeable devant l'expiration du verrou périmé) ; tests à valeurs exactes.
 - Complexité : 0 constat.
+
+### Passe 3 (2026-11-05, SHA revu 5939b13)
+
+Relu : correctif de la passe 2 (`8cd81e6..5939b13`). CI verte sur Ubuntu, macOS et Windows (run 42122607664).
+
+- Vérifié sans constat : `taskkill /T /F /PID <pid de claude>` en liste d'arguments, sans shell, sur le seul arbre de `claude` ; `start_new_session` sous POSIX, `killpg` sur le groupe dont `claude` est chef, `kill` de secours ; `CREATE_NEW_PROCESS_GROUP` inutile (`taskkill /T` suit la filiation) ; fin normale inchangée (`poll()` non nul, aucun kill).
+- Nit · low · reviewer · reporté : sur contamination, `process.kill()` ne tue que le parent ; un descendant resterait orphelin (lecture bornée par `reader.join(timeout=5)`). `_kill_tree` y conviendrait aussi.
+- Nit · low · reviewer · reporté : sous POSIX, `_alive` lit l'état juste après la séance ; un petit-enfant zombie pas encore récolté par init répond à `kill(pid, 0)`. Course étroite, non observée en CI ; une attente bornée la fermerait.
+- Complexité : 0 constat.
