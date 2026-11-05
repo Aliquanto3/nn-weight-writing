@@ -69,7 +69,7 @@ Si des images MNIST sont tout de même redistribuées, ajouter : « Copyright Le
 
 Corrections de spec proposées (specs non modifiées) :
 
-1. `jeux-de-donnees.md`, section Images : remplacer « Licences vérifiées au lot 1 (CAP-1) » par un renvoi à ce constat (`docs/verifications/1-4-licences-images.md`) et la mention « MNIST : licence non établie à la source, redistribution des images exclue ».
+1. `jeux-de-donnees.md`, section Images : remplacer « Licences vérifiées au lot 1 (CAP-1) » par un renvoi à ce constat (`docs/verifications/1-4-licences-images.md`) et la mention « MNIST : licence non établie à la source, publication des pixels MNIST suspendue à la décision d'Anaël (options A à D du constat) », à remplacer par l'option retenue une fois la décision consignée.
 2. `jeux-de-donnees.md`, tableau « À vérifier » : préciser la ligne « Licences d'images » avec le verdict « feu vert avec réserve ; MNIST, décision d'Anaël ».
 3. `ARCHITECTURE-SPINE.md`, AD-18 : selon la décision d'Anaël, ajouter à `nnww publish` le refus d'une archive qui contient des pixels MNIST (journaux compris, AD-7), par analogie avec `r_republish` (par exemple `mnist_republish` dans `config/publish.toml`) ; ou, en AD-7, journaliser une référence au lieu des pixels MNIST.
 4. `SPEC.md` CAP-14 ou `stories.yaml` 2-1 et 2-5 : ajouter un critère « fichier d'attributions présent et cité dans le rapport, le billet et les notes de v0.2.0 ».
@@ -111,3 +111,10 @@ Corrections de spec proposées (specs non modifiées) :
 - Nit, low, second avis 8 : prétraitement NIST des chiffres 8×8. Corrigé (table).
 - Nit, low, second avis 9 : reports non appliqués. Rejeté : la story ne modifie pas les specs, ils restent en report.
 - Nit, low, second avis 10 : fournisseur amont de MiMo. Corrigé a minima (renvoi au constat 1-2, qui couvre MiMo via OpenRouter).
+
+### Passe 2 (2026-11-05, SHA revu 3b66577)
+
+- Important, medium, reviewer : Report 1 proposait d'écrire dans `jeux-de-donnees.md` « redistribution des images exclue », ce qui tranchait d'avance l'option B. Corrigé (publication suspendue à la décision, options A à D).
+- Nit, low, reviewer : le bloc d'attribution MNIST (« Les images de ce dépôt ne sont pas redistribuées ») suppose l'option B ; la phrase qui suit couvre l'option C. Laissé en l'état, à ajuster une fois la décision prise.
+- Nit, low, reviewer : « Aucune des trois licences ne limite l'usage » vaut pour les sources secondaires de MNIST, dont la licence n'est pas établie. Non bloquant, déjà dit en Incertitudes.
+- Vérifié sans constat : citations de AD-7 (contenu de l'échange dans `model_call`), AD-18 (exclusions et refus), AD-19 (recopie en littéraux, plafonds), vocabulaire de CAP-1, CAP-13 et CAP-14, numéros des stories 2-1 à 2-5.
