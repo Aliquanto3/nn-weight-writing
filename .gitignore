@@ -27,3 +27,6 @@ heldout/
 
 # Compteur du contrôle rapide (agent-cost-kit)
 .claude/cost-kit/.blocages
+
+# Artefacts de séance et de témoins (AD-12)
+runs/

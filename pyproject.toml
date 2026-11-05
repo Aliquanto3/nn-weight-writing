@@ -10,7 +10,12 @@ license-files = ["LICENSE"]
 requires-python = ">=3.14"
 keywords = ["neural-networks", "weight-writing", "interpretability", "llm"]
 # Dépendances ajoutées par `uv add` au fil des stories, jamais figées de mémoire.
-dependencies = []
+dependencies = [
+    "numpy>=2.5.4",
+]
+
+[project.scripts]
+nnww = "nn_weight_writing.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/Aliquanto3/nn-weight-writing"
@@ -30,7 +35,10 @@ select = ["E", "F", "I", "B", "UP"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
-addopts = "-q --tb=short --strict-markers"
+addopts = "-q --tb=short --strict-markers -m 'not live'"
+markers = [
+    "live: appel réel à un service externe (payant ou par abonnement), désélectionné par défaut",
+]
 
 [dependency-groups]
 dev = [

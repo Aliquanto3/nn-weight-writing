@@ -1,0 +1,17 @@
+# Protocole d'écriture (protocole-ecriture.md, AD-6). Lu par le seul module nn_weight_writing.config.
+# Toute modification après la première séance mesurée invalide les séances déjà faites
+# et se consigne comme décision (recalibrage unique après le jouet).
+
+[session]
+# Passes par séance, identiques pour A et B et à toutes les tailles.
+pass_budget = 20
+# Plafond de tours d'une séance (fin `turn_limit`).
+turn_limit = 200
+# Délai maximal d'une exécution dans le bac à sable, en secondes.
+exec_timeout_s = 60
+# Tentatives de gel par séance (refus au-delà).
+max_freeze_attempts = 3
+
+[journal]
+# Version du schéma des événements de journal.jsonl (AD-7).
+schema_version = 1
