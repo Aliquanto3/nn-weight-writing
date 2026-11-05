@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Forge nn-weight-writing</title>
+<style>
+:root{--bg:#0d1420;--card:#152033;--ink:#e6edf7;--muted:#9fb0c8;--blue:#5aa2ff;--line:#24324a;--seal:#2f6fd6;--kill:#c8738a}
+@media (prefers-color-scheme: light){:root:not([data-theme="dark"]){--bg:#f4f7fc;--card:#fff;--ink:#14213a;--muted:#55657f;--line:#dbe3ef;--seal:#2a63c4}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI",sans-serif}
+main{max-width:920px;margin:0 auto;padding:32px 16px 64px}
+header{display:flex;gap:24px;align-items:center;flex-wrap:wrap}
+header svg{flex:0 0 150px;filter:drop-shadow(0 0 18px rgba(90,162,255,.35))}
+h1{margin:0 0 6px;font-size:1.7rem}
+h2{margin:36px 0 12px;font-size:1.15rem;color:var(--blue)}
+.sub{color:var(--muted);margin:0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;box-shadow:0 0 24px rgba(90,162,255,.08)}
+ul{margin:0;padding-left:20px}li{margin:6px 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px}
+.lot b{color:var(--blue)}
+.kill li::marker{color:var(--kill)}
+.p{display:flex;gap:10px;align-items:flex-start}
+.p .i{font-size:1.4rem;line-height:1}
+.p small{color:var(--muted);display:block}
+.tag{display:inline-block;border-radius:999px;padding:1px 9px;font-size:.78rem;border:1px solid var(--line);color:var(--muted);margin-left:4px}
+</style>
+</head>
+<body>
+<main>
+<header>
+<svg viewBox="0 0 160 160" width="150" height="150" role="img" aria-label="Sceau HARDENED">
+<defs><radialGradient id="g" cx="40%" cy="35%"><stop offset="0" stop-color="#6aa8ff"/><stop offset="1" stop-color="#1d4fa8"/></radialGradient></defs>
+<path fill="url(#g)" d="M80 6c9 0 12 8 20 10s15-4 21 2 1 14 5 21 12 9 12 18-8 12-10 20 4 15-2 21-14 1-21 5-9 12-18 12-12-8-20-10-15 4-21-2-1-14-5-21-12-9-12-18 8-12 10-20-4-15 2-21 14-1 21-5 11-12 18-12z"/>
+<circle cx="80" cy="80" r="50" fill="none" stroke="#dbe8ff" stroke-opacity=".55" stroke-width="2" stroke-dasharray="3 4"/>
+<text x="80" y="76" text-anchor="middle" fill="#fff" font-family="Georgia,serif" font-size="17" font-weight="700" letter-spacing="1.5">HARDENED</text>
+<text x="80" y="96" text-anchor="middle" fill="#dbe8ff" font-family="Georgia,serif" font-size="10" letter-spacing="1">2026-11-05</text>
+</svg>
+<div>
+<h1>nn-weight-writing : idée forgée</h1>
+<p class="sub">Un LLM écrit tous les poids d'un réseau, sans gradient. Atelier bmad-forge-idea avec Anaël. Le brief se trouve dans <code>forged-idea.md</code>.</p>
+</div>
+</header>
+
+<h2>Résultat</h2>
+<div class="card">L'idée tient, à une condition : changer de thèse. Le 97,7 % de Nuss sera presque sûrement égalé par un script à règles (B), parce que ses fausses références suivent 15 règles explicites. Le projet ne cherche donc plus à montrer que « A marche ». Il cherche <b>où le réseau apporte quelque chose que le script n'apporte pas</b> : la différentiabilité (E), les signaux bruités, la perception. Un résultat négatif est un livrable.</div>
+
+<h2>Décisions verrouillées</h2>
+<div class="grid">
+<div class="card lot"><b>Lot 1 · 100 $</b><br>Reproduction critique : jouet puis juridique (S, S-réservé, R). Méthodes A-programme, A-littéral, B, C en courbe, F. Sonnet et MiMo, 3 tentatives ; Fable, 1 tentative sur S. Rapport, v0.1.0, billet LinkedIn.</div>
+<div class="card lot"><b>Lot 2 · 75 $</b><br>Où le réseau compte : méthode E, échelle d'images (formes, puis chiffres 8×8 et MNIST, puis Fashion-MNIST), tailles de 10⁴ à 10⁷ sur MNIST. MiMo s'il reste à moins de 3 points de Sonnet.</div>
+<div class="card lot"><b>Lot 3 · 25 $</b><br>Conditionnel : petit transformer écrit, comparé à Tracr et à l'entraînement.</div>
+</div>
+<div class="card" style="margin-top:14px"><ul>
+<li><b>Frontière</b> : tous les poids, à partir de rien. Dès qu'un modèle pré-entraîné entre en jeu, le sujet relève de slm-weight-editing.</li>
+<li><b>Circularité</b> : un normaliseur commun aux vraies et aux fausses références, et des types d'erreurs réservés à l'évaluation. Porte avant R : si moins de 30 % des hallucinations réelles sont incohérentes, R devient une mesure de plafond.</li>
+<li><b>Deux définitions de A</b> : poids écrits en clair, ou script générateur, comparés vers 10⁴ paramètres. On mesure la taille nominale et la taille effective.</li>
+<li><b>Limite de taille</b> : on s'arrête au premier signal : plus de réseau valide, A qui plafonne pendant que C monte, ou A sous B. Prédiction : vers 10⁵.</li>
+<li><b>Protocole</b> : l'agent peut regarder et tester, pas ajuster. Aucune statistique qui produit des poids, aucune annotation par l'agent.</li>
+<li><b>Budget</b> : 200 $ pour le projet, harnais multi-fournisseur, porte de coût après le jouet.</li>
+</ul></div>
+
+<h2>Écarté, et pourquoi</h2>
+<div class="card kill"><ul>
+<li><b>D</b>, le LLM qui génère des données annotées : distillation classique, hors des questions posées.</li>
+<li><b>Tâche tabulaire</b> : doublon du juridique.</li>
+<li><b>Tête sur encodeur gelé</b> : impossible à écrire sans statistiques sur les activations.</li>
+<li><b>Greffe de circuit dans un SLM</b> : relève de slm-weight-editing.</li>
+<li><b>Opus en second modèle</b> : même famille que Sonnet, alors que MiMo teste si le résultat est propre à Claude.</li>
+</ul></div>
+
+<h2>Points faibles qui ont survécu</h2>
+<div class="card"><ul>
+<li>Le générateur S est reconstruit d'après un post LinkedIn : ni le code ni les données de Nuss ne sont publiés.</li>
+<li>Le régime R dépend de l'accès à Judilibre (compte PISTE) et de la collecte d'hallucinations.</li>
+<li>Les appels d'outils et la vision de MiMo ne sont pas vérifiés. Son 97 % vient d'une tâche de juge.</li>
+<li>Le coût d'une séance n'est pas mesuré : la fourchette se resserre seulement après le jouet.</li>
+</ul></div>
+
+<h2>Ceux qui ont mis l'idée à l'épreuve</h2>
+<div class="grid">
+<div class="card p"><span class="i">📊</span><div><b>Mary</b><span class="tag">analyste</span><small>« Sur ces données, B atteindra 100 %. »</small></div></div>
+<div class="card p"><span class="i">🏗️</span><div><b>Winston</b><span class="tag">architecte</span><small>Deux livrables, dont le second dépend du premier ; la greffe relève du dépôt voisin.</small></div></div>
+<div class="card p"><span class="i">📋</span><div><b>John</b><span class="tag">PM</span><small>Publier au lot 1, tant que la discussion est vivante.</small></div></div>
+<div class="card p"><span class="i">🛑</span><div><b>Killjoy</b><span class="tag">stoppeur</span><small>« 240 séances, c'est un programme de thèse. »</small></div></div>
+<div class="card p"><span class="i">📏</span><div><b>Level</b><span class="tag">vérificatrice</span><small>Fuite de style ; à 10⁵ poids, l'agent écrit forcément un script.</small></div></div>
+<div class="card p"><span class="i">🪵</span><div><b>Splinter</b><span class="tag">contradicteur</span><small>Un réseau de 10⁷ paramètres écrit sera un réseau de 10⁴ rempli de zéros ; le 97 % de juge ne se transfère pas.</small></div></div>
+<div class="card p"><span class="i">😤</span><div><b>Grumbal</b><span class="tag">adversaire</span><small>Un k-means déguisé en écriture ; l'encodeur gelé contredit le protocole.</small></div></div>
+<div class="card p"><span class="i">🃏</span><div><b>Wildcard</b><span class="tag">options</span><small>La couche 1 d'un réseau convolutif s'écrit (Sobel, Gabor).</small></div></div>
+<div class="card p"><span class="i">🚢</span><div><b>Dana</b><span class="tag">pragmatique</span><small>Mesurer une séance avant de s'engager.</small></div></div>
+<div class="card p"><span class="i">🧑‍🔬</span><div><b>Hélène Marchetti</b><span class="tag">invitée</span><small>Relectrice de workshop ML : tout publier pour que le négatif tienne.</small></div></div>
+<div class="card p"><span class="i">⚖️</span><div><b>Thomas Ferrand</b><span class="tag">invité</span><small>Ingénieur données en legaltech : la plupart des hallucinations sont cohérentes.</small></div></div>
+<div class="card p"><span class="i">🔬</span><div><b>Ingrid Halvorsen</b><span class="tag">invitée</span><small>Chercheuse en interprétabilité : Tracr comme vrai compilateur témoin.</small></div></div>
+</div>
+</main>
+</body>
+</html>

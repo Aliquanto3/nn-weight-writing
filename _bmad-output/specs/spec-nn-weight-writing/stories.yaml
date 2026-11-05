@@ -1,0 +1,175 @@
+# Ordre d'exécution : de haut en bas. Aucun point d'arrêt demandé (décision d'Anaël, 2026-11-05).
+
+# --- Lot 1 : reproduction critique (100 $) ---
+- id: "1-1"
+  title: Vérifier la reconstruction de S d'après Nuss
+  description: >-
+    Établir la liste des 15 types d'erreurs de Nuss et ses écarts connus avec l'original (CAP-1, jeux-de-donnees.md).
+    Livrable : un constat avec verdict dans docs/verifications/.
+  invoke_dev_with: >-
+    Story de recherche documentaire, sans code. Ne rien inventer : un type non attesté par la source est
+    marqué « reconstruit » avec sa justification.
+- id: "1-2"
+  title: Vérifier MiMo-V2.6-Pro via OpenRouter
+  description: >-
+    Établir l'identifiant, le prix, les appels d'outils et la vision de MiMo via OpenRouter, et comparer l'API
+    chat completions à l'endpoint compatible Anthropic (CAP-1, AD-10, harnais.md). Livrable : un constat avec
+    verdict et un script de sonde minimal.
+  invoke_dev_with: >-
+    Demande la clé OpenRouter d'Anaël (variable d'environnement, jamais commitée). Coût de la sonde journalisé
+    et compté dans le budget facturé du lot 1 (ligne closed du registre, AD-11).
+- id: "1-3"
+  title: Vérifier l'accès à Judilibre et la collecte des hallucinations
+  description: >-
+    Établir l'accès à Judilibre par PISTE, sa licence de réutilisation, une source pour le Conseil d'État et la
+    collecte des hallucinations via slm-quality-bench (CAP-1). Livrable : un constat avec verdict.
+  invoke_dev_with: >-
+    Le compte PISTE est à ouvrir par Anaël : le demander par notification et avancer sur les autres points
+    en attendant.
+- id: "1-4"
+  title: Vérifier les licences des jeux d'images
+  description: >-
+    Établir les conditions de réutilisation de MNIST, Fashion-MNIST et des chiffres de scikit-learn pour le lot 2
+    (CAP-1). Livrable : un constat avec verdict.
+- id: "1-5"
+  title: Noyau du harnais de séance
+  description: >-
+    Service d'outils et catalogue unique, paquet de séance à vocabulaire fermé des types visibles, bac à sable
+    profils A et B avec filtre et audit de l'interdit statistique, budget de passes, journal, format de réseau,
+    gel avec sha256 et commande d'évaluation séparée (CAP-2, CAP-4, CAP-5, CAP-6 ; AD-1 à AD-9, AD-12, AD-15,
+    AD-16, AD-19 ; harnais.md, protocole-ecriture.md).
+  invoke_dev_with: >-
+    Les outils se testent en appelant le service directement, sans pilote ni fournisseur (1-6). Tests
+    obligatoires : frontière de confiance par l'AST (AD-1) ; paquet sans étiquette ni type, vocabulaire fermé
+    seul présent ; passe hors budget refusée (budget 20), passe décomptée même invalide, sans score, seul freeze
+    après la dernière ; corpus d'évasions de AD-5 (cadres de générateur, np.ma.core.builtins, np.f2py.os,
+    np.ctypeslib, string.Formatter, np.load(allow_pickle=True), import os déjà chargé), chaque cas en échec ;
+    imports par profil (A NumPy seul ; B re, datetime, math, unicodedata), B réexécuté dans un espace neuf par
+    exemple ; fonctions d'ajustement et littéraux au-delà de 8 Ko ou 512 nombres refusés ; drapeaux d'audit
+    (fragment de 12 caractères recopié d'un exemple) journalisés sans refus ; gel refusé pour A si les blocs ne
+    partitionnent pas les unités cachées ou visent un type hors vocabulaire ; évaluation refusée sur empreinte
+    divergente et déterministe ; aucun motif de clé dans le journal.
+- id: "1-6"
+  title: Pilotes Claude Code et API, fournisseurs, coût et plafond
+  description: >-
+    Port fournisseur avec adaptateurs OpenRouter, Anthropic (repli) et simulé ; pilote API ; pilote Claude Code
+    par claude -p et serveur MCP local sur le catalogue de 1-5 ; coût facturé et coût équivalent API par
+    appel ; registre budgétaire, plafonds de lot et de projet sur le facturé, arrêt au plafond de séance
+    (CAP-3 ; AD-10, AD-11, AD-14, AD-15 ; harnais.md).
+  invoke_dev_with: >-
+    Part du noyau de 1-5. Tests hors ligne (fournisseur fake, claude simulé) : test de contamination (la
+    première requête du pilote Claude Code ne contient que le prompt système et la description de tâche ;
+    configuration dédiée, --tools vide, --strict-mcp-config) ; test d'identité du catalogue (même prompt
+    système, description, outils et budget de passes pour un même (task, method) quel que soit le modèle et
+    le pilote) ; billed_usd à 0 par abonnement et cost_equiv_usd journalisé ; ouverture refusée au-delà du
+    plafond facturé, réservations comprises ; arrêt money_budget ; ligne closed même en erreur ; coupure par
+    limite d'usage terminée en error. Le dossier CLAUDE_CONFIG_DIR demande une connexion unique d'Anaël : la
+    demander par notification et avancer sur le reste en attendant. Un seul appel réel par pilote
+    (Claude Code, OpenRouter, API Anthropic), marqué live, en fin de story.
+- id: "1-7"
+  title: Tâches jouet et témoins
+  description: >-
+    Parité, comparaison de nombres et petit automate avec jeux réservés, solution écrite à la main à 100 %,
+    témoins C et B exécutables (CAP-8, CAP-6, CAP-7).
+- id: "1-8"
+  title: Séances sur le jouet et calibrage du budget de passes
+  description: >-
+    Séances A-programme, A-littéral et B sur Sonnet et MiMo, 1 tentative par case, puis recalibrage unique du
+    budget de passes (CAP-8, protocole-ecriture.md).
+  invoke_dev_with: >-
+    Consigner le budget de passes retenu comme décision dans le journal du run avant 1-9 ; il est ensuite
+    figé.
+- id: "1-9"
+  title: Générateurs de S et S-réservé
+  description: >-
+    Générateurs reproductibles par graine pour S (15 types) et S-réservé (10 types connus, 5 à l'évaluation),
+    jeux réservés hors de portée de l'agent (CAP-9, jeux-de-donnees.md).
+  invoke_dev_with: >-
+    Part du constat 1-1. Test : la description de tâche de S-réservé ne mentionne aucun des 5 types tenus à
+    l'écart.
+- id: "1-10"
+  title: Séances A et B sur S et S-réservé, porte de coût
+  description: >-
+    A-programme (vers 10⁴ et 10⁵ sur S, 10⁵ sur S-réservé), A-littéral et B sur Sonnet et MiMo, Fable une fois
+    sur S ; porte des 2 $ calculée sur le coût facturé des premières séances Sonnet de S, sans effet par
+    abonnement (CAP-5, CAP-6, AD-11, AD-19, methodes-et-lots.md).
+  invoke_dev_with: >-
+    Consigner le résultat de la porte comme décision dans le journal du run avant les séances suivantes
+    (3 ou 2 tentatives par case ; 3 pour Sonnet par abonnement). Lister les séances signalées par les drapeaux
+    d'audit pour jugement en 1-14.
+- id: "1-11"
+  title: Témoins C et F sur S et S-réservé
+  description: >-
+    Courbe C sur l'architecture de référence (N = 64 à 8 192 et au-delà, plusieurs graines), réentraînement de
+    chaque architecture écrite en 1-10 à N = 8 192, et F avec entrées préparées (CAP-7, methodes-et-lots.md).
+  invoke_dev_with: >-
+    PyTorch dans un groupe de dépendances séparé, jamais importé par les outils de séance.
+- id: "1-12"
+  title: Pré-étude R et porte des 30 %
+  description: >-
+    Classer ~300 hallucinations de SLM en cohérentes et incohérentes, chiffrer la part avec intervalle et
+    décider si R est un comparatif ou une mesure de plafond (CAP-10).
+  invoke_dev_with: >-
+    Part du constat 1-3. Consigner la décision de la porte dans le journal du run.
+- id: "1-13"
+  title: Jeu R et séances sur R
+  description: >-
+    Vraies références Judilibre, fausses vérifiées inexistantes, normaliseur commun, puis séances A et B et
+    témoins C (dont point « même réseau ») et F sur R selon la décision de 1-12 (CAP-11).
+- id: "1-14"
+  title: Mesures, rapport du lot 1 et v0.1.0
+  description: >-
+    Tableau des mesures régénéré depuis les journaux (lisibilité par ablation comprise, coût facturé et
+    équivalent API séparés), drapeaux d'audit publiés par séance et séances signalées jugées avant
+    conclusion, docs/rapport-lot1.md, release v0.1.0 avec l'archive de nnww publish en assets, brouillon du
+    billet remis à Anaël (CAP-12, CAP-13, AD-7, AD-18, AD-19).
+  invoke_dev_with: >-
+    Le billet n'est jamais publié par l'agent. Tests de nnww publish : archive refusée sur motif de clé, sur
+    exemple réservé, et sur artefact de R sans r_republish = true (constat 1-3). Consigner chaque jugement de
+    séance signalée comme décision avant de rédiger les conclusions.
+
+# --- Lot 2 : où le réseau compte (75 $) ---
+- id: "2-1"
+  title: Jeux d'images et vision dans le harnais
+  description: >-
+    Formes synthétiques, chiffres 8×8, MNIST et Fashion-MNIST avec jeux réservés, et images montrées à l'agent
+    par le harnais (CAP-14, jeux-de-donnees.md).
+  invoke_dev_with: >-
+    Part des constats 1-2 (vision de MiMo) et 1-4 (licences).
+- id: "2-2"
+  title: Témoins C et méthode E sur les images
+  description: >-
+    Courbes C sur chaque jeu d'images et affinage par gradient depuis des poids écrits (E, KBANN), en PyTorch
+    (CAP-14, methodes-et-lots.md).
+- id: "2-3"
+  title: Séances A et B sur les images
+  description: >-
+    Séances A et B sur les quatre jeux avec le modèle retenu par la règle des 3 points (CAP-14,
+    methodes-et-lots.md).
+  invoke_dev_with: >-
+    Consigner le modèle retenu et son motif comme décision avant la première séance.
+- id: "2-4"
+  title: Échelle de tailles sur MNIST
+  description: >-
+    Montée de 10⁴ à 10⁷ paramètres sur MNIST jusqu'au premier signal du critère de limite, même budget de
+    passes à toutes les tailles (CAP-14, protocole-ecriture.md).
+- id: "2-5"
+  title: Rapport du lot 2 et v0.2.0
+  description: >-
+    Rapport du lot 2 avec la courbe exactitude-taille et le signal d'arrêt atteint, release v0.2.0 ; billet
+    seulement si un résultat est marquant (CAP-14).
+
+# --- Lot 3 : conditionnel (25 $) ---
+- id: "3-1"
+  title: Tâches algorithmiques et témoins Tracr et entraînement
+  description: >-
+    Une ou deux tâches algorithmiques (tri, comptage, parenthèses), leur version compilée par Tracr et un
+    transformer entraîné (CAP-15).
+  invoke_dev_with: >-
+    Ne démarre que si les trois conditions de déclenchement de methodes-et-lots.md sont réunies. Tracr
+    (JAX, dm-haiku) probablement dans un environnement séparé : le vérifier d'abord.
+- id: "3-2"
+  title: Séances transformer écrit et rapport du lot 3
+  description: >-
+    Le LLM écrit le petit transformer, comparaison des trois sur le même jeu réservé, rapport et release
+    selon AGENTS.md (CAP-15).
