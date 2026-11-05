@@ -58,3 +58,8 @@ Trois tâches jouet à solution exacte (parité, comparaison de nombres, petit a
 - Nit, low, second avis 8 : `except ImportError` trop large dans `_train`. Corrigé : `ModuleNotFoundError` limité à `torch`.
 - Rejeté, low, second avis 9 : coût CI de torch mesuré à 27-68 s par job, acceptable.
 - Complexité : 0 constat (génération O(n), pas de structure qui grossit par événement).
+
+### Passe 2 (2026-11-05, SHA revu c25759d)
+
+- Aucun constat nouveau. Vérifié : bornes exactes (parité 512/512 accepté, 513/512 refusé ; automate 352/350 et 352/352 ; comparaison 1500/1501 et 1500/1502), séance et réservé disjoints (tranches consécutives de chaque classe), refus de `heldout/` éprouvé sur `HELDOUT/`, `heldout\`, `data/../heldout/` et `.\Heldout\compare\..` (Windows), version 2 cohérente (code, test, spec), CI verte sur les trois OS.
+- Complexité : 0 constat.
