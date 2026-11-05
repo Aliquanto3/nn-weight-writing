@@ -6,8 +6,8 @@ Fichier d'état de l'orchestrateur, à relire en premier après chaque `/clear`.
 
 | Périmètre | Epics | Note |
 |---|---|---|
-| Dans le run | Epics 1 à 1 | Lot 1, stories 1-1 à 1-6 d'abord (demande d'Anaël, 2026-11-05) |
-| Hors run | Epics 2 à 3 | Lots 2 et 3 ; stories 1-7 à 1-14 après 1-6, sur nouvelle demande |
+| Dans le run | Epics 1 à 1 | Lot 1 : 1-1 à 1-6 demandées (2026-11-05), étendu à 1-7 et à la moitié MiMo de 1-8 sur consigne « tout ce que tu peux cette nuit » |
+| Hors run | Epics 2 à 3 | Lots 2 et 3 ; 1-9 à 1-14 en attente de décisions ou de ressources d'Anaël |
 
 Au plus 4 stories en développement à la fois, chacune dans son worktree (`.claude/worktrees/<story>`).
 Plafond global : 5 agents actifs à la fois sous Windows (développement, revue et rebase confondus).
@@ -35,10 +35,11 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 ## Brief
 
 - **Tâche du run** : run autonome sur le lot 1 de `stories.yaml`, 1-1 à 1-6 d'abord ; 1-2 et 1-3 attendent la clé OpenRouter et le compte PISTE d'Anaël ; conforme à ARCHITECTURE-SPINE.md ; topic GitHub passé à `status-dev`.
-- **Intention courante** : V0 presque finie (1-1, 1-2, 1-3 provisoire, 1-4 fusionnées) ; 1-5 en développement (Opus, high) ; puis 1-6.
-- **Plan des vagues restantes** : V1 = 1-6 ★ (← 1-5, 1-2) ; elle écrit la ligne `closed` `probe-1-2` (0,00816209 USD) et suit la normalisation de 1-2 (`input = prompt_tokens - cached_tokens - cache_write_tokens`, fournisseur OpenRouter fixé).
+- **Intention courante** : 1-1 à 1-7 fusionnées (1-3 provisoire) ; suite complète verte sur main 1e62860 ; 1-8 moitié MiMo en cours (9 séances jouet, plafond 3 $ facturés).
+- **Plan des vagues restantes** : V2 = 1-8 moitié MiMo (revue puis PR) ; ensuite, après Anaël : 1-8 moitié Sonnet + recalibrage unique du budget de passes, 1-9 (après décision CAP-1 sur S), 1-12 (après PISTE, Ollama, collecte).
 - **Artefacts utiles** : constats dans `docs/verifications/` ; specs de story dans `_bmad-output/implementation-artifacts/stories/` ; décisions D1-D12 de 1-5 dans sa spec de story.
-- **Attentes Anaël** : compte PISTE (1-3 T1-T8), Ollama + GPU pour la collecte (avant 1-12), connexion `CLAUDE_CONFIG_DIR` (1-6 live), décisions CAP-1 sur S (1-1) et MNIST A-D (1-4).
+- **Attentes Anaël** : connexion `CLAUDE_CONFIG_DIR=~/.nnww/claude-config` + `NNWW_CLAUDE_CWD_ROOT=C:
+nww-cwd` (procédure dans la spec 1-6) ; `ANTHROPIC_API_KEY` si repli API ; compte PISTE (1-3 T1-T8) ; Ollama + GPU pour la collecte (avant 1-12) et place de la story de collecte (R9) ; décisions CAP-1 sur S (1-1), MNIST A-D (1-4), D13 linalg (1-5), `max_session_usd = 5`, `session_timeout_s = 7200`, effort medium Sonnet/Fable (1-6).
 - **Pièges rencontrés** : `setup-uv` sans tag majeur (épingler la version exacte) ; `file_prs.py` lancé trop tôt après `gh pr create` saute la PR (« aucun contrôle ») : attendre ~30 s.
 
 ## Sprint 1 — Lot 1, reproduction critique (1-1 à 1-6)
@@ -46,7 +47,8 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 | Vague | Stories en parallèle | Après | Fichiers ou écrans touchés |
 |---|---|---|---|
 | V0 | 1-1 · 1-2 · 1-3 (mixte) · 1-4 · 1-5 ★ | — | 1-1, 1-3, 1-4 `docs/verifications/` (un fichier chacune) ; 1-2 `providers/probe.py`, `docs/verifications/`, sans toucher `pyproject.toml` ; 1-5 `src/nn_weight_writing/{session,sandbox,network,journal,evaluation}`, `cli.py`, `config/protocol.toml`, `pyproject.toml` |
-| V1 | 1-6 ★ (mixte) | 1-6 ← 1-5 ; 1-6 ← 1-2 | `providers/`, `session/` pilotes, `budget/` (ligne closed de la sonde 1-2 comprise), `config/{models,pricing}.toml` |
+| V1 | 1-6 ★ (mixte) · 1-7 | 1-6 ← 1-5 ; 1-6 ← 1-2 ; 1-7 ← 1-5 | 1-6 `providers/`, `session/` pilotes, `budget/`, `config/{models,pricing}.toml` ; 1-7 `tasks/toy/`, `datasets/`, `baselines/`, `cli.py` (ajouts) |
+| V2 | 1-8 (mixte, moitié MiMo) | 1-8 ← 1-6 ; 1-8 ← 1-7 | `docs/experiences/`, `budget/ledger.csv` |
 
 ## Journal
 
@@ -103,3 +105,47 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-05 22:30 · 1-3 · attente humaine · compte PISTE (tests T1-T8, version des CGU), Ollama et GPU de la tour pour la collecte avant 1-12, placement de la story de collecte (R9) · 185f9b1
 - 2026-11-05 22:30 · 1-4 · attente humaine · décision MNIST (options A à D) avant 2-1 · 235e7f7
 - 2026-11-05 22:30 · 1-1 · attente humaine · décision CAP-1 sur S (feu vert avec réserve proposé) · 3a3b2d3
+- 2026-11-05 22:34 · 1-5 · dev · fini, 250 tests verts (Windows), D1-D12 appliquées, 9 écarts consignés ; à trancher : svdvals/qr/cholesky admises (hors liste AD-19), pas de limite mémoire · 98273f9
+- 2026-11-05 22:34 · 1-5 · PR · brouillon ouverte pour la CI trois OS · 98273f9
+- 2026-11-05 22:34 · 1-5 · second-avis · lancé · 98273f9
+- 2026-11-05 22:35 · 1-5 · CI · verte sur les trois OS (PR #8 brouillon) · 98273f9
+- 2026-11-05 22:40 · 1-5 · second-avis · 4 medium (OverflowError et RecursionError non rattrapées, solveurs et décompositions linalg admis, log du sous-processus sans plafond), 2 low ; aucune évasion trouvée, canal D1, budget et frontière AD-1 tenus · 98273f9
+- 2026-11-05 22:40 · 1-5 · décision · solveurs et décompositions de np.linalg ajoutés aux fonctions d'ajustement refusées (prudence, réversible avant toute séance mesurée ; à confirmer par Anaël) · —
+- 2026-11-05 22:40 · 1-5 · review · lancé (reviewer Opus, rebase d'abord) · 98273f9
+- 2026-11-05 22:45 · 1-5 · review · passe 1 : 5 medium corrigés (dont D13 linalg et un TypeError du manifeste trouvé en revue), 2 low corrigés, 338 tests verts ; rebasée sur 302199b · c1f1ca4
+- 2026-11-05 22:45 · 1-5 · review · passe 2 lancée · c1f1ca4
+- 2026-11-05 22:50 · 1-5 · review · passe 2 : 2 medium corrigés (finitude jugée en float64, substituts Unicode qui faisaient tomber la séance), 1 low corrigé, Pyright rejeté (inatteignable) · 216527f
+- 2026-11-05 22:50 · 1-5 · review · passe 3 (dernière) lancée · 216527f
+- 2026-11-05 22:51 · 1-5 · review · passe 3 : 0 Important, 1 low admis · ec61ac9
+- 2026-11-05 22:51 · 1-5 · CI · rouge Linux et macOS : tests code_too_complex dépendants de la pile (parse réussi hors Windows → literals_too_large) · 216527f
+- 2026-11-05 22:51 · 1-5 · dev · correctif de tests lancé (dev-story Sonnet) · ec61ac9
+- 2026-11-05 22:54 · 1-5 · CI · verte sur les trois OS après correctif des tests · dd5afa4
+- 2026-11-05 22:54 · 1-5 · fusion · #8 fusionnée, MERGED vérifié · f4374ba
+- 2026-11-05 22:54 · 1-6 · dev · lancé (dev-story Opus, effort high, worktree) · f4374ba
+- 2026-11-05 22:55 · run · décision · périmètre étendu à 1-7 (consigne d'Anaël : « continue en autonomie cette nuit sur tout ce que tu peux ») ; 1-7 en parallèle de 1-6, recouvrement cli.py et uv.lock résolu au rebase de la seconde ; 1-9 attend la décision CAP-1 sur S, 1-8 le pilote Claude Code · —
+- 2026-11-05 22:55 · 1-7 · dev · lancé (dev-story Sonnet, worktree) · f4374ba
+- 2026-11-05 23:04 · 1-7 · dev · fini, 430 tests verts ; main à 100 % et B à 100 % sur le réservé ; C PyTorch au format AD-17 ; torch 2.15.0 dans le groupe train, CI avec --group train · be9f7b9
+- 2026-11-05 23:04 · 1-7 · PR · brouillon ouverte pour la CI trois OS · be9f7b9
+- 2026-11-05 23:04 · 1-7 · second-avis · lancé · be9f7b9
+- 2026-11-05 23:07 · 1-7 · CI · verte sur les trois OS avec torch (27 s à 68 s) · be9f7b9
+- 2026-11-05 23:07 · 1-7 · second-avis · 3 medium (classes déséquilibrées à grande taille, témoin C entraînable sur heldout sans trace, graine du réservé en clair), 6 low · be9f7b9
+- 2026-11-05 23:07 · 1-7 · review · lancé (reviewer Opus) · be9f7b9
+- 2026-11-05 23:11 · 1-7 · review · passe 1 : 2 medium corrigés (équilibre par jeu, refus de heldout/ et empreinte du jeu dans run.json), 4 low corrigés, 3 rejetés · c25759d
+- 2026-11-05 23:11 · 1-7 · review · passe 2 lancée · c25759d
+- 2026-11-05 23:13 · 1-7 · review · passe 2 : rien · 6c8d8ee
+- 2026-11-05 23:13 · 1-7 · fusion · #9 fusionnée, MERGED vérifié · d26c6ba
+- 2026-11-05 23:16 · 1-6 · dev · fini, 437 tests verts ; live OpenRouter joué (0,000208 $), live Anthropic (clé absente) et Claude Code (connexion absente) non joués ; registre : probe-1-2 + live · a1df4f8
+- 2026-11-05 23:16 · 1-6 · second-avis · lancé · a1df4f8
+- 2026-11-05 23:19 · 1-6 · second-avis · 1 medium (texte final « rate limit » → séance en error), 4 low (pas de délai total sur claude, verrou du registre, model_call dupliqués, CLAUDE.md des parents du cwd non neutralisés → relevé en Important par l'orchestrateur) ; contamination, MCP, coût, registre, secrets OK · a1df4f8
+- 2026-11-05 23:19 · 1-6 · review · lancé (reviewer Opus, rebase sur main d26c6ba d'abord) · a1df4f8
+- 2026-11-05 23:29 · 1-6 · review · passe 1 : rebasée sur d26c6ba ; 1 high (CLAUDE.md d'un parent du cwd, ~/.claude/CLAUDE.md réellement présent sur le poste) et 3 medium corrigés, 3 low corrigés, 1 rejeté ; 539 tests verts · 8cd81e6
+- 2026-11-05 23:29 · 1-6 · PR · brouillon ouverte pour la CI · 8cd81e6
+- 2026-11-05 23:29 · 1-6 · review · passe 2 lancée · 8cd81e6
+- 2026-11-05 23:34 · 1-6 · review · passe 2 : 1 medium corrigé (arbre de processus tué au délai), 1 low corrigé · 5939b13
+- 2026-11-05 23:34 · 1-6 · review · passe 3 (dernière) lancée · 5939b13
+- 2026-11-05 23:40 · 1-6 · CI · verte sur les trois OS · 5939b13
+- 2026-11-05 23:40 · 1-6 · review · passe 3 : 0 Important, 2 low reportés · 656852d
+- 2026-11-05 23:41 · 1-6 · fusion · #10 fusionnée, MERGED vérifié · 1e62860
+- 2026-11-05 23:41 · run · décision · suite complète locale sur main 1e62860 : verte ; ruff OK · 1e62860
+- 2026-11-05 23:41 · run · décision · 1-8 avancée en partie (moitié MiMo, 9 séances jouet par OpenRouter, plafond 3 $ facturés pour la nuit) ; moitié Sonnet et recalibrage du budget de passes en attente de la connexion Claude Code ; 1-9 en attente de la décision CAP-1 sur S · —
+- 2026-11-05 23:41 · 1-8 · dev · lancé (dev-story Sonnet, worktree, séances MiMo) · 1e62860
