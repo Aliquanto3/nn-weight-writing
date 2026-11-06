@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import json
+
 import pytest
 from conftest import ENCODER, journal_records
 
@@ -90,3 +92,15 @@ def test_open_event_records_size_target(make_service):
         100_000
     )
     assert journal_records(make_service("B"))[0]["size_target"] is None
+
+
+def test_journal_without_size_target_still_reads(make_service, tmp_path):
+    """Journaux antérieurs à 1-10a (1-8, séances B de 1-10) : `size_target` absent, admis."""
+    from nn_weight_writing.journal.reader import find_last, read_records
+
+    records = journal_records(make_service("B"))
+    del records[0]["size_target"]
+    old = tmp_path / "old-journal.jsonl"
+    old.write_text("".join(json.dumps(r) + "\n" for r in records), encoding="utf-8")
+    assert len(list(read_records(old))) == len(records)
+    assert "size_target" not in find_last(old, "open")

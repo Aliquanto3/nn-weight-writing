@@ -4,6 +4,7 @@ Date : 2026-11-05 (séances 22:42 à 23:35 UTC). Lot 1, 1 tentative par case, pi
 
 ## Graines et versions
 
+- Reproductibilité : séances antérieures à la taille cible (story 1-10a). Depuis, `nnww session` refuse une séance A sans `--size-target` (code 2) ; rejouer ces séances sur le commit cité ci-dessous.
 - Jeux : `nnww datagen all --seed 0 --n 256 --n-heldout 400` (générateur v2) ; séances : `--seed 0`, tentative 1 ; jeux `data/<tâche>/toy/` (256 exemples) et `heldout/<tâche>/toy/` (400 exemples), non commités.
 - Code : worktree `exp/1-8-jouet-mimo` sur `main` 1e62860 + correctif `b85cd7e`. Python 3.14, dépendances de `uv.lock`.
 

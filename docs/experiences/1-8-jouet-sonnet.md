@@ -4,6 +4,7 @@ Date : 2026-11-06 (séances 04:25 à 04:31 UTC). Lot 1, 1 tentative par case, pi
 
 ## Graines et versions
 
+- Reproductibilité : séances antérieures à la taille cible (story 1-10a). Depuis, `nnww session` refuse une séance A sans `--size-target` (code 2) ; rejouer ces séances sur le commit cité ci-dessous.
 - Jeux : `nnww datagen all --seed 0 --n 256 --n-heldout 400` régénérés dans le worktree (non commités) ; séances : `--seed 0`, tentative 1.
 - Code : worktree `exp/1-8-jouet-sonnet` sur `main` b8b1a4b + deux correctifs du harnais (`aed4996`, `49ce9c0` après rebase sur `main` 925c602 ; `bf4c086`, `ef9f6cb` avant). Claude Code : celui du poste au 2026-11-06.
 

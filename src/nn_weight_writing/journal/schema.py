@@ -31,11 +31,12 @@ class OpenEvent(Event):
     attempt: int
     seed: int
     pass_budget: int
-    size_target: int | None
     protocol_sha256: str
     system_prompt_sha256: str
     sampling: dict
     effort: str | None
+    # Taille cible des séances A (story 1-10a) ; absente des journaux antérieurs, None pour B.
+    size_target: int | None = None
 
 
 @dataclass(frozen=True)
@@ -129,7 +130,7 @@ EVENT_TYPES: dict[str, type[Event]] = {
 
 
 # Champs ajoutés après coup, avec valeur par défaut : absents des journaux plus anciens, admis.
-OPTIONAL_FIELDS = frozenset({"cache_write_1h_tokens"})
+OPTIONAL_FIELDS = frozenset({"cache_write_1h_tokens", "size_target"})
 
 
 def event_fields(cls: type[Event]) -> tuple[str, ...]:
