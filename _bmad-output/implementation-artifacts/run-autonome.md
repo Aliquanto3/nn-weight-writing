@@ -234,3 +234,10 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-06 07:15 · 1.10a · CI · verte sur les trois OS (PR #22) · d137653
 - 2026-11-06 07:15 · 1.10a · fusion · #22 fusionnée, MERGED vérifié · 2d3eeef
 - 2026-11-06 07:15 · 1.10 · dev · relancé, moitié Sonnet + Fable, cases A (15 séances Sonnet, 3 Fable) · 2d3eeef
+- 2026-11-06 07:21 · 1.11 · dev · première partie finie : 60 runs C et F, 3 graines, N = 64 à 32 768 ; S C 51,7 → 94,6 % ; F (legal.fields@1) sous C dès 8 192 · d6df200
+- 2026-11-06 07:26 · 1.11 · second-avis · 2 medium (legal.fields@1 en scalaires rend t01, t02, t06, t09, t15 quasi inapprenables ; 100 époques peut-être choisies sur le réservé), 2 low · d6df200
+- 2026-11-06 07:26 · 1.11 · décision · F refait avec legal.fields@2 (mêmes champs en one-hot, aucun indice calculé ; @1 gardé pour la traçabilité, résultats en annexe) · —
+- 2026-11-06 07:49 · 1.11 · review · passe 1 : 4 Important corrigés (legal.fields@2 et courbe F rejouée, époques rechoisies sur validation tirée de l'entraînement : 100 gardées, refus d'un jeu d'une autre tâche, reprise clé par encodeur), 1 low corrigé ; F@2 = C à ±1 point à 8 192 et 32 768 · 70b0bb7
+- 2026-11-06 07:49 · 1.11 · review · passe 2 : 0 Important, 2 low (chiffres du compte rendu corrigés ; plateau des époques montré à 8 192 seulement, réserve) · 3a1b882
+- 2026-11-06 07:49 · 1.11 · CI · verte sur les trois OS (PR #23) · 3a1b882
+- 2026-11-06 07:49 · 1.11 · fusion · #23 fusionnée (première partie), MERGED vérifié ; seconde partie (réentraînement des architectures de 1-10) après 1-10 · ad127ca
