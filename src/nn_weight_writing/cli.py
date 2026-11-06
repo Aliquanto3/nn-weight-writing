@@ -121,6 +121,13 @@ def _session(args: argparse.Namespace) -> int:
     if not examples.is_file():
         print(f"exemples absents : {examples}", file=sys.stderr)
         return 2
+    from nn_weight_writing.session.tools import check_size_target
+
+    try:
+        check_size_target(args.method, args.size_target)
+    except ValueError as exc:
+        print(exc, file=sys.stderr)
+        return 2
     try:
         outcome = run_session(
             task=task,
@@ -133,6 +140,7 @@ def _session(args: argparse.Namespace) -> int:
             attempt=args.attempt,
             seed=args.seed,
             lot=args.lot,
+            size_target=args.size_target,
             runs_dir=Path(args.runs_dir) if args.runs_dir else RUNS_DIR,
             ledger_path=Path(args.ledger) if args.ledger else None,
             claude_executable=json.loads(args.claude_command),
@@ -195,6 +203,11 @@ def build_parser() -> argparse.ArgumentParser:
     session.add_argument("--dataset", required=True, help="data/<task>/<dataset>/examples.jsonl")
     session.add_argument("--method", required=True, choices=["A-program", "A-literal", "B"])
     session.add_argument("--model", required=True, help="nom dans config/models.toml")
+    session.add_argument(
+        "--size-target",
+        type=int,
+        help="taille visée en paramètres (10000 ou 100000) : obligatoire pour A, interdite pour B",
+    )
     session.add_argument("--attempt", type=int, required=True)
     session.add_argument("--seed", type=int, required=True)
     session.add_argument("--lot", type=int, required=True)

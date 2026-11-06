@@ -151,3 +151,30 @@ def argument_errors(schema: dict, arguments: object) -> list[str]:
         if "minItems" in rule and len(value) < rule["minItems"]:
             errors.append(f"{key} : au moins {rule['minItems']} élément(s)")
     return errors
+
+
+SIZE_TARGETS = (10_000, 100_000)
+
+
+def check_size_target(method: Method | str, size_target: int | None) -> None:
+    """Taille cible : obligatoire (10⁴ ou 10⁵) pour A, interdite pour B ; `ValueError` sinon."""
+    method = Method(method)
+    if method is Method.B:
+        if size_target is not None:
+            raise ValueError("la taille cible est interdite pour la méthode B")
+        return
+    if size_target is None:
+        raise ValueError(f"la taille cible est obligatoire pour la méthode {method}")
+    if type(size_target) is not int or size_target not in SIZE_TARGETS:
+        allowed = ", ".join(str(s) for s in SIZE_TARGETS)
+        raise ValueError(f"taille cible {size_target!r} refusée ; admises : {allowed}")
+
+
+def size_window(size_target: int) -> tuple[int, int]:
+    """Fenêtre d'une demi-décade `[N/√10, N·√10]`, bornes entières arrondies."""
+    return round(size_target / 10**0.5), round(size_target * 10**0.5)
+
+
+def size_label(size_target: int) -> str:
+    """`1e4` pour 10 000 (identifiant de séance)."""
+    return f"1e{len(str(size_target)) - 1}"

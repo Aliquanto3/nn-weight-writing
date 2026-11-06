@@ -35,7 +35,14 @@ from nn_weight_writing.network.layers import forward
 from nn_weight_writing.sandbox.audit import audit
 from nn_weight_writing.sandbox.filter import Profile
 from nn_weight_writing.session.refusals import EndReason, RefusalCode
-from nn_weight_writing.session.tools import TOOLS_BY_NAME, Method, argument_errors
+from nn_weight_writing.session.tools import (
+    TOOLS_BY_NAME,
+    Method,
+    argument_errors,
+    check_size_target,
+    size_label,
+    size_window,
+)
 from nn_weight_writing.tasks.base import Codec
 from nn_weight_writing.tasks.io import read_bundle
 
@@ -51,9 +58,18 @@ def model_slug(model: str) -> str:
     return re.sub(r"[^a-z0-9.-]", "", model.lower())
 
 
-def make_session_id(task: str, method: str, model: str, attempt: int, now: datetime) -> str:
-    """`{task}-{method}-{model_slug}-t{n}-{YYYYMMDDTHHMMSSZ}` (AD-12), `now` en UTC."""
-    return f"{task}-{method}-{model_slug(model)}-t{attempt}-{now.strftime('%Y%m%dT%H%M%SZ')}"
+def make_session_id(
+    task: str,
+    method: str,
+    model: str,
+    attempt: int,
+    now: datetime,
+    size_target: int | None = None,
+) -> str:
+    """`{task}-{method}[-1e4]-{model_slug}-t{n}-{YYYYMMDDTHHMMSSZ}` (AD-12), `now` en UTC."""
+    size = f"-{size_label(size_target)}" if size_target is not None else ""
+    stamp = now.strftime("%Y%m%dT%H%M%SZ")
+    return f"{task}-{method}{size}-{model_slug(model)}-t{attempt}-{stamp}"
 
 
 def _only_numbers(rows: list) -> bool:
@@ -84,6 +100,7 @@ class OpenInfo:
     system_prompt_sha256: str
     sampling: dict = field(default_factory=dict)
     effort: str | None = None
+    size_target: int | None = None
 
 
 class ToolRefusal(Exception):
@@ -110,6 +127,8 @@ class ToolService:
             raise ValueError(f"encodeur {codec.encoder_id} ≠ paquet {self.bundle.encoder}")
         self.codec = codec
         self.method = Method(info.method)
+        check_size_target(self.method, info.size_target)
+        self.size_target = info.size_target
         self.frozen_dir = self.run_dir / FROZEN_DIR
         self.passes_used = 0
         self.freeze_attempts = 0
@@ -153,6 +172,7 @@ class ToolService:
                 attempt=info.attempt,
                 seed=info.seed,
                 pass_budget=self.config.pass_budget,
+                size_target=info.size_target,
                 protocol_sha256=self.config.protocol_sha256,
                 system_prompt_sha256=info.system_prompt_sha256,
                 sampling=dict(info.sampling),
@@ -283,6 +303,14 @@ class ToolService:
             raise ToolRefusal(
                 RefusalCode.ENCODER_MISMATCH, f"l'encodeur de la tâche est {self.bundle.encoder}"
             )
+        if self.size_target is not None:
+            declared = netio.n_params(manifest)
+            low, high = size_window(self.size_target)
+            if not low <= declared <= high:
+                raise ToolRefusal(
+                    RefusalCode.SIZE_OUT_OF_RANGE,
+                    f"{declared} paramètres déclarés ; fenêtre admise [{low} ; {high}]",
+                )
         self.manifest = manifest
         if self.method is Method.A_LITERAL:
             shapes = netio.weight_shapes(manifest)

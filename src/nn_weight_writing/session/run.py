@@ -25,6 +25,7 @@ from nn_weight_writing.session.service import (
     ToolService,
     make_session_id,
 )
+from nn_weight_writing.session.tools import check_size_target
 from nn_weight_writing.tasks.io import materialize_bundle
 from nn_weight_writing.tasks.registry import TaskSpec
 
@@ -77,9 +78,13 @@ def run_session(
     claude_config_dir: Path | None = None,
     claude_cwd_root: Path | None = None,
     now: datetime | None = None,
+    size_target: int | None = None,
 ) -> SessionOutcome:
     """Mène une séance ; `ledger.BudgetRefused` si les plafonds refusent l'ouverture."""
-    session_id = make_session_id(task.name, method, model.name, attempt, now or datetime.now(UTC))
+    check_size_target(method, size_target)
+    session_id = make_session_id(
+        task.name, method, model.name, attempt, now or datetime.now(UTC), size_target
+    )
     run_dir = Path(runs_dir or RUNS_DIR) / str(lot) / session_id
     max_session = protocol.max_session_usd if model.billed else 0.0
     ledger.reserve(session_id, lot, max_session, protocol, ledger_path)
@@ -94,7 +99,7 @@ def run_session(
             encoder=task.codec.encoder_id,
             vocabulary=list(task.vocabulary),
         )
-        system = prompt.system_prompt(method, protocol.pass_budget)
+        system = prompt.system_prompt(method, protocol.pass_budget, size_target)
         system_path = run_dir / prompt.SYSTEM_PROMPT_FILE
         system_path.write_bytes(system.encode("utf-8"))
         provider_name = provider.name if provider is not None else model.provider
@@ -111,6 +116,7 @@ def run_session(
             system_prompt_sha256=prompt.sha256_text(system),
             sampling=dict(model.sampling),
             effort=model.effort,
+            size_target=size_target,
         )
         service = ToolService(run_dir, task.codec, info, protocol)
         task_text = prompt.task_message(bundle)

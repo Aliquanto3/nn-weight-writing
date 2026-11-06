@@ -31,6 +31,7 @@ class OpenEvent(Event):
     attempt: int
     seed: int
     pass_budget: int
+    size_target: int | None
     protocol_sha256: str
     system_prompt_sha256: str
     sampling: dict

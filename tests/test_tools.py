@@ -39,6 +39,16 @@ def test_argument_errors():
     assert argument_errors(schema, "x") == ["les arguments doivent être un objet"]
 
 
+def test_session_id_contains_size_target():
+    now = datetime(2026, 11, 5, 14, 3, 9, tzinfo=UTC)
+    assert make_session_id("legal_s", "A-program", "Claude Sonnet 5.5", 1, now, 10_000) == (
+        "legal_s-A-program-1e4-claudesonnet5.5-t1-20261105T140309Z"
+    )
+    assert make_session_id("legal_s", "A-literal", "m", 1, now, 100_000) == (
+        "legal_s-A-literal-1e5-m-t1-20261105T140309Z"
+    )
+
+
 def test_session_id_format():
     now = datetime(2026, 11, 5, 14, 3, 9, tzinfo=UTC)
     assert make_session_id("legal-S", "A-program", "Claude Sonnet 5.5", 2, now) == (

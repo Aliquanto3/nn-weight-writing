@@ -57,7 +57,8 @@ def make_service(tmp_path, protocol):
     """Fabrique un service neuf pour une méthode, avec son paquet matérialisé."""
     counter = iter(range(1000))
 
-    def factory(method: str, config=None) -> ToolService:
+    def factory(method: str, config=None, size_target: int | None = None) -> ToolService:
+        """Séance A sans `size_target` : ouverte à 10⁴ puis fenêtre levée (réseaux jouets)."""
         run_dir = tmp_path / f"toy-{method}-test-t1-{next(counter)}"
         source = write_examples(tmp_path / "examples.jsonl", EXAMPLES)
         materialize_bundle(
@@ -81,8 +82,12 @@ def make_service(tmp_path, protocol):
             system_prompt_sha256="1" * 64,
             sampling={"temperature": 1.0},
             effort="medium",
+            size_target=size_target if size_target or method == "B" else 10_000,
         )
-        return ToolService(run_dir, LenCodec(), info, config or protocol)
+        service = ToolService(run_dir, LenCodec(), info, config or protocol)
+        if size_target is None:
+            service.size_target = None
+        return service
 
     return factory
 
@@ -187,6 +192,8 @@ def session_env(tmp_path, protocol, claude_cwd_root):
     def run(model: ModelConfig, method: str = "B", **kwargs):
         from nn_weight_writing.session.run import run_session
 
+        if method != "B":
+            kwargs.setdefault("size_target", 10_000)
         params = {
             "task": TASK,
             "dataset": "toy",
