@@ -3,6 +3,7 @@ simulé ; normalisation de l'usage et formule de coût (AD-11)."""
 
 from __future__ import annotations
 
+import dataclasses
 import json
 
 import httpx2
@@ -102,6 +103,9 @@ def test_openrouter_body_pins_provider_and_requests_cost():
     assert "reasoning" not in body
     assert openrouter.build_body(request(effort="high"), ())["reasoning"] == {"effort": "high"}
     assert "provider" not in openrouter.build_body(request(), ())
+    assert "seed" not in openrouter.build_body(request(), ())
+    assert openrouter.build_body(request(seed=0), ())["seed"] == 0
+    assert openrouter.build_body(request(seed=5), ())["seed"] == 5
 
 
 def test_openrouter_call_through_sdk_normalizes_usage():
@@ -128,7 +132,19 @@ def test_openrouter_call_through_sdk_normalizes_usage():
     assert sent["usage"] == {"include": True} and sent["model"] == "xiaomi/mimo-v2.6-pro"
 
 
-def test_openrouter_retries_transient_errors_in_the_adapter():
+def test_adapters_do_not_retry_by_default():
+    # Un délai ou une erreur après envoi a pu être facturé : aucune nouvelle tentative (revue 1-10).
+    seen: list = []
+    ok = chat_completion({"prompt_tokens": 10, "completion_tokens": 2}, content="fin")
+    client = transport([(503, {"error": {"message": "surcharge"}}), (200, ok)], seen)
+    provider = OpenRouterProvider(api_key=KEY, http_client=client)
+    with pytest.raises(ProviderError, match="InternalServerError"):
+        provider.complete(request())
+    assert len(seen) == 1
+    assert AnthropicProvider(api_key=KEY)._client.max_retries == 0
+
+
+def test_openrouter_retries_transient_errors_when_asked():
     seen: list = []
     ok = chat_completion({"prompt_tokens": 10, "completion_tokens": 2}, content="fin")
     client = transport([(503, {"error": {"message": "surcharge"}}), (200, ok)], seen)
@@ -182,6 +198,8 @@ def test_anthropic_params_cache_points_and_tool_results():
     assert params["tools"][-1]["cache_control"] == {"type": "ephemeral"}
     assert "cache_control" not in params["tools"][0]
     assert params["output_config"] == {"effort": "medium"}
+    seeded = anthropic_adapter.build_params(dataclasses.replace(two_results, seed=3))
+    assert seeded == params and "seed" not in seeded
     assert params["messages"] == [
         {"role": "user", "content": [{"type": "text", "text": "tâche"}]},
         {

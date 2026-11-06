@@ -42,16 +42,25 @@ class SessionOutcome:
     cost_equiv_usd: float
 
 
+# Délai par appel du pilote OpenRouter : un appel de 131072 jetons de sortie dure jusqu'à ~30 min.
+OPENROUTER_TIMEOUT_S = 3600.0
+# Délai par appel du pilote Anthropic (défaut de l'adaptateur).
+ANTHROPIC_TIMEOUT_S = 600.0
+PROVIDER_TIMEOUT_S = {"openrouter": OPENROUTER_TIMEOUT_S, "anthropic": ANTHROPIC_TIMEOUT_S}
+
+
 def make_provider(model: ModelConfig) -> ModelProvider:
     """Adaptateur du pilote API selon `models.toml` ; `fake` ne s'obtient qu'en test."""
     if model.provider == "openrouter":
         from nn_weight_writing.providers.openrouter import OpenRouterProvider
 
-        return OpenRouterProvider(provider_order=model.provider_order)
+        return OpenRouterProvider(
+            provider_order=model.provider_order, timeout_s=OPENROUTER_TIMEOUT_S
+        )
     if model.provider == "anthropic":
         from nn_weight_writing.providers.anthropic import AnthropicProvider
 
-        return AnthropicProvider()
+        return AnthropicProvider(timeout_s=ANTHROPIC_TIMEOUT_S)
     raise ValueError(f"aucun adaptateur réel pour le fournisseur {model.provider}")
 
 
@@ -103,6 +112,13 @@ def run_session(
         system_path = run_dir / prompt.SYSTEM_PROMPT_FILE
         system_path.write_bytes(system.encode("utf-8"))
         provider_name = provider.name if provider is not None else model.provider
+        api = model.driver != "claude_code"
+        if not api:
+            call_timeout = None
+        elif provider is not None:
+            call_timeout = getattr(provider, "timeout_s", None)
+        else:
+            call_timeout = PROVIDER_TIMEOUT_S.get(model.provider)
         info = OpenInfo(
             task=task.name,
             dataset=dataset,
@@ -117,6 +133,8 @@ def run_session(
             sampling=dict(model.sampling),
             effort=model.effort,
             size_target=size_target,
+            max_tokens=model.max_tokens if api else None,
+            call_timeout_s=call_timeout,
         )
         service = ToolService(run_dir, task.codec, info, protocol)
         task_text = prompt.task_message(bundle)
@@ -129,7 +147,7 @@ def run_session(
                 cwd_root=claude_cwd_root,
             ).run(service, system_path, task_text)
         else:
-            ApiLoopDriver(provider or make_provider(model), model, price).run(
+            ApiLoopDriver(provider or make_provider(model), model, price, seed=seed).run(
                 service, system, task_text, max_session
             )
     except Exception as exc:
