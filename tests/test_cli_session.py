@@ -135,3 +135,22 @@ def test_registry_validates_names_that_compose_a_path(tmp_path):
         tmp_path / "legal_s" / "session" / "examples.jsonl"
     )
     assert examples_path("parity", "toy", tmp_path).name == "examples.jsonl"
+
+
+@pytest.mark.parametrize(
+    ("method", "extra", "message"),
+    [
+        ("B", ["--size-target", "10000"], "la taille cible est interdite pour la méthode B"),
+        ("A-program", [], "la taille cible est obligatoire pour la méthode A-program"),
+        ("A-literal", ["--size-target", "5000"], "taille cible 5000 refusée"),
+    ],
+)
+def test_session_command_refuses_invalid_size_target(
+    tmp_path, monkeypatch, capsys, claude_cwd_root, method, extra, message
+):
+    setup(tmp_path, monkeypatch, claude_cwd_root)
+    argv = args(tmp_path, "--model", "sonnet-5.5", *extra)
+    argv[argv.index("--method") + 1] = method
+    assert cli.main(argv) == 2
+    assert message in capsys.readouterr().err
+    assert not (tmp_path / "ledger.csv").exists()

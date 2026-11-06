@@ -179,16 +179,20 @@ def test_subscription_session_opens_even_when_cap_is_reached(session_env, monkey
     assert outcome.reason == "pass_budget"
 
 
-@pytest.mark.parametrize("method", ["A-literal", "A-program", "B"])
-def test_protocol_identity_across_models_and_drivers(session_env, monkeypatch, method):
-    """AD-15 : même prompt système, description, outils et budget, quel que soit le modèle."""
+@pytest.mark.parametrize(
+    ("method", "size_target"),
+    [("A-literal", 10_000), ("A-program", 10_000), ("A-program", 100_000), ("B", None)],
+)
+def test_protocol_identity_across_models_and_drivers(session_env, monkeypatch, method, size_target):
+    """AD-15 : même prompt système, description, outils et budget, quel que soit le modèle,
+    à (tâche, méthode, taille cible) égaux."""
     seen = {}
     for model in (
         fake_model(name="mimo-v2.6-pro", id="xiaomi/mimo-v2.6-pro"),
         fake_model(name="sonnet-5.5-api", id="claude-sonnet-5-5", effort="medium"),
     ):
         provider = FakeProvider([reply("fin")])
-        outcome = session_env.run(model, method=method, provider=provider)
+        outcome = session_env.run(model, method=method, provider=provider, size_target=size_target)
         request = provider.requests[0]
         assert len(request.messages) == 1
         seen[model.name] = {
@@ -198,7 +202,7 @@ def test_protocol_identity_across_models_and_drivers(session_env, monkeypatch, m
             "open": _open(outcome.run_dir),
         }
     capture = scenario(monkeypatch, session_env.tmp, {"result": {"result": "fin"}})
-    outcome = session_env.run(claude_model(), method=method)
+    outcome = session_env.run(claude_model(), method=method, size_target=size_target)
     claude = json.loads(capture.read_text("utf-8"))
     seen["sonnet-5.5"] = {
         "system": claude["system_prompt"],
@@ -207,7 +211,7 @@ def test_protocol_identity_across_models_and_drivers(session_env, monkeypatch, m
         "open": _open(outcome.run_dir),
     }
     reference = seen["sonnet-5.5"]
-    assert reference["system"] == prompt.system_prompt(method, 20)
+    assert reference["system"] == prompt.system_prompt(method, 20, size_target)
     assert reference["tools"] == [
         (t.name, t.description, t.input_schema) for t in catalogue(method)
     ]
@@ -230,6 +234,33 @@ def test_no_key_reaches_the_journal(session_env, monkeypatch):
     assert key not in text and "[secret masqué]" in text
 
 
+def _pad_to_window(manifest, weights, size_target):
+    """Ajoute des unités cachées inertes (poids nuls) à la couche 0 jusqu'à la fenêtre cible."""
+    import numpy as np
+
+    from nn_weight_writing.network import io as netio
+    from nn_weight_writing.session.tools import size_window
+
+    low, high = size_window(size_target)
+    first, last = manifest["layers"][0], manifest["layers"][1]
+    per_unit = first["in"] + 1 + last["out"]
+    extra = -(-(low - netio.n_params(manifest)) // per_unit)
+    padded = {
+        **manifest,
+        "layers": [
+            {**first, "out": first["out"] + extra},
+            {**last, "in": last["in"] + extra},
+            *manifest["layers"][2:],
+        ],
+    }
+    assert low <= netio.n_params(padded) <= high
+    weights = dict(weights)
+    weights["L0.W"] = np.pad(weights["L0.W"], ((0, 0), (0, extra)))
+    weights["L0.b"] = np.pad(weights["L0.b"], (0, extra))
+    weights["L1.W"] = np.pad(weights["L1.W"], ((0, extra), (0, 0)))
+    return padded, weights
+
+
 @pytest.mark.parametrize("task_name", ["parity", "compare", "automaton"])
 def test_toy_session_through_api_driver(tmp_path, protocol, task_name):
     """Séance jouet complète (tâche inscrite par 1-7) par le pilote API et le fournisseur `fake` :
@@ -245,6 +276,7 @@ def test_toy_session_through_api_driver(tmp_path, protocol, task_name):
     _, held = generate(task_name, seed=3, n=32, n_heldout=64, root=tmp_path)
     task = get_task(task_name)
     manifest, weights = handmade.build(task_name)
+    manifest, weights = _pad_to_window(manifest, weights, 10_000)
     writes = [
         (
             "write_weights",
@@ -273,6 +305,7 @@ def test_toy_session_through_api_driver(tmp_path, protocol, task_name):
         dataset="toy",
         examples=examples_path(task_name, "toy", tmp_path / "data"),
         method="A-literal",
+        size_target=10_000,
         model=fake_model(),
         price=TEST_PRICE,
         protocol=protocol,

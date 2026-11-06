@@ -31,6 +31,7 @@ class RefusalCode(StrEnum):
     NO_NETWORK_DECLARED = "no_network_declared"
     NETWORK_HAS_WEIGHTS = "network_has_weights"
     INVALID_WEIGHTS = "invalid_weights"
+    SIZE_OUT_OF_RANGE = "size_out_of_range"
     # Gel (AD-8).
     NO_PRODUCTION = "no_production"
     WEIGHTS_INCOMPLETE = "weights_incomplete"

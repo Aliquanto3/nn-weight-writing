@@ -1,6 +1,7 @@
 """Prompt système et description de tâche (AD-2, AD-14, AD-15).
 
-Ils ne dépendent que de la méthode, du budget de passes et du paquet de séance : ni du modèle,
+Ils ne dépendent que de la méthode, de la taille cible (A), du budget de passes et du paquet
+de séance : ni du modèle,
 ni du pilote, ni du fournisseur (test d'identité). Le prompt système est écrit dans
 `system_prompt.md` du dossier de séance, lu tel quel par les deux pilotes.
 """
@@ -10,7 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 
-from nn_weight_writing.session.tools import Method
+from nn_weight_writing.session.tools import Method, check_size_target, size_window
 from nn_weight_writing.tasks.io import Bundle
 
 SYSTEM_PROMPT_FILE = "system_prompt.md"
@@ -61,9 +62,24 @@ predict(raw) et renvoie un label ; ce n'est pas une passe.
 }
 
 
-def system_prompt(method: Method | str, pass_budget: int) -> str:
+def _size_line(size_target: int) -> str:
+    low, high = size_window(size_target)
+    exponent = len(str(size_target)) - 1
+    superscript = str(exponent).translate(str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹"))
+    window = f"[{low:,} ; {high:,}]".replace(",", " ")
+    return (
+        f"Taille visée : environ 10{superscript} paramètres ; declare_network refuse un réseau "
+        f"hors de {window}.\n"
+    )
+
+
+def system_prompt(method: Method | str, pass_budget: int, size_target: int | None = None) -> str:
     method = Method(method)
-    return _COMMON.format(pass_budget=pass_budget) + "\n" + _METHODS[method]
+    check_size_target(method, size_target)
+    text = _COMMON.format(pass_budget=pass_budget) + "\n" + _METHODS[method]
+    if size_target is not None:
+        text += "\n" + _size_line(size_target)
+    return text
 
 
 def task_message(bundle: Bundle) -> str:
