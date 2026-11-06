@@ -177,3 +177,13 @@ Branche rebasée sur `origin/main` `ad127ca` (PR #23) sans conflit avant la revu
 - Rejeté, second avis 7 : fenêtres de taille citées à tort par le second avis ; `size_window` (`session/tools.py`) rend round(N/√10) et round(N·√10), soit [3 162 ; 31 623] et [31 623 ; 316 228], conformes à la spec de 1-10a ; tailles gelées relevées (12 254 à 30 632, 98 018 à 306 302) dans ces fenêtres.
 - Vérifié, revue : exactitudes reproduites depuis `runs/1/` en lecture seule (Fable A-littéral 3517/4000, S-réservé A-programme 10^5 t2 3585/4000, A-programme 10^4 t1 2744/4000), et la voie `--par-type` des réseaux gelés coïncide avec `score_frozen` sur deux séances ; paquets S-réservé limités à `examples.jsonl` et `task.json`, sans étiquette ni `type_id`.
 - Complexité : 0 constat.
+
+### Passe 2 (2026-11-06, SHA revu 03acd22)
+
+Branche à jour sur `origin/main` `ad127ca`. Relu : `git diff c719d12..03acd22` (garde-fou `98c3c6d`, compte rendu).
+
+- Nit, low, revue : JSON du catalogue trop profond (`[` imbriqués par milliers) : `json.loads` lève `RecursionError`, non rattrapée, qui remontait de `_session` en exception au lieu d'un refus `error` motivé (échec fermé, pas de contournement). Corrigé : refus « de forme inconnue », test ajouté.
+- Nit, low, revue : `is_file()` suit les liens, un lien symbolique vers un fichier de bonne forme passait, et un lien mort (`exists()` faux) n'était pas contrôlé. Contenu lu identique à celui que lirait `claude`, donc sans contournement réel hors course entre contrôle et lancement. Corrigé : lien refusé, même mort ; test ajouté (sauté sous Windows sans privilège de lien, joué par la CI Linux et macOS). Les jonctions Windows ne visent que des dossiers, déjà refusés par `is_file()`.
+- Rejeté, revue : casse du nom (un nom voisin par la casse est hors de `MARKETPLACE_ENTRIES`, refusé par `iterdir`) ; autre fichier admis par motif (aucun : liste exacte) ; valeurs (le catalogue ne porte que des fiches publiques, l'activation passe par `installed_plugins.json` et `settings.json`, déjà contrôlés) ; coût de lecture (0,05 s pour le contrôle complet sur la configuration réelle de 2,7 Mo).
+- Vérifié : 14 dossiers refusés listés conformes à `ls runs/1/*T0622[4-5]*Z` ; sha `d34901b`, `ddd62c2`, `8351652`, `98c3c6d` présents et de libellés conformes ; mention AD-11 du plafond exacte (plafond sur le facturé). Configuration dédiée réelle toujours admise.
+- Complexité : 0 constat.

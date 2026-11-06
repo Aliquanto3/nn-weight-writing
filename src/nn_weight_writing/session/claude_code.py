@@ -157,18 +157,18 @@ def _plugin_problems(plugins: Path) -> list[str]:
         if table:
             return ["plugin installé"]
     cache = plugins / DIRECTORY_CACHE
-    if cache.exists() and not _directory_cache_ok(cache):
+    if (cache.exists() or cache.is_symlink()) and not _directory_cache_ok(cache):
         return [f"plugins/{DIRECTORY_CACHE} de forme inconnue"]
     return []
 
 
 def _directory_cache_ok(cache: Path) -> bool:
     """Catalogue des places de marché : fichier ordinaire, clés connues, rien d'installé."""
-    if not cache.is_file():
+    if cache.is_symlink() or not cache.is_file():  # lien (même mort) ou dossier refusés
         return False
     try:
         data = json.loads(cache.read_text("utf-8"))
-    except OSError, ValueError:  # JSON ou UTF-8 illisible
+    except OSError, ValueError, RecursionError:  # illisible, ou JSON trop profond
         return False
     if not isinstance(data, dict) or not set(data) <= DIRECTORY_CACHE_KEYS:
         return False

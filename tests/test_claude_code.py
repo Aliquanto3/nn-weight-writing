@@ -303,6 +303,27 @@ def test_config_dir_directory_cache_unknown_shape_refused(tmp_path, content):
     ]
 
 
+def test_config_dir_directory_cache_too_deep_refused(tmp_path):
+    deep = '{"listings": ' + "[" * 100_000 + "]" * 100_000 + "}"
+    assert _cache_problems(tmp_path, deep) == [
+        "plugins/plugin-directory-cache-v2.json de forme inconnue"
+    ]
+
+
+def test_config_dir_directory_cache_symlink_refused(tmp_path):
+    target = tmp_path / "ailleurs.json"
+    target.write_text('{"listings": []}', "utf-8")
+    plugins = tmp_path / "plugins"
+    plugins.mkdir()
+    try:
+        (plugins / "plugin-directory-cache-v2.json").symlink_to(target)
+    except OSError:
+        pytest.skip("liens symboliques non permis sur ce poste")
+    assert config_dir_problems(tmp_path) == [
+        "plugins/plugin-directory-cache-v2.json de forme inconnue"
+    ]
+
+
 def test_config_dir_directory_cache_as_directory_refused(tmp_path):
     assert _cache_problems(tmp_path, directory=True) != []
 
