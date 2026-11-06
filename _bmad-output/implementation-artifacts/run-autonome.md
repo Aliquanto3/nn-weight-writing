@@ -261,3 +261,8 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-06 22:57 · 1.10 · décision · résultat consigné : MiMo-V2.6-Pro ne tient pas S dans le budget de sortie du fournisseur (64000 et 131072, effort par défaut et medium) ; pas d'architecture MiMo à réentraîner en 1-11 ; MiMo hors du choix du modèle du lot 2 (règle des 3 points) · e9b8a95
 - 2026-11-06 22:57 · 1.10 · second-avis · lancé, moitié MiMo · e9b8a95
 - 2026-11-06 22:57 · 1.11 · second-avis · lancé, seconde partie (réentraînement Sonnet + Fable seul) · 3a7d336
+- 2026-11-06 23:04 · 1.10 · review · moitié MiMo lancée (reviewer Opus) : décisions : pas de nouvel essai silencieux sur timeout, réponse vide au classement commun des deux pilotes, troncature avec appel partiel en error, session_timeout_s appliqué au pilote API · e9b8a95
+- 2026-11-06 23:04 · 1.11 · second-avis · seconde partie : 0 high, 2 medium (mécanisme Fable 10⁵ mal désigné, conclusions causales sur un seul N), 4 low ; étanchéité, chiffres et retrain vérifiés · 3a7d336
+- 2026-11-06 23:04 · 1.11 · review · passe 1 (Sonnet) : 2 medium et 4 low corrigés (compte rendu factuel, clé de reprise avec N) ; passe 2 : relue par l'orchestrateur (texte seul), rien · 273c9d0
+- 2026-11-06 23:04 · 1.11 · CI · verte sur les trois OS (PR #25) · 273c9d0
+- 2026-11-06 23:04 · 1.11 · fusion · #25 fusionnée, MERGED vérifié ; 1-11 terminée · 785d260
