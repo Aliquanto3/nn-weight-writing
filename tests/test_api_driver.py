@@ -72,11 +72,49 @@ def test_answer_without_tool_call_ends_in_pass_budget(session_env):
     assert (outcome.reason, outcome.detail) == ("pass_budget", "l'agent a rendu la main sans geler")
 
 
-def test_empty_answer_is_error_not_pass_budget(session_env):
-    provider = FakeProvider([reply()])
+def test_empty_answer_is_pass_budget_like_claude_code(session_env):
+    # Ni texte ni outil (`stop`) : même fin que le pilote Claude Code (résultat `success`).
+    provider = FakeProvider([dataclasses.replace(reply(), stop_reason="stop")])
     outcome = session_env.run(fake_model(), method="B", provider=provider)
-    assert outcome.reason == "error"
-    assert outcome.detail == "réponse vide (end_turn) : ni texte ni appel d'outil"
+    assert (outcome.reason, outcome.detail) == ("pass_budget", "l'agent a rendu la main sans geler")
+
+
+def test_truncated_answer_with_tool_call_is_error_and_tool_not_run(session_env):
+    partial = reply(calls=[("submit_rules", '{"code": "def predict(raw):')], usage=CALL_USAGE)
+    provider = FakeProvider([dataclasses.replace(partial, stop_reason="length")])
+    outcome = session_env.run(fake_model(max_tokens=64), method="B", provider=provider)
+    assert (outcome.reason, outcome.detail) == ("error", "réponse tronquée (length) à 64 jetons")
+    records = read_journal(outcome.run_dir)
+    assert not [r for r in records if r["type"] in ("tool_call", "refusal")]
+
+
+def test_session_timeout_bounds_api_session(session_env, protocol):
+    import time
+
+    class SlowProvider(FakeProvider):
+        def complete(self, request):
+            time.sleep(0.2)
+            return super().complete(request)
+
+    fast = dataclasses.replace(protocol, session_timeout_s=0.1)
+    looping = [reply(calls=[("run_on_examples", {})], usage=CALL_USAGE) for _ in range(5)]
+    provider = SlowProvider(looping)
+    outcome = session_env.run(fake_model(), method="B", provider=provider, protocol=fast)
+    assert (outcome.reason, outcome.detail) == (
+        "error",
+        "délai de séance dépassé (0.1 s) avant le tour 2",
+    )
+    assert len(provider.requests) == 1
+    rows = ledger.read(session_env.ledger)
+    assert (rows[-1].status, rows[-1].billed_usd) == ("closed", 0.0012)
+
+
+def test_open_event_logs_max_tokens_and_call_timeout(session_env):
+    provider = FakeProvider([reply("fini")])
+    provider.timeout_s = 3600.0
+    outcome = session_env.run(fake_model(max_tokens=131072), method="B", provider=provider)
+    opened = read_journal(outcome.run_dir)[0]
+    assert (opened["max_tokens"], opened["call_timeout_s"]) == (131072, 3600.0)
 
 
 def test_session_seed_is_sent_in_every_request(session_env):
@@ -150,7 +188,10 @@ def test_provider_error_ends_in_error_and_closes_ledger(session_env):
     )
     outcome = session_env.run(fake_model(), method="B", provider=provider)
     assert outcome.reason == "error"
-    assert outcome.detail == "fournisseur fake : APIStatusError: 503 après 3 tentatives"
+    assert outcome.detail == (
+        "fournisseur fake : APIStatusError: 503 après 3 tentatives "
+        "(coût de l'appel perdu inconnu, non compté)"
+    )
     rows = ledger.read(session_env.ledger)
     assert (rows[-1].status, rows[-1].billed_usd) == ("closed", 0.0012)
 

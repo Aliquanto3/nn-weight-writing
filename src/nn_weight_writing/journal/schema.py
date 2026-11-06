@@ -37,6 +37,10 @@ class OpenEvent(Event):
     effort: str | None
     # Taille cible des séances A (story 1-10a) ; absente des journaux antérieurs, None pour B.
     size_target: int | None = None
+    # Plafond de sortie et délai par appel du pilote API (revue 1-10) ; absents des journaux
+    # antérieurs, None pour le pilote Claude Code ou un fournisseur sans délai connu.
+    max_tokens: int | None = None
+    call_timeout_s: float | None = None
 
 
 @dataclass(frozen=True)
@@ -130,7 +134,9 @@ EVENT_TYPES: dict[str, type[Event]] = {
 
 
 # Champs ajoutés après coup, avec valeur par défaut : absents des journaux plus anciens, admis.
-OPTIONAL_FIELDS = frozenset({"cache_write_1h_tokens", "size_target"})
+OPTIONAL_FIELDS = frozenset(
+    {"cache_write_1h_tokens", "size_target", "max_tokens", "call_timeout_s"}
+)
 
 
 def event_fields(cls: type[Event]) -> tuple[str, ...]:

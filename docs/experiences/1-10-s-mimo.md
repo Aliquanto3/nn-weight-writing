@@ -9,7 +9,7 @@ Date : 2026-11-06 (séances 06:03 à 07:23 UTC, en série). Lot 1, pilote API, O
 Décision d'Anaël (2026-11-06) : `max_tokens = 131072` (plafond de sortie de `xiaomi/mimo-v2.6-pro` sur OpenRouter, relevé par l'API `/models`, qui liste `seed` parmi les paramètres admis), effort medium gardé, graine de séance transmise au fournisseur. Commits (branche `exp/1-10-s-mimo`, rebasée sur `main` 8fe5c4d) :
 
 - `config/models.toml` : `max_tokens = 131072` (test `test_models_config`).
-- `4fe9975` : (b) `ChatRequest.seed`, envoyé dans le corps OpenRouter (`"seed"`), jamais lu par l'adaptateur Anthropic (test : paramètres identiques avec ou sans graine), l'empreinte du prompt système n'est pas touchée (la graine n'entre pas dans le prompt), la graine reste journalisée dans l'événement `open` ; (c) une réponse sans texte ni appel d'outil (`stop`/`end_turn`) finit en `error` (« réponse vide ... »), même classe que la troncature, parce que le protocole réserve `pass_budget` à un agent qui rend la main avec une réponse, et que `error` est déjà le code des échecs du fournisseur ; (d) délai par appel OpenRouter passé de 600 à 3600 s (`OPENROUTER_TIMEOUT_S`, `session/run.py`), pour tenir un appel de 131072 jetons (~25 à 30 min) ; `session_timeout_s = 7200` n'est appliqué qu'au pilote Claude Code, jamais au pilote API (aucun plafond de durée de séance côté API, seulement `max_session_usd`). Aucun fichier commun aux deux pilotes (`service.py`, `prompt.py`, `tools.py`, `refusals.py`) n'est touché ; `providers/types.py` gagne un champ optionnel.
+- `4fe9975` : (b) `ChatRequest.seed`, envoyé dans le corps OpenRouter (`"seed"`), jamais lu par l'adaptateur Anthropic (test : paramètres identiques avec ou sans graine), l'empreinte du prompt système n'est pas touchée (la graine n'entre pas dans le prompt), la graine reste journalisée dans l'événement `open` ; (c) une réponse sans texte ni appel d'outil classée `error` : **annulé à la revue** (voir `## Revue`), la réponse vide reste `pass_budget` sur les deux pilotes, sans changement de protocole en cours de lot ; (d) délai par appel OpenRouter passé de 600 à 3600 s (`OPENROUTER_TIMEOUT_S`, `session/run.py`), pour tenir un appel de 131072 jetons (~25 à 30 min) ; à la revue, `session_timeout_s = 7200` s'applique aussi au pilote API (contrôle avant chaque appel), et les nouvelles tentatives du SDK sont coupées (voir `## Revue`). L'essai ci-dessous a tourné avant ces correctifs (aucun délai ni nouvelle tentative ne s'y est produit). Aucun fichier commun aux deux pilotes (`service.py`, `prompt.py`, `tools.py`, `refusals.py`) n'est touché ; `providers/types.py` gagne un champ optionnel.
 - `--par-type` : celui de `main` (moitié Sonnet) est gardé, mon commit `365c268` est abandonné.
 
 ### Résultat de l'essai : `legal_s` A-programme 10⁴, tentative 1, graine 0
@@ -33,7 +33,7 @@ Décision d'Anaël (2026-11-06) : MiMo à `effort = "medium"` (aligné sur Sonne
 | B `legal_s_reserved` | 2 (1) | freeze | 1 | 3 | 34636 | 3589/4000 (89,7 %) | 0,044951 | 218 | aucun |
 | B `legal_s_reserved` | 3 (2) | freeze | 1 | 3 | 54882 | 3600/4000 (90,0 %) | 0,073558 | 391 | aucun |
 
-S-réservé, exactitude séparée (`scripts/exactitude_reserve.py --par-type`) : t2 vraies 2000/2000, 10 types connus (fausses) 1323/1334, 5 types tenus à l'écart 266/666 (39,9 %) ; t3 vraies 2000/2000, connus 1334/1334, tenus à l'écart 266/666. Le réseau B n'attrape donc que ~40 % des fausses des types jamais vus. La séance `legal_s` t3 à l'effort medium finit sans appel d'outil : réponse assistant vide avec `stop_reason: stop` après 58 909 jetons de raisonnement ; le pilote la classe `pass_budget` (agent qui rend la main), en réalité même échec que la troncature (aucun texte, aucun outil).
+S-réservé, exactitude séparée (`scripts/exactitude_reserve.py --par-type`) : t2 vraies 2000/2000, 10 types connus (fausses) 1323/1334, 5 types tenus à l'écart 266/666 (39,9 %) ; t3 vraies 2000/2000, connus 1334/1334, tenus à l'écart 266/666. Le réseau B n'attrape donc que ~40 % des fausses des types jamais vus. La séance `legal_s` t3 à l'effort medium finit sans appel d'outil : réponse assistant vide avec `stop_reason: stop` après 58 909 jetons de raisonnement ; le pilote la classe `pass_budget` (agent qui rend la main), en réalité un échec du modèle (aucun texte, aucun outil), classé comme une fin sans gel ; ce classement, commun aux deux pilotes, est gardé (revue) et le statut journalisé n'est pas réécrit.
 
 Moyenne et écart entre tentatives : `legal_s` B : aucune tentative gelée (0/3). `legal_s_reserved` B : exactitude 89,9 % en moyenne (89,7 ; 90,0), écart 0,3 point (2 gelées sur 3).
 
@@ -49,14 +49,14 @@ Option `--size-target` 10000 (fenêtre [3162 ; 31623]) ou 100000. Seules les tro
 
 - Cases B : 2 gels sur 6, tous deux sur S-réservé ; `legal_s` B 0/3 gelée. Cases A : 0/3 gelée sur les 3 jouées.
 - Facturé de l'étape 2 : 0,508904 $ ; étape 1 (annexe) : 0,359066 $ ; total de la moitié MiMo : 0,867970 $ (plafond 15 $).
-- L'effort medium n'a pas supprimé les troncatures (5 séances sur 9 à 64000 jetons ; 1 réponse vide à 58909) : les coûts des séances tronquées sont identiques à l'étape 1 (0,057379 $ et 0,055723 $), ce qui suggère des entrées et des sorties de même taille, `reasoning.effort` ne plafonnant pas le raisonnement chez Xiaomi. La graine n'est pas envoyée au fournisseur (`sampling` vide) : les tentatives ne sont pas indépendantes par la graine.
+- L'effort medium n'a pas supprimé les troncatures (6 séances sur 9 tronquées à 64000 jetons, 3 B et 3 A ; 1 réponse vide à 58909) : les coûts des séances tronquées sont identiques à l'étape 1 (0,057379 $ et 0,055723 $), ce qui suggère des entrées et des sorties de même taille, `reasoning.effort` ne plafonnant pas le raisonnement chez Xiaomi. La graine n'est pas envoyée au fournisseur aux étapes 1 et 2 (`sampling` vide, champ `seed` absent du corps) : le champ `seed` de leurs événements `open` dit la graine de séance prévue, pas une graine reçue par le modèle ; les journaux ne sont pas réécrits. Seul l'essai de l'étape 3 l'envoie.
 - Séances signalées par drapeau d'audit : aucune.
 - Défauts du harnais : aucun correctif de code commun. `--par-type` ajouté à `scripts/exactitude_reserve.py` (commit `365c268`), absent de `main`.
 
 ## Graines et jeux
 
 - Jeux : `nnww datagen legal --seed 0` ; jeux de séance `data/<tâche>/session/` (40 exemples), réservés `heldout/<tâche>/eval/` (4 000), non commités.
-- Commande : `nnww session --task <tâche> --dataset session --method B --model mimo-v2.6-pro --attempt N --seed N --lot 1`. Graine de séance = numéro de tentative (1, 2, 3).
+- Commande : `nnww session --task <tâche> --dataset session --method B --model mimo-v2.6-pro --attempt N --seed N --lot 1`. Graine de séance : numéro de tentative (1, 2, 3) à l'étape 1, numéro de tentative moins 1 (0, 1, 2) aux étapes 2 et 3.
 
 ## Annexe 1 : 64000 jetons, effort par défaut (étape 1)
 
@@ -90,3 +90,17 @@ Aucune.
 ## Ce qui reste
 
 - Toutes les cases A et B de MiMo sur S : bloquées par la troncature à 131 072 jetons. Pistes pour Anaël : effort `low` ou `minimal`, autre fournisseur ou autre mode de raisonnement, ou retenir le résultat (MiMo hors d'état de tenir S) pour la sélection du modèle.
+
+## Revue
+
+### Passe 1 (2026-11-06, SHA revu e9b8a95)
+
+Base à jour (`main` 8fe5c4d). Constats du second avis (Haiku), décisions de l'orchestrateur :
+
+- Important, medium, second avis 1 : le SDK réessayait un délai dépassé ou une erreur après envoi (`max_retries=3`, jusqu'à 4 × 3600 s), sans `model_call` ni coût journalisé pour l'appel perdu. Corrigé : `max_retries=0` par défaut sur OpenRouter et sur Anthropic (même défaut) ; le détail de fin `error` dit « coût de l'appel perdu inconnu, non compté ». Le SDK ne sépare pas proprement les erreurs de connexion avant envoi, d'où aucun nouvel essai du tout. Tests `test_adapters_do_not_retry_by_default`, `test_provider_error_ends_in_error_and_closes_ledger`.
+- Important, medium, second avis 2 : la réponse vide passait en `error` sur le pilote API seul (4fe9975), changement de protocole sans décision. Corrigé : retour à `pass_budget`, même classement que le pilote Claude Code ; la séance B `legal_s` t3 de l'étape 2 garde son statut. Test `test_empty_answer_is_pass_budget_like_claude_code`.
+- Nit, low, second avis 3 : une réponse tronquée avec un appel d'outil partiel n'était pas classée `error`, et l'outil était exécuté. Corrigé : toute troncature finit en `error`, sans exécuter l'outil. Test `test_truncated_answer_with_tool_call_is_error_and_tool_not_run`.
+- Nit, low, second avis 4 : `max_tokens` et le délai par appel non journalisés. Corrigé : champs optionnels `max_tokens` et `call_timeout_s` de l'événement `open` (dans `OPTIONAL_FIELDS`, `None` pour Claude Code, anciens journaux lisibles). Test `test_open_event_logs_max_tokens_and_call_timeout`.
+- Nit, low, second avis 5 : `seed` journalisé mais non transmis aux étapes 1 et 2. Pas de réécriture des journaux ; le compte rendu le précise (synthèse de l'étape 2).
+- Nit, low, second avis 6 : aucune borne de durée pour une séance API. Corrigé : `session_timeout_s` contrôlé avant chaque appel au modèle, fin `error` (« délai de séance dépassé »), comme le pilote Claude Code ; un appel en cours n'est pas interrompu (borne réelle : `session_timeout_s` + un délai d'appel). Test `test_session_timeout_bounds_api_session`. Le commentaire de `config/protocol.toml` n'est pas modifié : `protocol_sha256` hache le fichier brut, et le changer en cours de lot donnerait deux empreintes de protocole au lot 1 ; la portée est dite dans `api_driver.py`. Décision laissée à l'orchestrateur.
+- Nit, low, relecture : le compte rendu comptait « 5 séances sur 9 » tronquées à l'étape 2 (6 en réalité : 3 B, 3 A) et donnait les graines de l'étape 1 pour toutes les étapes. Corrigé. Chiffres de coût recoupés avec `budget/ledger.csv` : exacts.

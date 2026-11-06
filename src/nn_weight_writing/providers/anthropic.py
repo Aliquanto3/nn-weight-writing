@@ -1,7 +1,8 @@
 """Adaptateur `anthropic` (AD-10) : SDK `anthropic`, cache de prompt ; repli du pilote Claude Code.
 
 Points de cache : le prompt système, le dernier outil et le dernier bloc de la conversation.
-Les nouvelles tentatives sur erreur transitoire sont celles du SDK (`max_retries`).
+Aucune nouvelle tentative par défaut (`max_retries=0`) : un délai dépassé ou une erreur après envoi
+peut avoir été facturé sans `model_call` ni coût journalisé ; la séance finit en `error`.
 """
 
 from __future__ import annotations
@@ -122,13 +123,14 @@ class AnthropicProvider:
         *,
         api_key: str | None = None,
         http_client: Any = None,
-        max_retries: int = 3,
+        max_retries: int = 0,
         timeout_s: float = 600.0,
         base_url: str | None = None,
     ) -> None:
         key = api_key or os.environ.get(KEY_VAR)
         if not key:
             raise ProviderError(f"{KEY_VAR} absente de l'environnement")
+        self.timeout_s = timeout_s
         self._client = anthropic.Anthropic(
             api_key=key,
             http_client=http_client,

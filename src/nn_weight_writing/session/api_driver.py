@@ -3,7 +3,8 @@
 Chaque réponse devient un `model_call` (usage, deux coûts, échange) transmis au service d'outils,
 seul écrivain du journal ; chaque appel d'outil passe par `ToolService.call`. Fins : gel
 (`frozen`), réponse sans appel d'outil (`pass_budget`, AD-6), plafond de séance atteint
-(`money_budget`), plafond de tours (`turn_limit`), erreur du fournisseur (`error`).
+(`money_budget`), plafond de tours (`turn_limit`), erreur du fournisseur, réponse tronquée ou
+délai de séance (`session_timeout_s`, contrôlé avant chaque appel) dépassé (`error`).
 """
 
 from __future__ import annotations
@@ -105,7 +106,13 @@ class ApiLoopDriver:
         tools = catalogue(service.method)
         messages: list[Message] = [Message("user", (TextPart(task_text),))]
         sent = 0
+        timeout_s = service.config.session_timeout_s
+        session_start = time.monotonic()
         for turn in range(1, service.config.turn_limit + 1):
+            if time.monotonic() - session_start >= timeout_s:
+                return EndReason.ERROR, (
+                    f"délai de séance dépassé ({timeout_s:g} s) avant le tour {turn}"
+                )
             request = ChatRequest(
                 model=self.model.id,
                 system=system,
@@ -120,7 +127,11 @@ class ApiLoopDriver:
             try:
                 response = self.provider.complete(request)
             except Exception as exc:  # noqa: BLE001 - toute panne du fournisseur clôt en erreur
-                return EndReason.ERROR, f"fournisseur {self.provider.name} : {exc}"
+                # Pas de nouvelle tentative : l'appel perdu a pu être facturé, sans usage connu.
+                return EndReason.ERROR, (
+                    f"fournisseur {self.provider.name} : {exc} "
+                    "(coût de l'appel perdu inconnu, non compté)"
+                )
             exchange = {
                 "turn": turn,
                 "sent": [message_to_json(m) for m in messages[sent:]],
@@ -137,19 +148,16 @@ class ApiLoopDriver:
             sent = len(messages)
             if max_session_usd > 0 and service.totals["billed_usd"] >= max_session_usd:
                 return EndReason.MONEY_BUDGET, f"plafond de séance {max_session_usd:.6f} $ atteint"
-            if not response.message.tool_calls and response.stop_reason in TRUNCATED_STOPS:
-                # Réponse coupée par `max_tokens` (raisonnement non rendu compris) : ce n'est pas
+            if response.stop_reason in TRUNCATED_STOPS:
+                # Réponse coupée par `max_tokens` (raisonnement non rendu compris), avec ou sans
+                # appel d'outil (arguments possiblement partiels, non exécutés) : ce n'est pas
                 # l'agent qui rend la main ; séance perdue par le harnais, à rejouer (AD-14).
                 return EndReason.ERROR, (
                     f"réponse tronquée ({response.stop_reason}) à {self.model.max_tokens} jetons"
                 )
-            if not response.message.tool_calls and not response.message.text.strip():
-                # Réponse vide (raisonnement non rendu, `stop`) : ni texte ni outil, même échec
-                # qu'une troncature, pas un agent qui rend la main.
-                return EndReason.ERROR, (
-                    f"réponse vide ({response.stop_reason}) : ni texte ni appel d'outil"
-                )
             if not response.message.tool_calls:
+                # Réponse vide comprise (ni texte ni outil) : même classement que le pilote
+                # Claude Code, une fin sans gel (protocole inchangé en cours de lot, revue 1-10).
                 return EndReason.PASS_BUDGET, "l'agent a rendu la main sans geler"
             for call in response.message.tool_calls:
                 result = service.call(call.name, decode_arguments(call.arguments))

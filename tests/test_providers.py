@@ -132,7 +132,19 @@ def test_openrouter_call_through_sdk_normalizes_usage():
     assert sent["usage"] == {"include": True} and sent["model"] == "xiaomi/mimo-v2.6-pro"
 
 
-def test_openrouter_retries_transient_errors_in_the_adapter():
+def test_adapters_do_not_retry_by_default():
+    # Un délai ou une erreur après envoi a pu être facturé : aucune nouvelle tentative (revue 1-10).
+    seen: list = []
+    ok = chat_completion({"prompt_tokens": 10, "completion_tokens": 2}, content="fin")
+    client = transport([(503, {"error": {"message": "surcharge"}}), (200, ok)], seen)
+    provider = OpenRouterProvider(api_key=KEY, http_client=client)
+    with pytest.raises(ProviderError, match="InternalServerError"):
+        provider.complete(request())
+    assert len(seen) == 1
+    assert AnthropicProvider(api_key=KEY)._client.max_retries == 0
+
+
+def test_openrouter_retries_transient_errors_when_asked():
     seen: list = []
     ok = chat_completion({"prompt_tokens": 10, "completion_tokens": 2}, content="fin")
     client = transport([(503, {"error": {"message": "surcharge"}}), (200, ok)], seen)

@@ -1,8 +1,9 @@
 """Adaptateur `openrouter` (AD-10) : chat completions compatible OpenAI, SDK `openai`, `base_url`.
 
 Le fournisseur sous-jacent est fixé (`provider.order`, `allow_fallbacks: false`) pour garder le
-cache et un prix stable (constat 1-2). Les nouvelles tentatives sur erreur transitoire (429, 5xx,
-réseau) sont celles du SDK (`max_retries`).
+cache et un prix stable (constat 1-2). Aucune nouvelle tentative par défaut (`max_retries=0`) :
+un délai dépassé ou une erreur après envoi peut avoir été facturé sans `model_call` ni coût
+journalisé ; la séance finit en `error` (revue 1-10).
 """
 
 from __future__ import annotations
@@ -128,12 +129,13 @@ class OpenRouterProvider:
         api_key: str | None = None,
         base_url: str = BASE_URL,
         http_client: Any = None,
-        max_retries: int = 3,
+        max_retries: int = 0,
         timeout_s: float = 600.0,
     ) -> None:
         key = api_key or os.environ.get(KEY_VAR)
         if not key:
             raise ProviderError(f"{KEY_VAR} absente de l'environnement")
+        self.timeout_s = timeout_s
         self.provider_order = tuple(provider_order)
         self._client = openai.OpenAI(
             api_key=key,

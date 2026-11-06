@@ -101,6 +101,8 @@ class OpenInfo:
     sampling: dict = field(default_factory=dict)
     effort: str | None = None
     size_target: int | None = None
+    max_tokens: int | None = None
+    call_timeout_s: float | None = None
 
 
 class ToolRefusal(Exception):
@@ -173,6 +175,8 @@ class ToolService:
                 seed=info.seed,
                 pass_budget=self.config.pass_budget,
                 size_target=info.size_target,
+                max_tokens=info.max_tokens,
+                call_timeout_s=info.call_timeout_s,
                 protocol_sha256=self.config.protocol_sha256,
                 system_prompt_sha256=info.system_prompt_sha256,
                 sampling=dict(info.sampling),
