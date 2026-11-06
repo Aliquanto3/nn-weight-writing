@@ -129,7 +129,8 @@ def run_session(
     except Exception as exc:
         detail = f"{type(exc).__name__}: {exc}"
         if service is not None and not service.ended:
-            service.end(EndReason.ERROR, detail)
+            # Production déjà gelée : la séance reste `frozen`, la cause est consignée.
+            service.end(EndReason.FROZEN if service.frozen else EndReason.ERROR, detail)
         raise
     finally:
         totals = service.totals if service is not None else {}

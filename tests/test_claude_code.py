@@ -9,7 +9,7 @@ import subprocess
 import time
 
 import pytest
-from conftest import claude_model, read_journal, scenario
+from conftest import TEST_PRICE, claude_model, read_journal, scenario
 
 from nn_weight_writing.budget import ledger
 from nn_weight_writing.session import prompt
@@ -332,6 +332,93 @@ def test_init_problems():
         "commandes chargées : ['/review']",
         "plugins tiers : ['superpowers']",
     ]
+    builtin = ["claude", "Explore", "general-purpose", "Plan", "statusline-setup"]
+    assert init_problems({**good, "agents": builtin}, names) == []
+    assert init_problems({**good, "agents": [*builtin, "relecteur"]}, names) == [
+        "agents hors intégrés : ['relecteur']"
+    ]
+
+
+def test_config_dir_skills_file_refused(tmp_path):
+    (tmp_path / "skills").write_text("x", "utf-8")
+    assert config_dir_problems(tmp_path) == ["skills présent"]
+
+
+def test_config_dir_installed_plugins_not_utf8_refused(tmp_path):
+    (tmp_path / "plugins").mkdir()
+    (tmp_path / "plugins" / "installed_plugins.json").write_bytes(bytes([0xFF, 0xFE, 0x7B]))
+    assert config_dir_problems(tmp_path) == ["plugin installé"]
+
+
+def test_session_cost_reconciled_with_result_usage_and_1h_cache(session_env, monkeypatch):
+    """Flux réel de Claude Code : `output_tokens` partiels dans les événements `assistant`, cache
+    écrit en tranche d'une heure, total exact dans `result.usage` (arrivé après le gel)."""
+    price = dataclasses.replace(TEST_PRICE, cache_write_1h=2.0)
+    turns = [
+        {
+            "id": "msg_1",
+            "usage": {
+                "input_tokens": 3,
+                "output_tokens": 5,
+                "cache_read_input_tokens": 0,
+                "cache_creation_input_tokens": 1000,
+                "cache_creation": {
+                    "ephemeral_5m_input_tokens": 0,
+                    "ephemeral_1h_input_tokens": 1000,
+                },
+            },
+            "calls": [["submit_rules", {"code": RULES}]],
+        },
+        {
+            "id": "msg_2",
+            "usage": {"input_tokens": 2, "output_tokens": 4, "cache_read_input_tokens": 1000},
+            "calls": [["run_on_examples", {}], ["freeze", {}]],
+        },
+        # Message après le gel (texte de fin) : compté, le journal est encore ouvert.
+        {"id": "msg_3", "usage": {"input_tokens": 1, "output_tokens": 1}, "text": "Gelé."},
+    ]
+    final = {
+        "input_tokens": 6,
+        "output_tokens": 900,
+        "cache_read_input_tokens": 2000,
+        "cache_creation_input_tokens": 1200,
+        "cache_creation": {"ephemeral_5m_input_tokens": 0, "ephemeral_1h_input_tokens": 1200},
+    }
+    result = {"usage": final, "total_cost_usd": 0.0042}
+    scenario(monkeypatch, session_env.tmp, {"turns": turns, "result": result})
+    outcome = session_env.run(claude_model(), method="B", price=price)
+    records = read_journal(outcome.run_dir)
+    assert outcome.reason == "frozen"
+    assert types_of(records)[-3:] == ["model_call", "model_call", "end"]
+    calls = [r for r in records if r["type"] == "model_call"]
+    # msg_1 : 3×1 + 5×2 + 1000×2 (tranche 1 h) = 2013 µ$.
+    assert calls[0]["cache_write_1h_tokens"] == 1000 and calls[0]["cost_equiv_usd"] == 0.002013
+    last = calls[-1]
+    assert last["exchange"]["reconciliation"] == "result.usage"
+    assert last["exchange"]["total_cost_usd"] == 0.0042
+    # Écart : entrée 6-6, sortie 900-10, lecture 2000-1000, écriture 1200-1000 (1 h).
+    assert (last["input_tokens"], last["output_tokens"]) == (0, 890)
+    assert (last["cache_read_tokens"], last["cache_write_tokens"]) == (1000, 200)
+    assert last["cache_write_1h_tokens"] == 200
+    totals = records[-1]["totals"]
+    assert (totals["output_tokens"], totals["cache_write_tokens"]) == (900, 1200)
+    # Total de séance = `result.usage` au tarif : 6×1 + 900×2 + 2000×0,1 + 1200×2 = 4406 µ$.
+    assert totals["cost_equiv_usd"] == 0.004406 == outcome.cost_equiv_usd
+    rows = ledger.read(session_env.ledger)
+    assert rows[-1].cost_equiv_usd == 0.004406
+
+
+def test_tool_call_after_freeze_refused_and_not_journaled(session_env, monkeypatch):
+    turns = [
+        *FREEZE_TURNS,
+        {"id": "msg_3", "usage": {"input_tokens": 1}, "calls": [["run_on_examples", {}]]},
+    ]
+    scenario(monkeypatch, session_env.tmp, {"turns": turns})
+    outcome = session_env.run(claude_model(), method="B")
+    records = read_journal(outcome.run_dir)
+    tools = [r["tool"] for r in records if r["type"] == "tool_call"]
+    assert tools == ["submit_rules", "run_on_examples", "freeze"]
+    assert outcome.reason == "frozen" and records[-1]["type"] == "end"
 
 
 def test_successful_answer_mentioning_rate_limit_is_not_usage_limit(session_env, monkeypatch):

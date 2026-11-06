@@ -49,6 +49,8 @@ class ModelCallEvent(Event):
     provider_cost: float | None
     duration_s: float
     exchange: dict
+    # Part de `cache_write_tokens` en tranche d'une heure (pilote Claude Code) ; optionnel.
+    cache_write_1h_tokens: int = 0
 
 
 @dataclass(frozen=True)
@@ -123,6 +125,10 @@ EVENT_TYPES: dict[str, type[Event]] = {
         EndEvent,
     )
 }
+
+
+# Champs ajoutés après coup, avec valeur par défaut : absents des journaux plus anciens, admis.
+OPTIONAL_FIELDS = frozenset({"cache_write_1h_tokens"})
 
 
 def event_fields(cls: type[Event]) -> tuple[str, ...]:
