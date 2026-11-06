@@ -251,6 +251,8 @@ def test_config_dir_plugins_cache_only_admitted(tmp_path):
     assert config_dir_problems(tmp_path) == []  # cache de place de marché seul
     (plugins / "installed_plugins.json").write_text('{"version": 2, "plugins": {}}', "utf-8")
     assert config_dir_problems(tmp_path) == []  # table vide
+    (plugins / "plugin-directory-cache-v2.json").write_text('{"listings": []}', "utf-8")
+    assert config_dir_problems(tmp_path) == []  # catalogue des places de marché
 
 
 def test_config_dir_synced_account_copies_admitted(tmp_path):

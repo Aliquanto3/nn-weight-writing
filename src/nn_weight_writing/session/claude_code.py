@@ -64,7 +64,14 @@ HARMLESS_SETTINGS_KEYS = frozenset({"$schema", "theme"})
 # `plugins/` : fichiers et dossiers que Claude Code crée de lui-même à la connexion (liste et
 # cache des places de marché, sans plugin installé).
 MARKETPLACE_ENTRIES = frozenset(
-    {"known_marketplaces.json", "marketplaces", "installed_plugins.json", "store", "synced"}
+    {
+        "known_marketplaces.json",
+        "marketplaces",
+        "installed_plugins.json",
+        "plugin-directory-cache-v2.json",  # catalogue des places de marché, recréé par `claude -p`
+        "store",
+        "synced",
+    }
 )
 # `skills/` : seul `synced` (copie des skills du compte claude.ai que Claude Code recrée à chaque
 # lancement, sans réglage `syncClaudeAiSkills: false`). Elle n'est pas chargée :
