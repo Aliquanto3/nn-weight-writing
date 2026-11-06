@@ -253,3 +253,7 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-06 18:08 · 1.10 · CI · rouge Linux et macOS (PR #24) : test de JSON trop profond dépendant de la pile ; correctif de profondeur explicite lancé (dev-story Sonnet) · acc13e6
 - 2026-11-06 18:12 · 1.10 · CI · verte sur les trois OS après profondeur maximale explicite (32, catalogue réel à 7) · 0cdab32
 - 2026-11-06 18:12 · 1.10 · fusion · #24 fusionnée (moitié Sonnet + Fable), MERGED vérifié · 8fe5c4d
+- 2026-11-06 22:29 · 1.10 · report · moitié MiMo arrêtée de 08:31 à 17:52 (relance reçue tard), reprise en effort medium · 6313c1d
+- 2026-11-06 22:29 · 1.10 · dev · moitié MiMo, effort medium : 9 séances, 4 tronquées à 64000, 1 réponse vide (classée pass_budget à tort), 2 B gelées sur S-réservé (89,7 et 90,0 %) ; 3 A-program 1e4 tronquées → arrêt ; 0,868 $ facturés au total · b74d8e3
+- 2026-11-06 22:29 · 1.10 · décision · Anaël : essai de MiMo à max_tokens 131072 (plafond OpenRouter), effort medium, graine transmise au fournisseur ; une séance d'essai A-program 1e4 ; si elle gèle, toute la moitié MiMo rejouée dans ce réglage, sinon MiMo arrêté sur S et consigné comme résultat · —
+- 2026-11-06 22:29 · 1.10 · dev · relancé, moitié MiMo : correctifs (131072, seed, réponse vide) puis séance d'essai · b74d8e3
