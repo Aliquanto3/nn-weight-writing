@@ -30,6 +30,7 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 
 ## Contrats partagés en cours
 
+- Budget de passes figé : `pass_budget = 20` (décision 1-8 du 2026-11-06), à ne plus changer dans le lot.
 - 1-5 pose les modules partagés de la spine (`journal/schema.py`, `session/refusals.py`, `session/tools.py`, `network/manifest.schema.json`, `evaluation/schema.py`) ; 1-6 et 1-2 les importent sans les redéfinir.
 
 ## Brief
@@ -184,3 +185,9 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-06 05:38 · 1.3 · attente humaine · version des CGU Judilibre acceptée et quotas affichés dans le compte PISTE (condition 5 de r_republish, avant 1-14) · 050cc3a
 - 2026-11-06 05:45 · 1.8 · review · passe 1 : 3 medium corrigés (cache 1 h tarifé à part, journal Claude Code gardé ouvert jusqu'à result et réconcilié avec result.usage, équivalents réels 0,828 $ contre 0,422 $ au compte rendu), 4 low corrigés (dont agents intégrés seuls admis à l'init), 2 rejetés ; tarif 1 h de Fable à confirmer · ad0295f
 - 2026-11-06 05:45 · 1.8 · review · passe 2 lancée (Opus : close_on_freeze touche le cœur du protocole) · ad0295f
+- 2026-11-06 05:52 · 1.8 · review · passe 2 : 0 Important, 1 low corrigé (tests de gel tenu après délai ou exception), 1 rejeté, 1 pre-existing noté · dacc7c0
+- 2026-11-06 05:52 · 1.8 · CI · verte sur les trois OS (PR #17) · dacc7c0
+- 2026-11-06 05:52 · 1.8 · fusion · #17 fusionnée (moitié Sonnet), MERGED vérifié ; 1-8 terminée · d142d3d
+- 2026-11-06 05:52 · 1.8 · décision · recalibrage unique du budget de passes : pass_budget = 20 conservé et figé pour toutes les séances mesurées (tous modèles, toutes tâches, A et B). Motifs : 18 cases sur 18 gelées, maximum 3 passes (15 %), moyenne 0,94, aucune fin pass_budget ; le jouet ne donne qu'une borne basse et S est bien plus dur ; une valeur haute ne coûte rien quand la tâche est facile. Une case de S finie en pass_budget se lit « budget atteint » · d142d3d
+- 2026-11-06 05:52 · 1.8 · report · à vérifier sur la première séance réelle suivante (1-10) : end.totals.cost_equiv_usd égale result.total_cost_usd ; tarif d'écriture de cache 1 h de Fable 5.1 (20 $/Mtok) à confirmer · d142d3d
+- 2026-11-06 05:52 · 1.9 · dev · spec de story lancée avant le code (general-purpose Opus, worktree 1-9) : format des références, 15 types, faits juridiques vérifiés, encodeur ; relue par second-avis avant dev-story · 6990ff8
