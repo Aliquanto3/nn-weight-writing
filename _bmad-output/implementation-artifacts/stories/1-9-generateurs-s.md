@@ -1,7 +1,7 @@
 ---
 story: "1-9"
 title: Générateurs de S et S-réservé
-status: ready-for-dev
+status: review
 branch: feat/1-9-generateurs-s
 ---
 
@@ -21,6 +21,22 @@ Cette spec tranche toutes les décisions : l'implémentation n'invente ni format
 - Chaque type porte son identifiant et son statut (attesté ou reconstruit) dans les métadonnées du générateur ; `type_id` dans `labels.jsonl`.
 - Test obligatoire : la description de tâche de S-réservé ne nomme aucun des 5 types tenus à l'écart et n'en emploie pas le vocabulaire.
 
+## Décisions de relecture (orchestrateur, 2026-11-06)
+
+Issues du second avis sur cette spec. Elles prévalent sur le texte des sections D1 à D8 là où elles diffèrent (les sections concernées sont alignées ci-dessous).
+
+- **O1** (orchestrateur, 2026-11-06) : `--dataset` de `nnww session` ne se garde pas par un nom `train`, contournable par un chemin (`../../heldout/legal_s/eval`). Tout nom de jeu (et de tâche) qui compose un chemin est validé par `^[a-z0-9_]+$` (`tasks/registry.py`, `examples_path` et ses appelants, `datasets/toy.generate`) : aucun séparateur, aucun `..`. `nnww session` n'accepte en plus que la liste blanche des jeux de séance de la tâche (`TaskSpec.session_datasets` : `session` pour `legal_s` et `legal_s_reserved`, `toy` pour les jouets, nom actuel gardé). `train` garde son message dédié (code 2). Les jeux de séance de test nommés `toy-dev` deviennent `toy`.
+- **O2** (orchestrateur, 2026-11-06) : l'écart pourvoi (ou appel) – décision des vraies suit la distribution observée de `facts.toml` jusqu'à son maximum observé, pas 0–4 : Cour de cassation 0 à 6 ans, cours d'appel 0 à 8 ans (poids de queue minuscules). Les seuils de t08 et t13 restent à 10 ans ou plus. La ligne de `facts.toml` « aucune vraie entre 5 et 9 ans » est supprimée. Test : des vraies à 5 et 6 ans existent dans un grand tirage.
+- **O3** (orchestrateur, 2026-11-06) : t12, la moitié « fête légale » ne tire que les fêtes mobiles (lundi de Pâques, Ascension) ; lundi de Pentecôte exclu comme avant. Les fêtes fixes ne servent qu'au vérificateur (une vraie n'y tombe jamais). L'autre moitié (dimanche) est inchangée.
+- **O4** (orchestrateur, 2026-11-06) : identifiants d'encodeur `legal.chars@1` et `legal.fields@1` gardés (famille `legal`, nécessaire au transfert S → S-réservé → R). **Amendement de AD-4** : « une famille de tâches au même encodage déclare `{famille}.{encodeur}@{version}` ; la tâche reste dans le manifeste ». `dataset.json` porte la tâche. Le manifeste gelé d'une séance est de format fermé (AD-3) : plutôt que de l'étendre, l'évaluation (`evaluation/score.py`, `score_frozen`) lit la tâche de la séance (premier événement `open` du journal) ou du témoin (`run.json`, nouveau champ `task` de `RunRecord`, écrit par `freeze_run`) et refuse un réseau dont la tâche diffère de celle du jeu évalué (`ValueError`), en plus du contrôle de l'encodeur. L'option d'évaluation croisée journalisée (réseau de S évalué sur S-réservé ou R) n'est pas implémentée : **laissée à 1-14**.
+- **O5** (orchestrateur, 2026-11-06) : le test de `easter` compare à une table écrite à la main, indépendante du module (2008-03-23, 2011-04-24, 2015-04-05, 2019-04-21, 2020-04-12, 2024-03-31, 2025-04-20, 2026-04-05) et à un second algorithme écrit dans le test (Meeus/Jones/Butcher) pour 2001 à 2029.
+- **O6** (orchestrateur, 2026-11-06) : t15, le vérificateur n'applique les règles de jour (t12 et voisines) qu'aux dates valides ; un 29 février non bissextile ne viole que t15. Pas de redessin biaisé du tirage de t15.
+- **O7** (orchestrateur, 2026-11-06) : `legal.fields@1`, les années (indices 2 246 et 2 248) sont normalisées par `(année − 1980) / 50`, bornées à [0, 1].
+- **O8** (orchestrateur, 2026-11-06) : D1, règle de rédaction des sièges corrigée : noms officiels de la taxonomie gardés tels quels (« Saint-Denis de la Réunion » compris).
+- **O9** (orchestrateur, 2026-11-06) : `test_order_and_ids_do_not_leak_label` est déterministe à graine fixe : mélange par le flux du jeu ; pour la graine 0, les labels ne sont ni triés ni strictement alternés.
+- **O10** (orchestrateur, 2026-11-06) : numéro d'ordre des cours d'appel étendu à l'échantillon (21 304 observé) : plage [1, 24999], pour qu'un numéro de 20 000 ou plus ne devienne pas un indice de classe pour R.
+- **À confirmer par Anaël** : part de 45 % de la Cour de cassation dans les fausses de S-réservé (D6), et phrase propre à S-réservé de la description (D7). Gardées telles quelles.
+
 ## D1 — Format des références
 
 **Un seul style, abrégé, canonique**, que le normaliseur de R (1-13) produira à l'identique pour ses vraies et ses fausses :
@@ -34,7 +50,7 @@ Cette spec tranche toutes les décisions : l'implémentation n'invente ni format
 - `{date}` : `{jour} {mois} {année}`, jour sans zéro initial et `1er` pour le 1, mois en minuscules (`janvier février mars avril mai juin juillet août septembre octobre novembre décembre`), année sur 4 chiffres. `n° ` s'écrit avec le signe degré U+00B0 et une espace.
 - Chambres de la Cour de cassation : `civ. 1re`, `civ. 2e`, `civ. 3e`, `com.`, `soc.`, `crim.`, `ch. mixte`, `ass. plén.`.
 - Formations du Conseil d'État : `Ass.`, `Sect.`, `{k}e ch.` ou `{k}e sous-sect.` pour k de 1 à 10 (`1re ch.`, `1re sous-sect.` pour k = 1).
-- Sièges de cour d'appel : noms de `facts.toml` (`[cours_appel]`), sans « de » ni « d' ».
+- Sièges de cour d'appel : noms officiels de `facts.toml` (`[cours_appel]`), tels quels (O8).
 
 **Champs gardés : juridiction, formation (ou siège), date, numéro.** Motifs (mesures Judilibre du 2026-11-06, `facts.toml` `[excluded_fields]`) :
 
@@ -64,7 +80,7 @@ Une vraie référence ne viole aucune règle ; une fausse en viole **exactement 
 | t09 | `court_appeal_after_judgment` | reconstruit | ca | AA du numéro = année de l'arrêt + k, k ∈ [1, 3] | année de l'appel > année de l'arrêt | **tenu à l'écart** |
 | t10 | `malformed_number` | reconstruit | toutes | numéro remplacé par une malformation tirée uniformément (table ci-dessous) | le numéro ne suit aucun des trois motifs | connu |
 | t11 | `foreign_number_format` | reconstruit | toutes | numéro tiré au format valide d'une des deux autres juridictions, choisie uniformément (AA cohérent avec la date : écart tiré comme pour une vraie) | le numéro suit le motif d'une autre juridiction | **tenu à l'écart** |
-| t12 | `non_working_day` | reconstruit | toutes | moitié : un dimanche de la fenêtre ; moitié : une fête légale de la fenêtre qui ne tombe pas un dimanche, lundi de Pentecôte exclu ; autres champs tirés pour cette date | date valide, et dimanche ou l'une des 11 fêtes légales (lundi de Pentecôte compris) | **tenu à l'écart** |
+| t12 | `non_working_day` | reconstruit | toutes | moitié : un dimanche de la fenêtre ; moitié : un lundi de Pâques ou un jeudi de l'Ascension de la fenêtre (O3) ; autres champs tirés pour cette date | date valide, et dimanche ou l'une des 11 fêtes légales (lundi de Pentecôte compris) | **tenu à l'écart** |
 | t13 | `court_appeal_too_old` | reconstruit (remplace « solution ») | ca | écart entre l'année de l'arrêt et celle de l'appel tiré dans [10, 15] | année de l'arrêt − année de l'appel ≥ 10 | connu |
 | t14 | `series_chamber_mismatch` | reconstruit (remplace « publication ») | cc | chambre tirée parmi les 6 non exemptées ; numéro d'ordre NN.NNN tiré dans [10000, 79999] pour `crim.`, dans [80000, 89999] pour une chambre civile | chambre civile (`civ. 1re` à `soc.`) et NNNNN ≥ 80000, ou `crim.` et NNNNN < 80000 | connu |
 | t15 | `feb29_non_leap` | reconstruit (remplace « ECLI ») | toutes | date = 29 février d'une année non bissextile tirée uniformément dans [2001, 2026] ; autres champs tirés pour le 28 février de cette année | jour 29, mois 2, année non bissextile | connu |
@@ -118,14 +134,14 @@ Tous dans `src/nn_weight_writing/tasks/legal/facts.toml`, avec `status` (`primar
   - Fêtes légales : dates fixes et mobiles de `[holidays]` (Pâques par le comput grégorien). Un samedi, le Vendredi saint et le 26 décembre ne violent aucune règle ; aucune ligne ne les porte.
 - **Tirage d'une vraie référence** (et base de chaque fausse) :
   - date uniforme parmi les jours ouvrés de la fenêtre : du lundi au vendredi, hors fêtes légales, Vendredi saint et 26 décembre ;
-  - cc : chambre selon `chamber_weights`, écart selon `gap_weights` (0 à 4 ans), numéro d'ordre uniforme dans `criminal_serial` pour `crim.`, dans `civil_serial` sinon ;
+  - cc : chambre selon `chamber_weights`, écart selon `gap_weights` (0 à 6 ans, O2), numéro d'ordre uniforme dans `criminal_serial` pour `crim.`, dans `civil_serial` sinon ;
   - ce : formation selon `formation_weights`, k uniforme de 1 à 10, `sous-sect.` si la date ≤ 2016-04-20, `ch.` si ≥ 2017-01-01 ; dans la zone grise, `Ass.` (2/7) ou `Sect.` (5/7) ; numéro uniforme dans `number_range` ;
-  - ca : siège uniforme parmi les 35 (`all_seats` sans `excluded_from_real`), écart selon `gap_weights`, numéro d'ordre uniforme dans `serial`, écrit sur 5 chiffres.
+  - ca : siège uniforme parmi les 35 (`all_seats` sans `excluded_from_real`), écart selon `gap_weights` (0 à 8 ans, O2), numéro d'ordre uniforme dans `serial` ([1, 24999], O10), écrit sur 5 chiffres.
   - Une fausse part d'une vraie tirée pour sa juridiction, puis change le seul champ de son type (date forcée pour t06, t07, t12, t15, avant le tirage des autres champs).
 
 ## D5 — Encodeurs et décodeur (AD-4)
 
-L'identifiant reprend `{task}.{encoder}@{version}` avec la **famille de tâches `legal`** comme `{task}` : `legal.chars@1` et `legal.fields@1`, communs à `legal_s`, `legal_s_reserved` et, plus tard, à R. Motif : un réseau écrit sur S doit pouvoir être évalué sur S-réservé et sur R (robustesse hors distribution, CAP-12) sans refus `encoder_mismatch`. Toute modification d'un encodeur incrémente sa version.
+L'identifiant reprend `{task}.{encoder}@{version}` avec la **famille de tâches `legal`** comme `{task}` : `legal.chars@1` et `legal.fields@1`, communs à `legal_s`, `legal_s_reserved` et, plus tard, à R (amendement de AD-4, O4 : la tâche reste dans `dataset.json` et dans le contrôle de l'évaluation). Motif : un réseau écrit sur S doit pouvoir être évalué sur S-réservé et sur R (robustesse hors distribution, CAP-12) sans refus `encoder_mismatch`. Toute modification d'un encodeur incrémente sa version.
 
 **`encode(raw)` — `legal.chars@1`, 3 060 valeurs `float32` 0 ou 1.** Pur, sans statistique, chaque entrée signifie « tel symbole à telle position de tel champ » :
 
@@ -153,9 +169,9 @@ Plus longs champs produits : en-tête `ca saint-denis de la réunion` (28), mois
 |---|---|
 | 2 244 | jour / 31 (`1er` = 1 ; jeton illisible : 0) |
 | 2 245 | mois / 12 (nom inconnu : 0) |
-| 2 246 | (année − 2000) / 30 (jeton illisible : 0) |
+| 2 246 | (année − 1980) / 50, borné à [0, 1] (jeton illisible : 0) |
 | 2 247 | 1 si le numéro commence par `^\d{2}[-/]`, sinon 0 |
-| 2 248 | (année du numéro − 2000) / 30, avec AA ≥ 50 → 19AA, sinon 20AA ; 0 sans AA |
+| 2 248 | (année du numéro − 1980) / 50, borné à [0, 1], avec AA ≥ 50 → 19AA, sinon 20AA ; 0 sans AA |
 
 Ce sont des champs extraits, sans relation calculée entre eux : ni écart, ni jour de la semaine, ni validité. Architecture de F : la même cachée de 32 (2 249 × 32 + 32 + 66 = 72 066 paramètres).
 
@@ -329,7 +345,7 @@ Ni `baselines/`, ni `config/train.toml`, ni `session/`, ni les specs de `_bmad-o
 - `test_chars_other_symbol_and_truncation` — Given un en-tête de 40 caractères et une virgule d'en-tête CE, Then positions 32 et au-delà de l'en-tête ignorées, virgule au symbole 38, `°` absent.
 - `test_encoders_are_pure` — Given la même chaîne deux fois et après d'autres appels, Then tableaux égaux.
 - `test_encoders_refuse_non_canonical` — Given un numéro sans `n° ` ou un objet non chaîne, Then `ValueError` ou `TypeError`.
-- `test_fields_layout` — Given Perruche, When `encode_fields`, Then forme (2249,), `x[2244] == 17/31`, `x[2245] == 11/12`, `x[2246] == 0`, `x[2247] == 1`, `x[2248] == (1999-2000)/30` (tolérance float32).
+- `test_fields_layout` — Given Perruche, When `encode_fields`, Then forme (2249,), `x[2244] == 17/31`, `x[2245] == 11/12`, `x[2246] == (2000-1980)/50`, `x[2247] == 1`, `x[2248] == (1999-1980)/50` (tolérance float32).
 - `test_decode_argmax_and_tie` — Given [0.2, 0.9], [0.9, 0.2], [0.5, 0.5], Then `fake`, `real`, `real`.
 - `test_reference_architecture_size` — Then 3060 × 32 + 32 + 32 × 2 + 2 == 98 018.
 
@@ -350,7 +366,7 @@ Ni `baselines/`, ni `config/train.toml`, ni `session/`, ni les specs de `_bmad-o
 - `test_reserved_eval_is_s_eval_with_all_15_types` — Then `examples.jsonl` et `labels.jsonl` des deux dossiers d'évaluation sont identiques octet pour octet, et chaque type y a au moins 133 fausses.
 - `test_reserved_session_and_train_hold_only_known_types` — Then aucune ligne de t04, t07, t09, t11, t12 dans `data/legal_s_reserved/`.
 - `test_proportions` — Then dans chaque jeu : n/2 `real` ; chaque type à 1 près de son quota ; par juridiction, autant de vraies que de fausses ; S et évaluation : fausses à un tiers par juridiction, à 1 près ; t05 présent côté cc et côté ce dans l'évaluation. Valeurs exactes des fausses par juridiction (cc, ce, ca), calculées par un prototype de l'algorithme de D6 : évaluation 667, 667, 666 ; séance S 7, 7, 6 ; entraînement S 1 366, 1 365, 1 365 ; séance S-réservé 9, 6, 5 ; entraînement S-réservé 1 844, 1 103, 1 149.
-- `test_order_and_ids_do_not_leak_label` — Then les identifiants se suivent de 1 à n, et dans chaque jeu la suite des labels n'est ni triée ni alternée.
+- `test_order_and_ids_do_not_leak_label` — Then les identifiants se suivent de 1 à n, et, pour la graine 0 (mélange par le flux du jeu), dans chaque jeu la suite des labels n'est ni triée ni strictement alternée (O9).
 - `test_dataset_json_composition` — Then `generator` `legal`, `version` 1, `seed` 0, `composition` conforme à D6, `facts_sha256` égal à `facts_sha256()`, `held_out_types` vide pour S et égal aux 5 pour S-réservé.
 - `test_session_file_is_a_bundle_source` — Then `read_examples` lit `data/legal_s/session/examples.jsonl` (clés `id` et `raw` seules) et refuse `labels.jsonl`.
 - `test_generate_refuses_existing_before_writing` — Given `heldout/legal_s/eval/` déjà présent, When `generate`, Then `FileExistsError` et aucun des 5 autres dossiers créé.
@@ -373,4 +389,8 @@ Réalignement : `tests/test_boundary.py` couvre `tasks/legal/` sans changement (
 
 ## Revue de la spec
 
-À compléter par le second avis et le reviewer.
+Second avis : décisions O1 à O10 en tête de spec. Reviewer : à compléter.
+
+## Tests ajoutés par les décisions
+
+O1 : chemin relatif, `train` et `eval` refusés, jouet inchangé ; O2 : vraies à 5 et 6 ans ; O3 : t12 mobile ; O4 : refus d'une tâche différente ; O5 : table de Pâques ; O6 : 29 février hors t12 ; O7 : bornes de `fields` ; O10 : numéros d'ordre ≥ 20 000.
