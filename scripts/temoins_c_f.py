@@ -66,7 +66,7 @@ def main(argv: list[str] | None = None) -> int:
     if args.action == "table":
         print(table(read_jsonl(out)))
         return 0
-    done = {(r["task"], r["method"], r["n"], r["seed"]) for r in read_jsonl(out)}
+    done = {(r["task"], r.get("encoder"), r["n"], r["seed"]) for r in read_jsonl(out)}
     for task in args.tasks:
         for method in args.methods:
             run_curve(
@@ -78,7 +78,7 @@ def main(argv: list[str] | None = None) -> int:
                 lot=args.lot,
                 n_values=tuple(args.n) if args.n else None,
                 seeds=tuple(args.seeds) if args.seeds else None,
-                skip=lambda n, s, t=task, m=method: (t, m, n, s) in done,
+                skip=lambda n, s, e, t=task: (t, e, n, s) in done,
                 log=lambda r: (
                     append_jsonl(out, r),
                     print(r["run"], r["seconds"], r["accuracy"]["all"], flush=True),

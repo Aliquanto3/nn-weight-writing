@@ -8,6 +8,7 @@ l'architecture gelée d'une séance depuis des poids aléatoires (C « même ré
 
 from __future__ import annotations
 
+import json
 import tomllib
 from collections.abc import Callable
 from dataclasses import dataclass
@@ -24,7 +25,7 @@ from nn_weight_writing.config import CONFIG_DIR
 from nn_weight_writing.evaluation.labels import read_labels
 from nn_weight_writing.evaluation.score import check_alignment, run_task
 from nn_weight_writing.evaluation.verify import FROZEN_DIR, evaluate, verify_frozen
-from nn_weight_writing.network.io import sha256_file
+from nn_weight_writing.network.io import MANIFEST_NAME, sha256_file
 from nn_weight_writing.tasks.io import read_examples
 from nn_weight_writing.tasks.legal import TASKS as LEGAL_TASKS
 from nn_weight_writing.tasks.legal.task import LegalTask
@@ -89,6 +90,9 @@ def _encode_for(task: AnyTask, encoder_id: str) -> Callable[[object], np.ndarray
         return task.encode
     if getattr(task, "prepared_encoder_id", None) == encoder_id:
         return task.encode_prepared
+    legacy = getattr(task, "legacy_encoders", {})
+    if encoder_id in legacy:
+        return legacy[encoder_id]
     raise ValueError(f"{task.name} : encodeur {encoder_id!r} inconnu")
 
 
@@ -112,9 +116,19 @@ def reference_manifest(task: AnyTask, config: TrainConfig, *, prepared: bool = F
 
 
 def train_network(
-    manifest: dict, inputs: np.ndarray, targets: np.ndarray, config: TrainConfig, seed: int
+    manifest: dict,
+    inputs: np.ndarray,
+    targets: np.ndarray,
+    config: TrainConfig,
+    seed: int,
+    *,
+    on_epoch: Callable[[int, nn.Module], None] | None = None,
 ) -> dict[str, np.ndarray]:
-    """Entraîne depuis des poids aléatoires (graine `seed`), entropie croisée, Adam, CPU."""
+    """Entraîne depuis des poids aléatoires (graine `seed`), entropie croisée, Adam, CPU.
+
+    `on_epoch(époque, module)` après chaque époque (choix du nombre d'époques sur une validation
+    tirée du jeu d'entraînement, `scripts/choix_epoques.py`) ; il ne doit pas modifier le module.
+    """
     torch.manual_seed(seed)
     generator = torch.Generator().manual_seed(seed)
     module = torch_layers.build_module(manifest)
@@ -122,14 +136,27 @@ def train_network(
     loss_fn = nn.CrossEntropyLoss()
     x = torch.from_numpy(np.ascontiguousarray(inputs, dtype=np.float32))
     y = torch.from_numpy(np.ascontiguousarray(targets, dtype=np.int64))
-    for _ in range(config.epochs):
+    for epoch in range(1, config.epochs + 1):
         order = torch.randperm(len(x), generator=generator)
         for start in range(0, len(x), config.batch_size):
             batch = order[start : start + config.batch_size]
             optimizer.zero_grad()
             loss_fn(module(x[batch]), y[batch]).backward()
             optimizer.step()
+        if on_epoch:
+            on_epoch(epoch, module)
     return torch_layers.export_weights(module)
+
+
+def _check_dataset_task(task: AnyTask, data_dir: Path) -> None:
+    """Refuse un jeu d'une autre tâche : `legal_s` et `legal_s_reserved` ont le même encodeur."""
+    meta_path = data_dir / "dataset.json"
+    meta = json.loads(meta_path.read_text("utf-8")) if meta_path.is_file() else {}
+    declared = (meta.get("composition") or {}).get("task")
+    if declared is None and not isinstance(task, LegalTask):
+        return  # jeux jouet : `dataset.json` sans tâche
+    if declared != task.name:
+        raise ValueError(f"jeu {data_dir} de la tâche {declared!r}, séance de {task.name!r}")
 
 
 def _fit_and_freeze(
@@ -148,6 +175,7 @@ def _fit_and_freeze(
     data_dir = Path(data_dir)
     if HELDOUT_DIR in data_dir.resolve().parts:
         raise ValueError(f"jeu réservé refusé pour l'entraînement : {data_dir}")
+    _check_dataset_task(task, data_dir)
     examples = read_examples(data_dir / "examples.jsonl")
     labels = read_labels(data_dir / "labels.jsonl")
     check_alignment(examples, labels)
@@ -232,7 +260,10 @@ def retrain(
     task_name = run_task(session_dir)
     if not task_name:
         raise ValueError(f"{session_dir} : tâche de la séance introuvable")
-    manifest, _ = network.load(session_dir / FROZEN_DIR)
+    # Empreintes vérifiées ci-dessus ; seul le manifeste est relu, jamais les poids.
+    manifest = network.validate_manifest(
+        json.loads((session_dir / FROZEN_DIR / MANIFEST_NAME).read_text("utf-8")), with_blocks=True
+    )
     config = load_train_config(task_name, config_path)
     run_dir = Path(runs_root) / lot / "train" / f"{session_dir.name}-retrain-n{n}-s{seed}"
     extra = {"retrained_from": {"session": session_dir.name, "tree_sha256": tree}}

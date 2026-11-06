@@ -67,15 +67,21 @@ def run_curve(
     lot: str,
     n_values: tuple[int, ...] | None = None,
     seeds: tuple[int, ...] | None = None,
-    skip: Callable[[int, int], bool] | None = None,
+    skip: Callable[[int, int, str], bool] | None = None,
     log: Callable[[dict], None] | None = None,
 ) -> list[dict]:
-    """Un enregistrement par run : tâche, méthode, N, graine, durée, exactitude par groupe."""
+    """Un enregistrement par run : tâche, méthode, encodeur, N, graine, durée, exactitude.
+
+    `skip(n, seed, encoder)` : run déjà enregistré (reprise) ; l'encodeur en fait partie pour
+    qu'un F d'une nouvelle version d'encodeur ne soit pas sauté.
+    """
     config = load_train_config(task_name)
+    task = get_task(task_name)
+    encoder = task.prepared_encoder_id if prepared else task.encoder_id
     records = []
     for n in n_values or config.n_values:
         for seed in seeds or config.seeds:
-            if skip and skip(n, seed):
+            if skip and skip(n, seed, encoder):
                 continue
             start = time.perf_counter()
             run_dir = train(
@@ -85,6 +91,7 @@ def run_curve(
             record = {
                 "task": task_name,
                 "method": "F" if prepared else "C",
+                "encoder": encoder,
                 "n": n,
                 "seed": seed,
                 "seconds": round(seconds, 2),

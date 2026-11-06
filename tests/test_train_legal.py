@@ -46,7 +46,7 @@ def test_reference_architectures_have_the_documented_sizes(name):
     c = reference_manifest(task, config)
     f = reference_manifest(task, config, prepared=True)
     assert (c["encoder"], n_params(c)) == ("legal.chars@1", 98018)
-    assert (f["encoder"], n_params(f)) == ("legal.fields@1", 72066)
+    assert (f["encoder"], n_params(f)) == ("legal.fields@2", 77154)
     assert [layer["out"] for layer in c["layers"]] == [32, 2]
 
 
@@ -73,7 +73,7 @@ def test_train_c_and_f_freeze_and_measure(legal_root, prepared):
     run = json.loads((run_dir / "run.json").read_text("utf-8"))
     assert (run["baseline"], run["task"]) == (method, "legal_s_reserved")
     manifest, _ = network.load(run_dir / "frozen")
-    assert manifest["encoder"] == ("legal.fields@1" if prepared else "legal.chars@1")
+    assert manifest["encoder"] == ("legal.fields@2" if prepared else "legal.chars@1")
     counts = measure(run_dir, "legal_s_reserved", held)
     labels = read_labels(held / "labels.jsonl").values()
     n_held = sum(1 for lab in labels if lab.type_id in HELD_OUT)
@@ -84,6 +84,22 @@ def test_train_c_and_f_freeze_and_measure(legal_root, prepared):
     assert counts["fake_known"]["n"] == 300 - n_real - n_held
     assert counts["all"]["correct"] == sum(counts[g]["correct"] for g in counts if g != "all")
     assert counts["all"]["correct"] / 300 > 0.5  # apprend quelque chose avec 300 exemples
+
+
+def test_train_refuses_a_dataset_of_the_other_legal_task(legal_root, tmp_path):
+    data = legal_root / "data" / "legal_s_reserved" / "train"
+    with pytest.raises(ValueError, match="tâche 'legal_s_reserved', séance de 'legal_s'"):
+        train("legal_s", data, n=64, seed=0, runs_root=tmp_path, lot="x")
+
+
+def test_legacy_fields_v1_runs_stay_measurable(legal_root, tmp_path):
+    from nn_weight_writing.baselines.train import _encode_for
+    from nn_weight_writing.tasks.legal.encoders import encode_fields
+
+    task = get_task("legal_s")
+    assert _encode_for(task, "legal.fields@1") is encode_fields
+    with pytest.raises(ValueError, match="inconnu"):
+        _encode_for(task, "legal.fields@9")
 
 
 def test_measure_refuses_a_run_of_another_task(legal_root):
@@ -108,6 +124,9 @@ def test_retrain_keeps_the_architecture_with_fresh_random_weights(legal_root):
     runs = legal_root / "runs"
     source = train("legal_s", data, n=64, seed=3, runs_root=runs, lot="src", prepared=True)
     out = retrain(source, data, n=128, seed=9, runs_root=runs, lot="re")
+    with pytest.raises(ValueError, match="séance de 'legal_s'"):
+        other = legal_root / "data" / "legal_s_reserved" / "train"
+        retrain(source, other, n=128, seed=8, runs_root=runs, lot="re")
     assert out.name == "legal_s-F-n64-s3-retrain-n128-s9"
     m_src, w_src = network.load(source / "frozen")
     m_new, w_new = network.load(out / "frozen")

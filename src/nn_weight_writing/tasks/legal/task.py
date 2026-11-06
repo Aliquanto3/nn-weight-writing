@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
 
 import numpy as np
@@ -10,7 +11,8 @@ from nn_weight_writing.tasks.legal import encoders
 from nn_weight_writing.tasks.legal.types import KNOWN, TYPES, ErrorType
 
 CHARS_ID = "legal.chars@1"
-FIELDS_ID = "legal.fields@1"
+FIELDS_V1_ID = "legal.fields@1"  # runs gelés de 1-11 seulement
+FIELDS_ID = "legal.fields@2"
 CLASSES = (("real", "référence vraie"), ("fake", "référence fausse"))
 
 HEAD = (
@@ -61,7 +63,7 @@ class LegalTask:
     n_inputs: int = encoders.N_CHARS
     encoder_id: str = CHARS_ID
     prepared_encoder_id: str = FIELDS_ID
-    n_prepared_inputs: int = encoders.N_FIELDS
+    n_prepared_inputs: int = encoders.N_FIELDS_V2
 
     @property
     def description(self) -> str:
@@ -79,7 +81,12 @@ class LegalTask:
         return encoders.encode_chars(raw)
 
     def encode_prepared(self, raw: object) -> np.ndarray:
-        return encoders.encode_fields(raw)
+        return encoders.encode_fields_v2(raw)
+
+    @property
+    def legacy_encoders(self) -> dict[str, Callable[[object], np.ndarray]]:
+        """Anciennes versions, lues pour mesurer les runs gelés qui les portent (AD-4)."""
+        return {FIELDS_V1_ID: encoders.encode_fields}
 
     def decode(self, outputs: np.ndarray) -> str:
         """`real` ou `fake` : sortie la plus forte, `real` en cas d'égalité."""
