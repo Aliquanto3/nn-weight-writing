@@ -7,7 +7,8 @@ l'arborescence ; refus avant lancement sinon), avec un `CLAUDE_CONFIG_DIR` dédi
 serveur MCP de la séance (`--strict-mcp-config`), le prompt système du pilote API
 (`--system-prompt-file`) et la description de tâche sur l'entrée standard. Le pilote lit le flux
 `stream-json` : il transmet au service les échanges et l'usage par message (`model_call`,
-0 $ facturé) et vérifie à l'initialisation qu'aucun outil, serveur, skill ni plugin tiers n'est
+0 $ facturé), complété en fin de flux par l'écart avec `result.usage` (seul total exact), et
+vérifie à l'initialisation qu'aucun outil, serveur, skill, plugin tiers ni agent utilisateur n'est
 chargé. Les outils passent par le serveur MCP, jamais par le pilote.
 """
 
@@ -52,14 +53,26 @@ STRIPPED_ENV_PREFIXES = ("ANTHROPIC_", "CLAUDE", "OPENROUTER_", "OPENAI_", "AWS_
 # Entrées d'un dossier de configuration qui chargeraient du contexte ou des outils.
 FORBIDDEN_CONFIG_ENTRIES = (
     "CLAUDE.md",
-    "plugins",
-    "skills",
     "agents",
     "commands",
     "output-styles",
     "hooks",
     "settings.local.json",
 )
+# `settings.json` : clés sans effet sur le contexte ni sur les outils (apparence du terminal).
+HARMLESS_SETTINGS_KEYS = frozenset({"$schema", "theme"})
+# `plugins/` : fichiers et dossiers que Claude Code crée de lui-même à la connexion (liste et
+# cache des places de marché, sans plugin installé).
+MARKETPLACE_ENTRIES = frozenset(
+    {"known_marketplaces.json", "marketplaces", "installed_plugins.json", "store", "synced"}
+)
+# `skills/` : seul `synced` (copie des skills du compte claude.ai que Claude Code recrée à chaque
+# lancement, sans réglage `syncClaudeAiSkills: false`). Elle n'est pas chargée :
+# `--disable-slash-commands` vide `skills` dans l'événement `init`, contrôlé à chaque séance.
+SYNCED_ENTRIES = frozenset({"synced"})
+# Agents intégrés de Claude Code relevés dans l'événement `init` (1-8) ; inutilisables sans outil
+# `Agent`, mais tout autre agent viendrait de l'utilisateur ou d'un plugin.
+BUILTIN_AGENTS = frozenset({"claude", "Explore", "general-purpose", "Plan", "statusline-setup"})
 # Outils de ressources MCP ajoutés par Claude Code à tout serveur MCP ; le nôtre n'en expose pas.
 MCP_RESOURCE_TOOLS = frozenset({"ListMcpResourcesTool", "ReadMcpResourceTool"})
 USAGE_LIMIT = re.compile(
@@ -73,21 +86,62 @@ USAGE_KEYS = (
 )
 
 
+def _usage_counts(usage: dict) -> dict[str, int]:
+    """Jetons d'un `usage` Anthropic, dont la part d'écriture du cache en tranche d'une heure."""
+    counts = {key: int(usage.get(source) or 0) for key, source in USAGE_KEYS}
+    split = usage.get("cache_creation")
+    long_write = split.get("ephemeral_1h_input_tokens") if isinstance(split, dict) else 0
+    counts["cache_write_1h"] = min(int(long_write or 0), counts["cache_write"])
+    return counts
+
+
 def config_dir_problems(path: Path) -> list[str]:
     """Raisons pour lesquelles le dossier ne peut servir de configuration dédiée."""
     if not path.is_dir():
         return [f"{path} absent : connexion unique d'Anaël requise (voir la spec de 1-6)"]
     problems = [f"{name} présent" for name in FORBIDDEN_CONFIG_ENTRIES if (path / name).exists()]
+    problems += _plugin_problems(path / "plugins")
+    skills = path / "skills"
+    if skills.exists():
+        if not skills.is_dir():
+            problems.append("skills présent")
+        else:
+            extra = sorted(e.name for e in skills.iterdir() if e.name not in SYNCED_ENTRIES)
+            if extra:
+                problems.append(f"skills présent : {extra}")
     settings = path / "settings.json"
     if settings.exists():
         try:
             data = json.loads(settings.read_text("utf-8") or "{}")
         except json.JSONDecodeError:
             data = {"?": "illisible"}
-        extra = sorted(set(data) - {"$schema"}) if isinstance(data, dict) else ["?"]
+        extra = sorted(set(data) - HARMLESS_SETTINGS_KEYS) if isinstance(data, dict) else ["?"]
         if extra:
             problems.append(f"settings.json non vide : {extra}")
     return problems
+
+
+def _plugin_problems(plugins: Path) -> list[str]:
+    """`plugins/` n'est admis que sans plugin installé : cache des places de marché seulement."""
+    if not plugins.exists():
+        return []
+    if not plugins.is_dir():
+        return ["plugins présent"]
+    extra = sorted(
+        entry.name for entry in plugins.iterdir() if entry.name not in MARKETPLACE_ENTRIES
+    )
+    if extra:
+        return [f"plugins présent : {extra}"]
+    installed = plugins / "installed_plugins.json"
+    if installed.exists():
+        try:
+            data = json.loads(installed.read_text("utf-8") or "{}")
+            table = data.get("plugins") if isinstance(data, dict) else {"?": 1}
+        except OSError, ValueError:  # JSON ou UTF-8 illisible
+            table = {"?": 1}
+        if table:
+            return ["plugin installé"]
+    return []
 
 
 def ancestor_memory_files(cwd: Path) -> list[Path]:
@@ -190,6 +244,10 @@ def init_problems(event: dict, tool_names: Sequence[str]) -> list[str]:
     ]
     if plugins:
         problems.append(f"plugins tiers : {plugins}")
+    agents = [a.get("name") if isinstance(a, dict) else str(a) for a in event.get("agents") or []]
+    extra_agents = sorted(str(a) for a in agents if a not in BUILTIN_AGENTS)
+    if extra_agents:
+        problems.append(f"agents hors intégrés : {extra_agents}")
     return problems
 
 
@@ -227,6 +285,8 @@ class ClaudeCodeDriver:
 
     def run(self, service: ToolService, system_prompt_path: Path, task_text: str) -> None:
         """Mène la séance jusqu'à sa fin ; `service.end` est toujours appelé."""
+        # Le journal reste ouvert après le gel : l'usage final du flux (`result`) y est versé.
+        service.close_on_freeze = False
         reason, detail = self._session(service, Path(system_prompt_path), task_text)
         if not service.ended:
             service.end(reason, detail)
@@ -352,30 +412,25 @@ class ClaudeCodeDriver:
                 try:
                     service.record_model_call(self._model_call(message, stream, duration_s))
                 except RuntimeError:
-                    pass  # séance close entre-temps par le gel (fil du serveur MCP)
+                    pass  # séance close entre-temps (fil du serveur MCP)
         elif kind == "result":
             stream.result = event
+            if not service.ended:
+                reconciled = self._reconciliation(event, stream)
+                if reconciled is not None:
+                    service.record_model_call(reconciled)
 
     def _model_call(self, message: dict, stream: _Stream, duration_s: float) -> ModelCallEvent:
         """Un `model_call` par événement ; l'usage d'un même message n'est compté qu'une fois."""
-        usage = message.get("usage") or {}
         seen = stream.recorded.setdefault(str(message.get("id")), {})
         delta = {}
-        for key, source in USAGE_KEYS:
-            value = int(usage.get(source) or 0)
+        for key, value in _usage_counts(message.get("usage") or {}).items():
             delta[key] = max(value - seen.get(key, 0), 0)
             seen[key] = max(value, seen.get(key, 0))
-        equiv = cost_equiv_usd(Usage(**delta), self.price)
-        return ModelCallEvent(
-            input_tokens=delta["input"],
-            output_tokens=delta["output"],
-            cache_read_tokens=delta["cache_read"],
-            cache_write_tokens=delta["cache_write"],
-            cost_equiv_usd=equiv,
-            billed_usd=billed_usd(self.model, equiv),
-            provider_cost=None,
-            duration_s=round(duration_s, 6),
-            exchange={
+        return self._event(
+            delta,
+            duration_s,
+            {
                 "message_id": message.get("id"),
                 "model": message.get("model"),
                 "content": message.get("content") or [],
@@ -383,10 +438,52 @@ class ClaudeCodeDriver:
             },
         )
 
+    def _reconciliation(self, result: dict, stream: _Stream) -> ModelCallEvent | None:
+        """Écart entre l'`usage` cumulé de `result` et celui des événements `assistant`.
+
+        Les `output_tokens` des événements `assistant` sont partiels (raisonnement et fin de
+        génération absents) : seul `result.usage` porte le total de la séance.
+        """
+        usage = result.get("usage")
+        if not isinstance(usage, dict):
+            return None
+        final = _usage_counts(usage)
+        delta = {}
+        for key, value in final.items():
+            counted = sum(seen.get(key, 0) for seen in stream.recorded.values())
+            delta[key] = max(value - counted, 0)
+        if not any(delta.values()):
+            return None
+        stream.recorded["<result>"] = delta
+        return self._event(
+            delta,
+            0.0,
+            {
+                "reconciliation": "result.usage",
+                "total_cost_usd": result.get("total_cost_usd"),
+                "usage": usage,
+            },
+        )
+
+    def _event(self, delta: dict[str, int], duration_s: float, exchange: dict) -> ModelCallEvent:
+        equiv = cost_equiv_usd(Usage(**delta), self.price)
+        return ModelCallEvent(
+            input_tokens=delta["input"],
+            output_tokens=delta["output"],
+            cache_read_tokens=delta["cache_read"],
+            cache_write_tokens=delta["cache_write"],
+            cache_write_1h_tokens=delta["cache_write_1h"],
+            cost_equiv_usd=equiv,
+            billed_usd=billed_usd(self.model, equiv),
+            provider_cost=None,
+            duration_s=round(duration_s, 6),
+            exchange=exchange,
+        )
+
     def _outcome(
         self, service: ToolService, stream: _Stream, code: int | None, stderr: str
     ) -> tuple[EndReason, str | None]:
-        if service.ended:
+        if service.frozen or service.ended:
             return EndReason.FROZEN, None
         if stream.contamination:
             return EndReason.ERROR, "contamination : " + "; ".join(stream.contamination)

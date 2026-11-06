@@ -140,6 +140,8 @@ class Price:
     cache_write: float
     date: str = ""
     source: str = ""
+    # Écriture du cache en tranche d'une heure ; absente, celle de 5 minutes (`cache_write`).
+    cache_write_1h: float | None = None
 
 
 def load_pricing(path: Path | None = None) -> dict[str, Price]:
@@ -152,6 +154,11 @@ def load_pricing(path: Path | None = None) -> dict[str, Price]:
             if not isinstance(value, int | float) or isinstance(value, bool) or value < 0:
                 raise ValueError(f"pricing.toml : {model_id} : {key} invalide")
             values[key] = float(value)
+        if "cache_write_1h" in entry:
+            value = entry["cache_write_1h"]
+            if not isinstance(value, int | float) or isinstance(value, bool) or value < 0:
+                raise ValueError(f"pricing.toml : {model_id} : cache_write_1h invalide")
+            values["cache_write_1h"] = float(value)
         if not entry.get("date") or not entry.get("source"):
             raise ValueError(f"pricing.toml : {model_id} : date et source obligatoires")
         prices[model_id] = Price(**values, date=str(entry["date"]), source=entry["source"])

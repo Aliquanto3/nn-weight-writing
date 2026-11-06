@@ -84,3 +84,25 @@ def test_pricing_requires_date_and_source(tmp_path):
     path.write_text("[models.m]\ninput = -1\noutput = 1\ncache_read = 0\ncache_write = 0\n")
     with pytest.raises(ValueError, match="input invalide"):
         load_pricing(path)
+
+
+def test_pricing_cache_write_1h_optional_and_priced_apart(tmp_path):
+    from nn_weight_writing.budget.cost import cost_equiv_usd
+    from nn_weight_writing.providers.types import Usage
+
+    prices = load_pricing()
+    assert prices["claude-sonnet-5-5"].cache_write_1h == 4.0
+    assert prices["xiaomi/mimo-v2.6-pro"].cache_write_1h is None
+    usage = Usage(cache_write=1_000_000, cache_write_1h=400_000)
+    # 600 k à 2,50 (5 min) + 400 k à 4,00 (1 h).
+    assert cost_equiv_usd(usage, prices["claude-sonnet-5-5"]) == 3.1
+    # Sans tarif d'une heure : toute l'écriture au tarif de 5 minutes.
+    assert cost_equiv_usd(Usage(cache_write=1_000_000), prices["claude-sonnet-5-5"]) == 2.5
+    path = tmp_path / "pricing.toml"
+    path.write_text(
+        '[models.m]\ndate = "d"\nsource = "s"\ninput = 1\noutput = 1\ncache_read = 0\n'
+        'cache_write = 0\ncache_write_1h = "x"\n',
+        "utf-8",
+    )
+    with pytest.raises(ValueError, match="cache_write_1h invalide"):
+        load_pricing(path)

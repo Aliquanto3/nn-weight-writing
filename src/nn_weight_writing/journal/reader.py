@@ -6,7 +6,7 @@ import json
 from collections.abc import Iterator
 from pathlib import Path
 
-from nn_weight_writing.journal.schema import ENVELOPE, EVENT_TYPES, event_fields
+from nn_weight_writing.journal.schema import ENVELOPE, EVENT_TYPES, OPTIONAL_FIELDS, event_fields
 
 
 class JournalError(ValueError):
@@ -25,7 +25,11 @@ def read_records(path: Path) -> Iterator[dict]:
             cls = EVENT_TYPES.get(record["type"])
             if cls is None:
                 raise JournalError(f"ligne {expected} : type inconnu {record['type']!r}")
-            missing = [name for name in event_fields(cls) if name not in record]
+            missing = [
+                name
+                for name in event_fields(cls)
+                if name not in record and name not in OPTIONAL_FIELDS
+            ]
             if missing:
                 raise JournalError(f"ligne {expected} : champs manquants {missing}")
             yield record

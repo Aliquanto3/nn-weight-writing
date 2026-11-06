@@ -429,3 +429,30 @@ def test_non_string_tool_name_is_refused(make_service):
     service = make_service("B")
     assert service.call(["run_on_examples"], {})["refused"] == RefusalCode.UNKNOWN_TOOL
     assert refusals(service) == ["unknown_tool"]
+
+
+def test_reader_admits_model_call_without_cache_write_1h(tmp_path):
+    """Journaux d'avant le champ optionnel `cache_write_1h_tokens` : toujours lisibles."""
+    import json
+
+    from nn_weight_writing.journal.reader import JournalError
+
+    base = {"schema_version": 1, "seq": 0, "ts": "2026-11-06T00:00:00Z", "type": "model_call"}
+    call = {
+        "input_tokens": 1,
+        "output_tokens": 1,
+        "cache_read_tokens": 0,
+        "cache_write_tokens": 0,
+        "cost_equiv_usd": 0.0,
+        "billed_usd": 0.0,
+        "provider_cost": None,
+        "duration_s": 0.0,
+        "exchange": {},
+    }
+    path = tmp_path / "journal.jsonl"
+    path.write_text(json.dumps({**base, **call}) + "\n", "utf-8")
+    assert [r["type"] for r in read_records(path)] == ["model_call"]
+    del call["exchange"]
+    path.write_text(json.dumps({**base, **call}) + "\n", "utf-8")
+    with pytest.raises(JournalError, match="champs manquants"):
+        list(read_records(path))

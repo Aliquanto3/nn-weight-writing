@@ -114,6 +114,10 @@ class ToolService:
         self.passes_used = 0
         self.freeze_attempts = 0
         self.ended = False
+        # Gel réussi : plus aucun outil. Le journal est clos aussitôt, sauf si le pilote garde la
+        # main (`close_on_freeze = False`) pour y verser l'usage de fin de flux avant `end`.
+        self.frozen = False
+        self.close_on_freeze = True
         self._end_after_call = False
         self._started = time.perf_counter()
         self._lock = threading.RLock()
@@ -175,8 +179,8 @@ class ToolService:
 
     def _call(self, tool: str, arguments: object) -> dict:
         arguments = {} if arguments is None else arguments
-        if self.ended:
-            # Le journal est clos par `end` : le refus est renvoyé sans être écrit.
+        if self.ended or self.frozen:
+            # Séance gelée ou close : le refus est renvoyé sans être écrit.
             code = RefusalCode.SESSION_CLOSED
             return {"refused": str(code), "detail": "la séance est close"}
         try:
@@ -187,7 +191,10 @@ class ToolService:
         logged = arguments if isinstance(arguments, dict) else {"invalid": repr(arguments)[:200]}
         self.journal.write(ToolCallEvent(tool=str(tool), arguments=logged, result=result))
         if self._end_after_call:
-            self.end(EndReason.FROZEN)
+            self._end_after_call = False
+            self.frozen = True
+            if self.close_on_freeze:
+                self.end(EndReason.FROZEN)
         return result
 
     def record_model_call(self, event: ModelCallEvent) -> None:

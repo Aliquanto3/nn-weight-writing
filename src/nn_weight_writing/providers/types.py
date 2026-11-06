@@ -71,6 +71,8 @@ class Usage:
     cache_read: int = 0
     cache_write: int = 0
     provider_cost: float | None = None
+    # Part de `cache_write` écrite en tranche d'une heure (Claude Code), tarifée à part.
+    cache_write_1h: int = 0
 
 
 @dataclass(frozen=True)
