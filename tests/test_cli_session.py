@@ -126,7 +126,7 @@ def test_session_accepts_the_legal_session_dataset_name(tmp_path, capsys):
 def test_registry_validates_names_that_compose_a_path(tmp_path):
     from nn_weight_writing.tasks.registry import examples_path
 
-    for bad in ("../x", "a/b", "a\b", "..", "", "A", "x y", "x.y"):
+    for bad in ("../x", "a/b", "a\\b", "..", "", "A", "x y", "x.y"):
         with pytest.raises(ValueError, match="invalide"):
             examples_path("legal_s", bad, tmp_path)
         with pytest.raises(ValueError, match="invalide"):

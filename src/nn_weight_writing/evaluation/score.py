@@ -62,11 +62,15 @@ def score_frozen(run_dir: Path, codec: Codec, examples_path: Path, labels_path: 
     if manifest["encoder"] != codec.encoder_id:
         raise ValueError(f"encodeur {manifest['encoder']!r} différent de {codec.encoder_id!r}")
     expected = getattr(codec, "name", None)
-    if expected is not None and run_task(run_dir) != expected:
+    if not expected:
+        raise ValueError("codec sans nom de tâche : contrôle de la tâche impossible (O4)")
+    written = run_task(run_dir)
+    if written != expected:
         # Évaluation croisée (réseau de S sur S-réservé ou R) : option laissée à 1-14.
+        hint = "" if written else " (run.json sans champ task : regeler le témoin par nnww train)"
         raise ValueError(
-            f"réseau écrit pour la tâche {run_task(run_dir)!r}, jeu évalué de la tâche "
-            f"{expected!r} : évaluation croisée non prise en charge"
+            f"réseau écrit pour la tâche {written!r}, jeu évalué de la tâche "
+            f"{expected!r} : évaluation croisée non prise en charge{hint}"
         )
     examples = read_examples(examples_path)
     labels = read_labels(labels_path)

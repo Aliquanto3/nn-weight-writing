@@ -70,7 +70,7 @@ def make_service(tmp_path, protocol):
         )
         info = OpenInfo(
             task="toy",
-            dataset="toy-dev",
+            dataset="toy",
             dataset_sha256="0" * 64,
             method=method,
             model="test-model",
@@ -189,7 +189,7 @@ def session_env(tmp_path, protocol, claude_cwd_root):
 
         params = {
             "task": TASK,
-            "dataset": "toy-dev",
+            "dataset": "toy",
             "examples": examples,
             "method": method,
             "model": model,

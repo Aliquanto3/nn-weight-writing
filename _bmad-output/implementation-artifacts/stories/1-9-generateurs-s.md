@@ -401,3 +401,21 @@ O1 : chemin relatif, `train` et `eval` refusés, jouet inchangé ; O2 : vraies �
 - O1 : `TaskSpec.session_datasets` (défaut `("toy",)`, `("session",)` pour les deux tâches legal) porte la liste blanche ; `nnww session` refuse avant tout (code 2) `train`, tout nom hors `[a-z0-9_]+` et tout jeu hors liste.
 - O4 : `RunRecord.task` (défaut vide, donc un `run.json` ancien est refusé par `score_frozen`) et le premier événement `open` du journal donnent la tâche du réseau ; le manifeste gelé reste inchangé (AD-3). Évaluation croisée journalisée : reportée à 1-14.
 - Graine 0 : `nnww datagen legal --seed 0` donne 4 000 / 40 / 8 192, 6 dossiers sans recouvrement ; préfixes sha256 de `dataset.json` : eval `0a76a818cd11`, eval réservé `25bc55ad1984`, séance S `5fcbc7e0296d`, entraînement S `2360a52e7dc6`, séance R `4d0af15e5628`, entraînement R `654549f97903`.
+
+## Revue
+
+### Passe 1 (2026-11-06, SHA revu 82a4a40)
+
+Base à jour (origin/main 5c8a727, pas de rebase). CI trois OS verte sur 82a4a40. Vérifié en exécutant : graine 0 générée (0,8 s), aucune formation numérotée du CE dans la zone grise hors 3 t02 (dates impossibles), jours de semaine identiques entre vraies et fausses hors t12, longueurs moyennes de `raw` proches d'un type à l'autre ; faits de `facts.toml` relus (11 fêtes et décalages de Pâques, 8 formations de la Cour de cassation, 36 cours d'appel, 20 sièges sans cour d'appel, abréviations du CE) ; `facts.toml` en LF par `.gitattributes` (empreinte stable entre OS).
+
+- Nit, low, second avis 1 (labels dans `data/<tâche>/session/`) : rejeté, convention du jouet et tableau de D6 ; l'agent ne lit que `bundle/` et le bac à sable refuse `open` (AD-5).
+- Nit, low, second avis 2 (`day / 31` non borné) : rejeté, D5 fixe `jour / 31` pour `legal.fields@1` ; un jour invalide de R relève du normaliseur (1-13), un bornage changerait l'encodeur (nouvelle version).
+- Nit, low, second avis 3 (contrôle O4 sauté pour un codec sans nom) : corrigé, `name` ajouté au protocole `Codec` et `score_frozen` refuse un codec sans nom.
+- Nit, low, second avis 4 (`"a\b"` est un retour arrière) : corrigé, `"a\b"`.
+- Nit, low, second avis 5 (`toy-dev` restant dans `conftest.py` et `test_live.py`) : corrigé, `toy` (O1).
+- Nit, low, second avis 6 (`easter` et calendrier partagés par vérificateur et générateur) : rejeté, emplacement fixé par D8 ; risque couvert par la table de Pâques et l'algorithme de Meeus du test (O5).
+- Nit, low, second avis 7 (témoins C sans `task` refusés) : corrigé, le message indique de regeler le témoin par `nnww train` ; rien du dépôt n'en dépend (`scripts/exactitude_reserve.py` ne score que des séances, dont l'événement `open` porte la tâche ; `nnww evaluate` n'appelle pas `score_frozen`).
+- Nit, low, second avis 8 (t12 : aucune vraie un dimanche ou une fête mobile) : rejeté, c'est la règle du type, pas une fuite.
+- Nit, low, reviewer : t02 du CE garde `sous-sect.` tirée pour la date d'origine ; 3 lignes sur 16 432 en graine 0 portent `sous-sect.` avec une date impossible postérieure au 20 avril 2016, forme qu'aucune vraie n'a. Indice négligeable, gardé (corriger changerait les jeux et GENERATOR_VERSION).
+- Nit, low, reviewer : t14 tire sa chambre uniformément parmi 6 (crim. 1/6) et t07 force une formation numérotée (100 % contre 93 % des vraies) : écarts de distribution faibles, propres à la règle du type ; gardés, à mentionner au rapport du lot 1 avec les réserves de CAP-1.
+- Complexité : 0 constat (tirages en O(n), `find_last` lit une fois le journal).
