@@ -73,6 +73,14 @@ MARKETPLACE_ENTRIES = frozenset(
         "synced",
     }
 )
+# `plugins/plugin-directory-cache-v2.json` : catalogue public des places de marché (forme relevée
+# le 2026-11-06 : ces cinq clés, 3604 fiches `listings`). Admis seulement en fichier ordinaire, de
+# cette forme, sans aucune clé d'installation ni d'activation à quelque profondeur que ce soit.
+DIRECTORY_CACHE = "plugin-directory-cache-v2.json"
+DIRECTORY_CACHE_KEYS = frozenset(
+    {"schemaVersion", "fetchedAt", "listings", "entryNames", "entryNameClaims"}
+)
+INSTALL_KEY = re.compile(r"install|enabl", re.I)
 # `skills/` : seul `synced` (copie des skills du compte claude.ai que Claude Code recrée à chaque
 # lancement, sans réglage `syncClaudeAiSkills: false`). Elle n'est pas chargée :
 # `--disable-slash-commands` vide `skills` dans l'événement `init`, contrôlé à chaque séance.
@@ -148,7 +156,34 @@ def _plugin_problems(plugins: Path) -> list[str]:
             table = {"?": 1}
         if table:
             return ["plugin installé"]
+    cache = plugins / DIRECTORY_CACHE
+    if cache.exists() and not _directory_cache_ok(cache):
+        return [f"plugins/{DIRECTORY_CACHE} de forme inconnue"]
     return []
+
+
+def _directory_cache_ok(cache: Path) -> bool:
+    """Catalogue des places de marché : fichier ordinaire, clés connues, rien d'installé."""
+    if not cache.is_file():
+        return False
+    try:
+        data = json.loads(cache.read_text("utf-8"))
+    except OSError, ValueError:  # JSON ou UTF-8 illisible
+        return False
+    if not isinstance(data, dict) or not set(data) <= DIRECTORY_CACHE_KEYS:
+        return False
+    if not isinstance(data.get("listings", []), list):
+        return False
+    stack: list = [data]
+    while stack:
+        node = stack.pop()
+        if isinstance(node, dict):
+            if any(INSTALL_KEY.search(str(key)) for key in node):
+                return False
+            stack.extend(node.values())
+        elif isinstance(node, list):
+            stack.extend(node)
+    return True
 
 
 def ancestor_memory_files(cwd: Path) -> list[Path]:
