@@ -24,6 +24,7 @@ from nn_weight_writing.cli import main  # noqa: E402
 from nn_weight_writing.datasets.legal import Sizes, generate  # noqa: E402
 from nn_weight_writing.evaluation.labels import read_labels  # noqa: E402
 from nn_weight_writing.evaluation.verify import EvaluationRefused  # noqa: E402
+from nn_weight_writing.network import sha256_file, tree_sha256  # noqa: E402
 from nn_weight_writing.tasks.legal.types import HELD_OUT  # noqa: E402
 
 
@@ -147,6 +148,23 @@ def test_retrain_refuses_a_tampered_source(legal_root, tmp_path):
     (source / "frozen" / "manifest.json").write_text("{}", encoding="utf-8")
     with pytest.raises(EvaluationRefused):
         retrain(source, data, n=64, seed=0, runs_root=tmp_path, lot="r")
+
+
+def test_retrain_drops_the_blocks_declared_by_a_session(legal_root, tmp_path):
+    data = legal_root / "data" / "legal_s" / "train"
+    source = train("legal_s", data, n=64, seed=6, runs_root=tmp_path, lot="b")
+    path = source / "frozen" / "manifest.json"
+    manifest = json.loads(path.read_text("utf-8"))
+    manifest["blocks"] = [{"rule": "r", "types": ["t10"], "units": [[0, 0]]}]
+    path.write_text(json.dumps(manifest), encoding="utf-8")
+    run_path = source / "run.json"
+    run = json.loads(run_path.read_text("utf-8"))
+    run["files"]["manifest.json"] = sha256_file(path)
+    run["tree_sha256"] = tree_sha256(run["files"])
+    run_path.write_text(json.dumps(run), encoding="utf-8")
+    out = retrain(source, data, n=64, seed=0, runs_root=tmp_path, lot="b2")
+    new_manifest, _ = network.load(out / "frozen")
+    assert "blocks" not in new_manifest and new_manifest["layers"] == manifest["layers"]
 
 
 def test_cli_train_prepared_and_retrain(legal_root, capsys):

@@ -264,6 +264,9 @@ def retrain(
     manifest = network.validate_manifest(
         json.loads((session_dir / FROZEN_DIR / MANIFEST_NAME).read_text("utf-8")), with_blocks=True
     )
+    manifest.pop(
+        "blocks", None
+    )  # déclaration de séance (ablation) : le format d'un témoin est fermé
     config = load_train_config(task_name, config_path)
     run_dir = Path(runs_root) / lot / "train" / f"{session_dir.name}-retrain-n{n}-s{seed}"
     extra = {"retrained_from": {"session": session_dir.name, "tree_sha256": tree}}
