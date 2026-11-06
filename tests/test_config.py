@@ -65,6 +65,7 @@ def test_models_config():
     }
     assert models["mimo-v2.6-pro"].provider_order == ("xiaomi",)
     assert models["mimo-v2.6-pro"].effort == "medium"
+    assert models["mimo-v2.6-pro"].max_tokens == 131072
     assert not models["sonnet-5.5"].billed and models["sonnet-5.5-api"].billed
 
 
