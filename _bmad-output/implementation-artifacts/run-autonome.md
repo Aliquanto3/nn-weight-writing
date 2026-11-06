@@ -251,3 +251,5 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-06 18:08 · 1.10 · review · moitié Sonnet + Fable, passe 2 : 0 Important, 2 low corrigés (RecursionError rattrapée, liens refusés) · acc13e6
 - 2026-11-06 18:08 · 1.11 · dev · seconde partie, volet Sonnet + Fable fini : 18 architectures réentraînées à 8 192 (3 graines) ; défaut de retrain corrigé (clé blocks des manifestes de séance) ; revue groupée avec le volet MiMo · 3a7d336
 - 2026-11-06 18:08 · 1.10 · CI · rouge Linux et macOS (PR #24) : test de JSON trop profond dépendant de la pile ; correctif de profondeur explicite lancé (dev-story Sonnet) · acc13e6
+- 2026-11-06 18:12 · 1.10 · CI · verte sur les trois OS après profondeur maximale explicite (32, catalogue réel à 7) · 0cdab32
+- 2026-11-06 18:12 · 1.10 · fusion · #24 fusionnée (moitié Sonnet + Fable), MERGED vérifié · 8fe5c4d
