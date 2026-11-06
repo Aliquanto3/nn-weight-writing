@@ -52,7 +52,6 @@ STRIPPED_ENV_PREFIXES = ("ANTHROPIC_", "CLAUDE", "OPENROUTER_", "OPENAI_", "AWS_
 # Entrées d'un dossier de configuration qui chargeraient du contexte ou des outils.
 FORBIDDEN_CONFIG_ENTRIES = (
     "CLAUDE.md",
-    "skills",
     "agents",
     "commands",
     "output-styles",
@@ -64,8 +63,12 @@ HARMLESS_SETTINGS_KEYS = frozenset({"$schema", "theme"})
 # `plugins/` : fichiers et dossiers que Claude Code crée de lui-même à la connexion (liste et
 # cache des places de marché, sans plugin installé).
 MARKETPLACE_ENTRIES = frozenset(
-    {"known_marketplaces.json", "marketplaces", "installed_plugins.json"}
+    {"known_marketplaces.json", "marketplaces", "installed_plugins.json", "store", "synced"}
 )
+# `skills/` : seul `synced` (copie des skills du compte claude.ai que Claude Code recrée à chaque
+# lancement, sans réglage `syncClaudeAiSkills: false`). Elle n'est pas chargée :
+# `--disable-slash-commands` vide `skills` dans l'événement `init`, contrôlé à chaque séance.
+SYNCED_ENTRIES = frozenset({"synced"})
 # Outils de ressources MCP ajoutés par Claude Code à tout serveur MCP ; le nôtre n'en expose pas.
 MCP_RESOURCE_TOOLS = frozenset({"ListMcpResourcesTool", "ReadMcpResourceTool"})
 USAGE_LIMIT = re.compile(
@@ -85,6 +88,11 @@ def config_dir_problems(path: Path) -> list[str]:
         return [f"{path} absent : connexion unique d'Anaël requise (voir la spec de 1-6)"]
     problems = [f"{name} présent" for name in FORBIDDEN_CONFIG_ENTRIES if (path / name).exists()]
     problems += _plugin_problems(path / "plugins")
+    skills = path / "skills"
+    if skills.exists():
+        extra = sorted(e.name for e in skills.iterdir() if e.name not in SYNCED_ENTRIES)
+        if extra or not skills.is_dir():
+            problems.append(f"skills présent : {extra}")
     settings = path / "settings.json"
     if settings.exists():
         try:

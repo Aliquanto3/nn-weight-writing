@@ -224,10 +224,11 @@ def test_config_dir_not_dedicated_refused_before_launch(session_env, monkeypatch
     if entry.endswith(".md"):
         target.write_text("# global", "utf-8")
     else:
-        target.mkdir()
+        (target / "mes-skills").mkdir(parents=True)
     outcome = session_env.run(claude_model(), method="B")
     assert outcome.reason == "error"
-    assert outcome.detail == f"configuration Claude Code non dédiée : {entry} présent"
+    expected = f"{entry} présent" if entry.endswith(".md") else "skills présent : ['mes-skills']"
+    assert outcome.detail == f"configuration Claude Code non dédiée : {expected}"
     assert not capture.exists()
 
 
@@ -250,6 +251,15 @@ def test_config_dir_plugins_cache_only_admitted(tmp_path):
     assert config_dir_problems(tmp_path) == []  # cache de place de marché seul
     (plugins / "installed_plugins.json").write_text('{"version": 2, "plugins": {}}', "utf-8")
     assert config_dir_problems(tmp_path) == []  # table vide
+
+
+def test_config_dir_synced_account_copies_admitted(tmp_path):
+    (tmp_path / "skills" / "synced").mkdir(parents=True)
+    (tmp_path / "plugins" / "synced").mkdir(parents=True)
+    (tmp_path / "plugins" / "store").mkdir()
+    assert config_dir_problems(tmp_path) == []
+    (tmp_path / "skills" / "perso").mkdir()
+    assert config_dir_problems(tmp_path) == ["skills présent : ['perso']"]
 
 
 def test_config_dir_installed_plugin_refused(tmp_path):
