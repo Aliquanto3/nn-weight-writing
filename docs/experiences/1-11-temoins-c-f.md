@@ -116,3 +116,59 @@ Branche à jour de `origin/main` (2d3eeef), relu `224f1a6..70b0bb7` (équivalent
 - Nit, low, revue : « devance de 4 points à N = 1 024 sur les deux tâches » (2,7 points sur S-réservé) et « 0,6 point en moyenne » (0,4 sur les huit lignes). Corrigé dans la Lecture et le Protocole.
 - Nit, low, revue : le plateau des 100 époques n'est montré qu'à N = 8 192 ; à N = 64 ou 256, 100 époques ne font que 100 à 400 pas d'Adam, et la lecture « F accélère aux petits N » en dépend. Reporté (réserve de protocole, à tester en 1-14 si les petits N servent à une conclusion).
 - Complexité : 0 constat.
+
+## Seconde partie : réentraînement des architectures Sonnet 5.5 et Fable 5.1 (18 séances A de 1-10)
+
+Commande : `nnww retrain` (fonction `retrain`, via `scripts/reentrainement.py`), N = 8 192 premiers exemples de `data/<tâche>/train` (celui de la tâche de la séance), graines 0, 1, 2, hyperparamètres de `config/train.toml` de la tâche. Empreinte de la séance vérifiée d'abord, poids de la séance hachés pour l'empreinte (`verify_frozen`), jamais utilisés comme initialisation, `blocks` écartés du manifeste (format de témoin fermé : correctif `9efb27e`). Exactitude mesurée comme en première partie (`baselines.curve.measure`, 4 000 références du réservé, moyenne ± écart-type de population sur 3 graines). Séances de `1-10s` (lecture seule) : 18 séances A, 54 runs, enregistrements bruts `runs/1/reentrainement.jsonl` (hors commit). MiMo n'a gelé aucune séance A (arrêté sur S, voir `docs/experiences/1-10-s-mimo.md`) : cette section ne couvre que Sonnet et Fable. Les séances B n'ont pas de réseau.
+
+Écart = moyenne réentraînée − exactitude de la séance (points). « C 8 192 » = C de référence de la première partie (98 018 paramètres).
+
+| Modèle | Tâche | Case | Tent. | Paramètres | Séance A (%) | Réentraîné, 3 graines (%) | Écart (pts) | C 8 192 (%) |
+|---|---|---|---|---|---|---|---|---|
+| Sonnet 5.5 | legal_s | A-program 10^4 | 1 | 30632 | 68.6 | 86.0 ± 0.9 | +17.4 | 83,7 ± 0,7 |
+| Sonnet 5.5 | legal_s | A-program 10^4 | 2 | 30632 | 60.7 | 86.0 ± 0.9 | +25.3 | 83,7 ± 0,7 |
+| Sonnet 5.5 | legal_s | A-program 10^4 | 3 | 30632 | 61.2 | 86.0 ± 0.9 | +24.8 | 83,7 ± 0,7 |
+| Sonnet 5.5 | legal_s | A-program 10^5 | 1 | 171530 | 94.9 | 83.8 ± 0.7 | -11.1 | 83,7 ± 0,7 |
+| Sonnet 5.5 | legal_s | A-program 10^5 | 2 | 306302 | 85.8 | 83.1 ± 0.8 | -2.6 | 83,7 ± 0,7 |
+| Sonnet 5.5 | legal_s | A-program 10^5 | 3 | 245042 | 93.0 | 83.2 ± 0.4 | -9.9 | 83,7 ± 0,7 |
+| Sonnet 5.5 | legal_s | A-literal 10^4 | 1 | 30632 | 58.0 | 86.0 ± 0.9 | +28.0 | 83,7 ± 0,7 |
+| Sonnet 5.5 | legal_s | A-literal 10^4 | 2 | 30632 | 66.3 | 86.0 ± 0.9 | +19.7 | 83,7 ± 0,7 |
+| Sonnet 5.5 | legal_s | A-literal 10^4 | 3 | 12254 | 56.4 | 83.1 ± 0.8 | +26.8 | 83,7 ± 0,7 |
+| Fable 5.1 | legal_s | A-program 10^4 | 1 | 30632 | 92.2 | 86.0 ± 0.9 | -6.2 | 83,7 ± 0,7 |
+| Fable 5.1 | legal_s | A-program 10^5 | 1 | 276349 | 98.4 | 61.5 ± 16.3 | -36.9 | 83,7 ± 0,7 |
+| Fable 5.1 | legal_s | A-literal 10^4 | 1 | 30632 | 87.9 | 86.0 ± 0.9 | -1.9 | 83,7 ± 0,7 |
+| Sonnet 5.5 | legal_s_reserved | A-program 10^5 | 1 | 98018 | 89.0 | 83.6 ± 0.5 | -5.4 | 83,6 ± 0,5 |
+| Sonnet 5.5 | legal_s_reserved | A-program 10^5 | 2 | 131711 | 89.6 | 82.7 ± 0.3 | -7.0 | 83,6 ± 0,5 |
+| Sonnet 5.5 | legal_s_reserved | A-program 10^5 | 3 | 196034 | 87.8 | 82.9 ± 0.4 | -4.8 | 83,6 ± 0,5 |
+| Sonnet 5.5 | legal_s_reserved | A-literal 10^4 | 1 | 30632 | 80.3 | 82.4 ± 1.6 | +2.2 | 83,6 ± 0,5 |
+| Sonnet 5.5 | legal_s_reserved | A-literal 10^4 | 2 | 12254 | 56.4 | 83.1 ± 1.2 | +26.7 | 83,6 ± 0,5 |
+| Sonnet 5.5 | legal_s_reserved | A-literal 10^4 | 3 | 21443 | 65.4 | 83.3 ± 0.4 | +18.0 | 83,6 ± 0,5 |
+
+
+S-réservé, détail du réentraînement (types tenus à l'écart séparés ; C de référence à 8 192 : vraies 96,8 ± 0,9, 10 connus 93,8 ± 0,9, 5 tenus 23,6 ± 0,9) :
+
+| Case | Tent. | Séance A | vraies | 10 connus | 5 tenus |
+|---|---|---|---|---|---|
+| A-program 10^5 | 1 | 89.0 | 96.8 ± 0.9 | 93.8 ± 0.9 | 23.6 ± 0.9 |
+| A-program 10^5 | 2 | 89.6 | 95.8 ± 0.3 | 92.5 ± 0.5 | 23.6 ± 0.4 |
+| A-program 10^5 | 3 | 87.8 | 96.6 ± 0.2 | 92.4 ± 0.7 | 22.8 ± 0.6 |
+| A-literal 10^4 | 1 | 80.3 | 97.2 ± 1.0 | 92.2 ± 3.6 | 18.7 ± 2.0 |
+| A-literal 10^4 | 2 | 56.4 | 96.6 ± 0.7 | 92.1 ± 3.5 | 24.5 ± 1.4 |
+| A-literal 10^4 | 3 | 65.4 | 96.8 ± 0.8 | 95.7 ± 1.0 | 18.1 ± 2.4 |
+
+
+Constats factuels :
+
+- Les trois tentatives Sonnet de A-program 10^4 sur S, deux des trois de A-littéral 10^4 sur S et l'A-littéral et l'A-program 10^4 de Fable ont la même architecture (3 060 → 10 → 2, 30 632 paramètres) : leur réentraînement est identique (86,0 ± 0,9 %, mêmes graines, mêmes données). Cette architecture réentraînée dépasse C de référence (83,7 %) de 2,3 points avec 3 fois moins de paramètres.
+- Sonnet, 10^4 sur S : séances A à 56-69 %, réentraînées à 83-86 % (+17 à +28 points). Sur ces architectures, le gel de A-programme et A-littéral reste loin de ce que la forme permet.
+- Sonnet, 10^5 sur S : séances A à 85,8-94,9 %, réentraînées à 83,1-83,8 %, soit autant que C (83,7 %), alors que les paramètres vont de 171 530 à 306 302. Les poids écrits dépassent de 2,6 à 11,1 points ceux obtenus par gradient sur la même forme à N = 8 192.
+- Fable, 10^4 sur S : A-programme 92,2 % contre 86,0 % réentraîné (poids écrits au-dessus de 6,2 points) ; A-littéral 87,9 % contre 86,0 % (+1,9).
+- Fable, 10^5 sur S : la séance est à 98,4 %, le réentraînement à 61,5 ± 16,3 % (graines : 50,0 %, 84,6 %, 50,0 %). L'architecture est 3 060 → 89 → 31 → 33 → 2 → 2, activation `relu` à toutes les couches, dont un goulet de 2 unités `relu` (33 → 2 puis 2 → 2). Les graines 0 et 2 prédisent une classe constante (50,0 %, biais de sortie de la dernière couche négatifs) ; la graine 1 (84,6 %) a un biais de sortie à +3,5. Mécanisme observé : unités `relu` mortes au goulet, prédiction constante ; non retravaillé ici.
+- S-réservé, Sonnet : A-program 10^5 à 87,8-89,6 %, réentraînement à 82,7-83,6 %, soit C (83,6 %) ; A-littéral 10^4 de 56,4 à 80,3 % contre 82,4-83,3 % réentraîné. Sur les types tenus à l'écart, le réentraînement donne 18 à 25 % comme C (23,6 %), tandis que les séances B de 1-10 (même moitié) retrouvaient t09 et t11 par déduction : l'écart des séances A sur ces types n'est pas mesuré ici (seule l'exactitude globale de la séance est reprise).
+
+Question de la méthode C, « l'écart vient-il des poids ou de la forme du réseau ? » : constats à N = 8 192 seulement, un seul point ; la conclusion revient à 1-14.
+
+- Sonnet 10^4 sur S et A-littéral 10^4 de S-réservé : la séance A est sous la même forme réentraînée (jusqu'à +28 points au tableau, convention réentraîné − séance).
+- Sonnet 10^5, Fable 10^4, S-réservé A-program : la séance A est au-dessus de la même forme réentraînée (de −2,6 à −11,1 points au tableau). C passe à 94,6 % à 32 768 sur S : l'avance de la séance sur C dépend de N.
+- Les formes gelées réentraînées à 8 192 sont dans le bruit de C de référence (σ 0,3 à 0,8), sauf le cas Fable 10^5 (goulet `relu` mort) et le 86,0 % de la forme 3 060 → 10 → 2 au-dessus de C.
+- Séparer poids et forme demanderait de réentraîner à d'autres N (la forme seule) et de comparer aux séances à N équivalent ; non fait ici.
