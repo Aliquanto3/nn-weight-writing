@@ -15,7 +15,7 @@ Séances A-programme, A-littéral et B de `sonnet-5.5` (pilote Claude Code, abon
 
 - `docs/experiences/1-8-jouet-sonnet.md` (tableau des 9 cases, défauts, preuve de l'événement `init`, étanchéité, recalibrage).
 - `budget/ledger.csv` écrit par le harnais.
-- Correctifs `bf4c086` et `ef9f6cb` : `session/claude_code.py` (contrôle de la configuration dédiée) et `tests/test_claude_code.py`.
+- Correctifs `aed4996` et `49ce9c0` (`bf4c086`, `ef9f6cb` avant rebase) : `session/claude_code.py` (contrôle de la configuration dédiée) et `tests/test_claude_code.py`.
 
 ## Décisions
 
@@ -26,10 +26,27 @@ Séances A-programme, A-littéral et B de `sonnet-5.5` (pilote Claude Code, abon
 
 ## Résultats
 
-9 séances gelées sur 9, 400/400 sur le réservé, 0 à 3 passes sur 20, 0 $ facturé, 0,421884 $ équivalent API (journal ; environ le double selon `result.total_cost_usd` de Claude Code), aucun drapeau d'audit, aucune limite d'usage. Une séance refusée avant lancement par le défaut 2, rejouée. Événement `init` : aucun plugin tiers, skill, commande ni outil hors serveur du harnais (agents : seuls les intégrés).
+9 séances gelées sur 9, 400/400 sur le réservé, 0 à 3 passes sur 20, 0 $ facturé, 0,421884 $ équivalent API au journal, 0,828 $ équivalent réel estimé (`result.total_cost_usd` de Claude Code, une séance estimée × 2,08), aucun drapeau d'audit, aucune limite d'usage. Une séance refusée avant lancement par le défaut 2, rejouée. Événement `init` : aucun plugin tiers, skill, commande ni outil hors serveur du harnais (agents : seuls les intégrés).
 
 ## Reports
 
-- Coût équivalent du pilote Claude Code sous-estimé d'environ moitié (jetons de sortie partiels dans les événements `assistant`, cache écrit en tranche d'une heure non pris en compte par `pricing.toml`) : lire `result.usage`, trancher le tarif de cache (story du harnais).
-- Contrôle des `agents` de `init` dans `init_problems` ; éventuellement `syncClaudeAiSkills: false` dans le `settings.json` dédié.
+- Coût équivalent et contrôle des `agents` : corrigés en revue (`5adf75b`). Reste : tarif `cache_write_1h` de Fable 5.1 (20,00 $) à confirmer sur la page de prix ; première séance réelle après correctif à vérifier (réconciliation présente, `end.totals.cost_equiv_usd` égal à `total_cost_usd` au micro-dollar près). Éventuellement `syncClaudeAiSkills: false` dans le `settings.json` dédié.
 - Décision de `pass_budget` avant 1-9 ; effort `medium` des modèles Claude à confirmer par Anaël ; commande d'exactitude : 1-14.
+
+## Revue
+
+### Passe 1 (2026-11-06, SHA revu 172ae8a)
+
+Base : `origin/main` 925c602, à jour. Correctifs : `5adf75b` (Fix), compte rendu (Docs).
+
+- Important, medium, second avis 2 et 4 : écriture du cache d'une heure tarifée au taux de 5 min, équivalents biaisés bas. Corrigé : `cache_write_1h` dans `Price` et `pricing.toml` (Sonnet 4,00 $ relevé ; Fable 20,00 $ à confirmer), `Usage.cache_write_1h`, champ optionnel `cache_write_1h_tokens` du `model_call` (lecteur rétrocompatible, `OPTIONAL_FIELDS`).
+- Important, medium, second avis 3 : sortie partielle des événements `assistant`. Prouvé par le compte rendu (84 contre 2138 jetons). Corrigé : journal gardé ouvert après le gel pour ce pilote (`close_on_freeze`), `model_call` de réconciliation sur `result.usage` avec `total_cost_usd` ; test sur flux simulé (`test_session_cost_reconciled_with_result_usage_and_1h_cache`) et refus d'outil après gel testé.
+- Important, medium, second avis 1 : « doubler » présenté comme majorant. Corrigé : tableau des équivalents réels des 9 séances, 0,828 $ (parité A-programme estimée × 2,08, marquée).
+- Nit, low, second avis 5 : `skills` fichier → `NotADirectoryError`. Corrigé et testé.
+- Nit, low, second avis 6 : `installed_plugins.json` non UTF-8 levait. Corrigé et testé. `"plugins": null` : rejeté (aucun plugin déclaré, admis à bon droit).
+- Nit, low, second avis 7 : `agents` non contrôlé. Corrigé : seuls les cinq agents intégrés observés admis, testé.
+- Nit, low, second avis 8 : cas `plugins` au niveau séance. Rejeté : `config_dir_problems` est l'unique entrée et le cas séance `skills` couvre le chemin de refus avant lancement.
+- Nit, low, second avis 9 : lignes de registre dans le commit Fix. Noté, historique non réécrit en revue (correctif et données séparables plus tard si voulu).
+- Nit, low, second avis 10 : « ligne error » et SHA d'avant rebase. Corrigé dans le compte rendu et la spec.
+- Nit, low, revue : une séance tuée (délai, contamination) n'a pas de `result` et garde un équivalent partiel. Reporté, noté au compte rendu.
+- Complexité : 0 constat (réconciliation en O(messages), une fois par séance).
