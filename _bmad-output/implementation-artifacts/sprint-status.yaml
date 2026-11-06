@@ -4,7 +4,7 @@
 project: nn-weight-writing
 tracking_system: file-system
 story_location: _bmad-output/implementation-artifacts/stories
-last_updated: 2026-11-06 05:52
+last_updated: 2026-11-06 06:46
 
 development_status:
   epic-1: in-progress
@@ -16,7 +16,7 @@ development_status:
   1-6-pilotes-fournisseurs-cout-plafond: done
   1-7-taches-jouet-temoins: done
   1-8-seances-jouet-calibrage-budget-passes: done
-  1-9-generateurs-s-s-reserve: in-progress
+  1-9-generateurs-s-s-reserve: done
   1-10-seances-a-b-s-porte-cout: backlog
   1-11-temoins-c-f-s: backlog
   1-12-pre-etude-r-porte-30: backlog

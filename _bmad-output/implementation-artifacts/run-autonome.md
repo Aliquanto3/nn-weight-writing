@@ -36,7 +36,7 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 ## Brief
 
 - **Tâche du run** : run autonome sur le lot 1 de `stories.yaml`, 1-1 à 1-6 d'abord ; 1-2 et 1-3 attendent la clé OpenRouter et le compte PISTE d'Anaël ; conforme à ARCHITECTURE-SPINE.md ; topic GitHub passé à `status-dev`.
-- **Intention courante** : reprise le 2026-11-06 05:22 (connexion Claude Code et compte PISTE activés, CAP-1 sur S tranché) : 1-8 moitié Sonnet puis recalibrage unique du budget de passes (décision avant 1-9) ; 1-3 T1-T8 et verdict du point 1 ; puis 1-9. Décisions encore en attente (MNIST A-D, D13 linalg, D4 max_tokens, `max_session_usd`, `session_timeout_s`, effort des séances) : valeurs actuelles gardées, aucune story qui en dépend.
+- **Intention courante** : run en pause depuis le 2026-11-06 06:46 : 1-1 à 1-9 fusionnées, budget de passes figé à 20 ; 1-10 et suivantes attendent les décisions d'Anaël ci-dessous. Historique de la reprise : reprise le 2026-11-06 05:22 (connexion Claude Code et compte PISTE activés, CAP-1 sur S tranché) : 1-8 moitié Sonnet puis recalibrage unique du budget de passes (décision avant 1-9) ; 1-3 T1-T8 et verdict du point 1 ; puis 1-9. Décisions encore en attente (MNIST A-D, D13 linalg, D4 max_tokens, `max_session_usd`, `session_timeout_s`, effort des séances) : valeurs actuelles gardées, aucune story qui en dépend.
 - **Plan des vagues restantes** : 1-8 moitié Sonnet + recalibrage unique du budget de passes (décision au journal, avant 1-9) ; 1-9 (après décision CAP-1 sur S) ; 1-10 et 1-11 ensuite ; 1-12 (après PISTE, Ollama, collecte) ; 1-13, 1-14 et v0.1.0.
 - **Artefacts utiles** : constats dans `docs/verifications/` ; specs de story dans `_bmad-output/implementation-artifacts/stories/` ; décisions D1-D12 de 1-5 dans sa spec de story.
 - **Ressources activées (2026-11-06)** : connexion `~/.nnww/claude-config` faite ; `NNWW_CLAUDE_CWD_ROOT='C:\nnww-cwd'` à poser dans chaque commande de séance, jamais de façon permanente ; identifiants PISTE dans `.env` (ignoré), chargés seulement dans la commande (`set -a; . ./.env; set +a`), valeurs jamais affichées. Pas d'`ANTHROPIC_API_KEY` : aucun test réel du repli API.
@@ -46,6 +46,10 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 ## Reports au rapport du lot 1 (1-14)
 
 - Réserves de CAP-1 sur S (constat 1-1, décision d'Anaël du 2026-11-06) : liste des 15 types (3 attestés, 12 reconstruits), format des références, proportions vraies/fausses et par juridiction, chiffre de référence divergent selon les republications (97,7 % contre 82,8 %, ou 97,8 % contre 94,6 %).
+
+- Écarts de distribution de S relevés en revue de 1-9 : t02 au Conseil d'État (3 lignes en graine 0 gardent « sous-sect. » à une date postérieure au 20 avril 2016, forme qu'aucune vraie n'a) ; t14 (chambre tirée parmi 6, criminelle à 1/6) ; t07 (formation numérotée à 100 % contre 93 % chez les vraies).
+- S-réservé : 45 % de Cour de cassation parmi les fausses et les vraies de séance et d'entraînement (4 des 10 types connus ne visent qu'elle), journalisé dans dataset.json.
+- Coût équivalent API du pilote Claude Code sous-compté avant 1-8 (0,42 $ au journal contre 0,83 $ réels sur les 9 séances Sonnet), corrigé en 1-8.
 
 ## Sprint 1 — Lot 1, reproduction critique (1-1 à 1-6)
 
@@ -191,3 +195,18 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-06 05:52 · 1.8 · décision · recalibrage unique du budget de passes : pass_budget = 20 conservé et figé pour toutes les séances mesurées (tous modèles, toutes tâches, A et B). Motifs : 18 cases sur 18 gelées, maximum 3 passes (15 %), moyenne 0,94, aucune fin pass_budget ; le jouet ne donne qu'une borne basse et S est bien plus dur ; une valeur haute ne coûte rien quand la tâche est facile. Une case de S finie en pass_budget se lit « budget atteint » · d142d3d
 - 2026-11-06 05:52 · 1.8 · report · à vérifier sur la première séance réelle suivante (1-10) : end.totals.cost_equiv_usd égale result.total_cost_usd ; tarif d'écriture de cache 1 h de Fable 5.1 (20 $/Mtok) à confirmer · d142d3d
 - 2026-11-06 05:52 · 1.9 · dev · spec de story lancée avant le code (general-purpose Opus, worktree 1-9) : format des références, 15 types, faits juridiques vérifiés, encodeur ; relue par second-avis avant dev-story · 6990ff8
+- 2026-11-06 06:15 · 1.9 · dev · spec de story écrite : format abrégé unique sans ECLI, solution ni publication (types 13 à 15 remplacés), faits relevés sur Judilibre et Légifrance, vérificateur de règles indépendant, encodeur legal.chars@1 (3 060 entrées, référence C à 98 018 paramètres) ; 3 points à confirmer (encodeur par famille legal, 45 % de Cour de cassation dans S-réservé, phrase propre à S-réservé) · 189378f
+- 2026-11-06 06:15 · 1.9 · second-avis · spec relue avant le code (lancé) · 189378f
+- 2026-11-06 06:21 · 1.9 · second-avis · spec : 1 high (--dataset contournable par un chemin vers heldout/ ou train), 4 medium (écart d'années des vraies tronqué à 4 ans, fêtes fixes devinables par la date, encodeur de famille sans tâche au manifeste, Pâques non vérifiée indépendamment), 5 low · 189378f
+- 2026-11-06 06:21 · 1.9 · décision · O1-O10 tranchées par l'orchestrateur (liste blanche des jeux de séance, distribution observée des écarts, fêtes mobiles seules pour t12, encodeur legal.* avec tâche au manifeste et évaluation croisée explicite, table de Pâques indépendante…), reportées dans la spec ; 45 % de Cour de cassation dans S-réservé et phrase propre à S-réservé à confirmer par Anaël · 189378f
+- 2026-11-06 06:21 · 1.9 · dev · lancé (dev-story Sonnet, worktree 1-9, rebase sur 5c8a727 d'abord) · 189378f
+- 2026-11-06 06:32 · 1.9 · dev · fini : tâches legal_s et legal_s_reserved, jeux 4 000 / 40 / 8 192 sans recouvrement, O1-O10 appliquées (tâche contrôlée à l'évaluation par le journal ou run.json, évaluation croisée laissée à 1-14) ; tests ciblés verts · 82a4a40
+- 2026-11-06 06:32 · 1.9 · PR · #19 brouillon ouverte pour la CI trois OS · 82a4a40
+- 2026-11-06 06:32 · 1.9 · second-avis · lancé · 82a4a40
+- 2026-11-06 06:38 · 1.9 · second-avis · 0 high, 0 medium, 8 low (labels de séance à côté des exemples, jour non borné dans legal.fields, contrôle O4 contournable par un codec sans nom, renommage toy-dev incomplet dans conftest) ; garde O1, frontière AD-1, vérificateur et surface vérifiés sur 20 000 lignes · 82a4a40
+- 2026-11-06 06:38 · 1.9 · review · lancé (reviewer Opus) · 82a4a40
+- 2026-11-06 06:46 · 1.9 · review · passe 1 : 0 Important, 4 low corrigés (codec sans nom refusé, test du séparateur Windows, renommage toy, message de refus d'un run.json sans tâche), 4 rejetés, 3 écarts de distribution gardés pour le rapport du lot 1 · fe9198e
+- 2026-11-06 06:46 · 1.9 · CI · verte sur les trois OS (PR #19) · fe9198e
+- 2026-11-06 06:46 · 1.9 · fusion · #19 fusionnée, MERGED vérifié · 0c99d84
+- 2026-11-06 06:46 · 1.9 · attente humaine · à confirmer : 45 % de Cour de cassation dans S-réservé, phrase propre à S-réservé, amendement de AD-4 (encodeur par famille legal, tâche contrôlée à l'évaluation) · 0c99d84
+- 2026-11-06 06:46 · run · report · run en pause : 1-1 à 1-9 fusionnées ; 1-10 à 1-14 attendent les décisions d'Anaël (D4 max_tokens, max_session_usd, session_timeout_s, effort des séances pour 1-10 ; MNIST A-D avant 2-1 ; D13 linalg ; CGU PISTE avant 1-14 ; Ollama + GPU et place de la collecte avant 1-12) · 0c99d84
