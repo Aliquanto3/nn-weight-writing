@@ -217,7 +217,7 @@ def _alive(pid: int) -> bool:
     return True
 
 
-@pytest.mark.parametrize("entry", ["CLAUDE.md", "plugins", "skills"])
+@pytest.mark.parametrize("entry", ["CLAUDE.md", "skills"])
 def test_config_dir_not_dedicated_refused_before_launch(session_env, monkeypatch, entry):
     capture = scenario(monkeypatch, session_env.tmp, {"turns": FREEZE_TURNS})
     target = session_env.config_dir / entry
@@ -240,6 +240,38 @@ def test_config_dir_problems(tmp_path):
     assert config_dir_problems(tmp_path) == []
     (tmp_path / "settings.json").write_text('{"enabledPlugins": {}, "hooks": {}}', "utf-8")
     assert config_dir_problems(tmp_path) == ["settings.json non vide : ['enabledPlugins', 'hooks']"]
+
+
+def test_config_dir_plugins_cache_only_admitted(tmp_path):
+    assert config_dir_problems(tmp_path) == []  # plugins absent
+    plugins = tmp_path / "plugins"
+    (plugins / "marketplaces" / "claude-plugins-official").mkdir(parents=True)
+    (plugins / "known_marketplaces.json").write_text("{}", "utf-8")
+    assert config_dir_problems(tmp_path) == []  # cache de place de marché seul
+    (plugins / "installed_plugins.json").write_text('{"version": 2, "plugins": {}}', "utf-8")
+    assert config_dir_problems(tmp_path) == []  # table vide
+
+
+def test_config_dir_installed_plugin_refused(tmp_path):
+    plugins = tmp_path / "plugins"
+    plugins.mkdir()
+    (plugins / "installed_plugins.json").write_text(
+        '{"version": 2, "plugins": {"x@y": [{"scope": "user"}]}}', "utf-8"
+    )
+    assert config_dir_problems(tmp_path) == ["plugin installé"]
+    (plugins / "installed_plugins.json").write_text("pas du json", "utf-8")
+    assert config_dir_problems(tmp_path) == ["plugin installé"]
+    (plugins / "installed_plugins.json").unlink()
+    (plugins / "cache").mkdir()
+    assert config_dir_problems(tmp_path) == ["plugins présent : ['cache']"]
+
+
+def test_config_dir_settings_theme_admitted_other_key_refused(tmp_path):
+    settings = tmp_path / "settings.json"
+    settings.write_text('{"theme": "dark"}', "utf-8")
+    assert config_dir_problems(tmp_path) == []
+    settings.write_text('{"theme": "dark", "model": "opus"}', "utf-8")
+    assert config_dir_problems(tmp_path) == ["settings.json non vide : ['model']"]
 
 
 def test_child_env_strips_keys_and_claude_settings(tmp_path):

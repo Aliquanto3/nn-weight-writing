@@ -52,13 +52,19 @@ STRIPPED_ENV_PREFIXES = ("ANTHROPIC_", "CLAUDE", "OPENROUTER_", "OPENAI_", "AWS_
 # Entrées d'un dossier de configuration qui chargeraient du contexte ou des outils.
 FORBIDDEN_CONFIG_ENTRIES = (
     "CLAUDE.md",
-    "plugins",
     "skills",
     "agents",
     "commands",
     "output-styles",
     "hooks",
     "settings.local.json",
+)
+# `settings.json` : clés sans effet sur le contexte ni sur les outils (apparence du terminal).
+HARMLESS_SETTINGS_KEYS = frozenset({"$schema", "theme"})
+# `plugins/` : fichiers et dossiers que Claude Code crée de lui-même à la connexion (liste et
+# cache des places de marché, sans plugin installé).
+MARKETPLACE_ENTRIES = frozenset(
+    {"known_marketplaces.json", "marketplaces", "installed_plugins.json"}
 )
 # Outils de ressources MCP ajoutés par Claude Code à tout serveur MCP ; le nôtre n'en expose pas.
 MCP_RESOURCE_TOOLS = frozenset({"ListMcpResourcesTool", "ReadMcpResourceTool"})
@@ -78,16 +84,40 @@ def config_dir_problems(path: Path) -> list[str]:
     if not path.is_dir():
         return [f"{path} absent : connexion unique d'Anaël requise (voir la spec de 1-6)"]
     problems = [f"{name} présent" for name in FORBIDDEN_CONFIG_ENTRIES if (path / name).exists()]
+    problems += _plugin_problems(path / "plugins")
     settings = path / "settings.json"
     if settings.exists():
         try:
             data = json.loads(settings.read_text("utf-8") or "{}")
         except json.JSONDecodeError:
             data = {"?": "illisible"}
-        extra = sorted(set(data) - {"$schema"}) if isinstance(data, dict) else ["?"]
+        extra = sorted(set(data) - HARMLESS_SETTINGS_KEYS) if isinstance(data, dict) else ["?"]
         if extra:
             problems.append(f"settings.json non vide : {extra}")
     return problems
+
+
+def _plugin_problems(plugins: Path) -> list[str]:
+    """`plugins/` n'est admis que sans plugin installé : cache des places de marché seulement."""
+    if not plugins.exists():
+        return []
+    if not plugins.is_dir():
+        return ["plugins présent"]
+    extra = sorted(
+        entry.name for entry in plugins.iterdir() if entry.name not in MARKETPLACE_ENTRIES
+    )
+    if extra:
+        return [f"plugins présent : {extra}"]
+    installed = plugins / "installed_plugins.json"
+    if installed.exists():
+        try:
+            data = json.loads(installed.read_text("utf-8") or "{}")
+            table = data.get("plugins") if isinstance(data, dict) else {"?": 1}
+        except json.JSONDecodeError:
+            table = {"?": 1}
+        if table:
+            return ["plugin installé"]
+    return []
 
 
 def ancestor_memory_files(cwd: Path) -> list[Path]:
