@@ -478,3 +478,27 @@ def test_ancestor_memory_files_follows_logical_and_resolved_paths(tmp_path):
         pytest.skip("liens symboliques non permis")
     assert ancestor_memory_files(tmp_path / "propre") == []
     assert ancestor_memory_files(link) == [tmp_path / "salie" / "CLAUDE.md"]
+
+
+def test_timeout_after_freeze_keeps_frozen(session_env, monkeypatch, protocol):
+    """Gel puis `claude` bloqué : le délai le tue, la séance reste gelée, le registre est clos."""
+    scenario(monkeypatch, session_env.tmp, {"turns": FREEZE_TURNS, "hang_after_turns": True})
+    fast = dataclasses.replace(protocol, session_timeout_s=3)
+    outcome = session_env.run(claude_model(), method="B", protocol=fast)
+    records = read_journal(outcome.run_dir)
+    assert outcome.reason == "frozen" and records[-1]["type"] == "end"
+    assert records[-1]["passes_used"] == 1
+    assert ledger.read(session_env.ledger)[-1].status == "closed"
+
+
+def test_error_after_freeze_keeps_frozen_and_is_raised(session_env, monkeypatch):
+    """`result.usage` illisible après le gel : erreur remontée et consignée, séance gelée."""
+    result = {"usage": {"output_tokens": "n/a"}}
+    scenario(monkeypatch, session_env.tmp, {"turns": FREEZE_TURNS, "result": result})
+    with pytest.raises(ValueError):
+        session_env.run(claude_model(), method="B")
+    (run_dir,) = (session_env.ledger.parent / "runs").rglob("journal.jsonl")
+    end = read_journal(run_dir.parent)[-1]
+    assert end["type"] == "end" and end["reason"] == "frozen"
+    assert end["detail"].startswith("ValueError")
+    assert ledger.read(session_env.ledger)[-1].status == "closed"

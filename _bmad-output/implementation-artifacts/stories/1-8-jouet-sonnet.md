@@ -50,3 +50,16 @@ Base : `origin/main` 925c602, à jour. Correctifs : `5adf75b` (Fix), compte rend
 - Nit, low, second avis 10 : « ligne error » et SHA d'avant rebase. Corrigé dans le compte rendu et la spec.
 - Nit, low, revue : une séance tuée (délai, contamination) n'a pas de `result` et garde un équivalent partiel. Reporté, noté au compte rendu.
 - Complexité : 0 constat (réconciliation en O(messages), une fois par séance).
+
+### Passe 2 (2026-11-06, SHA revu 434d9cc)
+
+Base : rebasée sur `origin/main` 050cc3a, sans conflit. Relu : correctifs de la passe 1 (`5c287ce` Fix, `434d9cc` Docs).
+
+- Gel du pilote Claude Code (`close_on_freeze = False`) : tenu. Après le gel, `_call` refuse sans journaliser ni compter de passe (production et empreintes figées), `_outcome` rend `frozen` avant délai ou contamination, `run.py` clôt en `frozen` avec la cause sur exception, pilote API inchangé (défaut `True`), ligne `closed` du registre écrite dans le `finally`.
+- Nit, low, revue : délai et exception après le gel non testés. Corrigé : `test_timeout_after_freeze_keeps_frozen`, `test_error_after_freeze_keeps_frozen_and_is_raised` (option `hang_after_turns` du faux `claude`).
+- Réconciliation : tenue. Écart par clé borné à 0 (écart négatif ignoré, pas de double comptage, sommes des maxima par message), `total_cost_usd` seulement dans `exchange`, coût recalculé à nos tarifs ; oracle du test calculé à la main (4406 µ$), totaux et registre cohérents.
+- `cache_write_1h` : tenu. Sonnet 4,00 $, Fable 20,00 $ marqué à confirmer ; pilote API et OpenRouter sans `cache_write_1h` (tarif de 5 min) ; les 10 journaux de `runs/` relus sans erreur par `read_records`.
+- Nit, low, revue : `totals` de l'`end` sans `cache_write_1h_tokens` (le coût l'intègre, la part n'est lisible qu'en sommant les `model_call`). Rejeté pour cette story : pas de consommateur.
+- Pre-existing, low, revue : un `usage` à valeur non entière (`int("n/a")`) lève dans le pilote, avant comme après le gel ; la séance reste consignée.
+- `init_problems` : cinq agents intégrés seuls admis, tout autre nom (ou nom absent) refusé. Compte rendu : 0,828 $ contre 0,4219 $, × 2,08 recalculé (0,051617 × 2,08 = 0,1074), marqué estimé.
+- Complexité : 0 constat.

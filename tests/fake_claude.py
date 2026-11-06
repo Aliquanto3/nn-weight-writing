@@ -125,6 +125,8 @@ async def main() -> int:
                         },
                     }
                 )
+    if scenario.get("hang_after_turns"):
+        await asyncio.sleep(3600)  # bloqué après le gel : le délai de séance doit le tuer
     result = scenario.get("result", {})
     if result is not None:
         emit(
