@@ -223,3 +223,14 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-06 07:02 · 1.10a · dev · lancé (dev-story Sonnet, worktree 1-10a) · 64ad628
 - 2026-11-06 07:02 · 1.10 · dev · lancé, moitié MiMo, cases B (dev-story Sonnet, worktree 1-10m, ≤ 4 $ facturés) · 64ad628
 - 2026-11-06 07:02 · 1.10 · dev · lancé, moitié Sonnet + Fable, cases B et porte de coût (dev-story Sonnet, worktree 1-10s) · 64ad628
+- 2026-11-06 07:05 · 1.11 · dev · lancé, première partie : courbes C et F sur S et S-réservé (dev-story Sonnet, worktree 1-11) ; réentraînement des architectures de 1-10 ensuite · 1bd3b6b
+- 2026-11-06 07:06 · 1.10a · dev · fini : --size-target 10⁴/10⁵, fenêtre [N/√10, N·√10], refus size_out_of_range, taille dans le prompt, l'événement open et l'identifiant · e63d306
+- 2026-11-06 07:08 · 1.10 · dev · moitié Sonnet + Fable, cases B finies : 7/7 gelées, 0 à 1 passe, aucun drapeau ; S 98,4 à 99,5 % ; S-réservé 87,4 à 89,4 % (fausses : 98,5 à 100 % sur les 10 types connus, 40 à 41 % sur les 5 tenus à l'écart) ; Fable S 98,4 % ; 0 $ facturé, 0,61 $ équivalent API · 22e27cc
+- 2026-11-06 07:08 · 1.10 · décision · porte de coût : médiane facturée des 3 premières séances Sonnet de S = 0 $ (abonnement), médiane équivalente 0,047 $ → 3 tentatives par case, la porte ne joue pas · 22e27cc
+- 2026-11-06 07:08 · 1.8 · report · levé : end.totals.cost_equiv_usd égale result.total_cost_usd (écart ≤ 7e-7 $) ; cache 1 h de Fable à 20 $/Mtok confirmé sur séance réelle · 22e27cc
+- 2026-11-06 07:09 · 1.10a · second-avis · 1 high (journaux antérieurs sans size_target illisibles : exactitude et evaluate en échec), 2 low · e63d306
+- 2026-11-06 07:12 · 1.10a · review · passe 1 : 1 high corrigé (champ optionnel, test, vérifié sur les 7 journaux B de 1-10), 1 low corrigé, 1 rejeté · d137653
+- 2026-11-06 07:13 · 1.10a · review · passe 2 (Sonnet) : rien · d137653
+- 2026-11-06 07:15 · 1.10a · CI · verte sur les trois OS (PR #22) · d137653
+- 2026-11-06 07:15 · 1.10a · fusion · #22 fusionnée, MERGED vérifié · 2d3eeef
+- 2026-11-06 07:15 · 1.10 · dev · relancé, moitié Sonnet + Fable, cases A (15 séances Sonnet, 3 Fable) · 2d3eeef
