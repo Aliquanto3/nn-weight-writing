@@ -14,7 +14,9 @@ import json
 import sys
 from pathlib import Path
 
-from nn_weight_writing import sandbox
+import numpy as np
+
+from nn_weight_writing import network, sandbox
 from nn_weight_writing.evaluation.labels import read_labels
 from nn_weight_writing.evaluation.score import accuracy, check_alignment, score_frozen
 from nn_weight_writing.evaluation.verify import FROZEN_DIR, verify_frozen
@@ -40,8 +42,13 @@ def predict(run_dir: Path, dataset: str) -> tuple[str, dict[str, object], dict]:
     examples = read_examples(examples_path)
     labels = read_labels(labels_path)
     if not rules.exists():
-        score = score_frozen(run_dir, get_task(task).codec, examples_path, labels_path)
-        return tree, {"__score__": score}, labels
+        codec = get_task(task).codec
+        score_frozen(run_dir, codec, examples_path, labels_path)  # contrôles (encodeur, tâche)
+        manifest, weights = network.load(run_dir / FROZEN_DIR)
+        inputs = np.stack([codec.encode(e.raw) for e in examples])
+        outputs = network.forward(manifest, weights, inputs)
+        predictions = {e.id: codec.decode(row) for e, row in zip(examples, outputs, strict=True)}
+        return tree, predictions, labels
     check_alignment(examples, labels)
     result = sandbox.run(
         rules.read_text(encoding="utf-8"), Profile.B, {"examples": [e.raw for e in examples]}
@@ -54,17 +61,13 @@ def predict(run_dir: Path, dataset: str) -> tuple[str, dict[str, object], dict]:
 
 def measure(run_dir: Path, dataset: str) -> tuple[str, int, int]:
     tree, predictions, labels = predict(run_dir, dataset)
-    if "__score__" in predictions:
-        return tree, predictions["__score__"].correct, predictions["__score__"].n
     score = accuracy(predictions, labels)
     return tree, score.correct, score.n
 
 
 def by_type(run_dir: Path, dataset: str) -> dict[str, tuple[int, int]]:
-    """Exactitude par `type_id` (règles B seulement : A n'expose pas les prédictions)."""
+    """Exactitude par `type_id`."""
     _, predictions, labels = predict(run_dir, dataset)
-    if "__score__" in predictions:
-        raise RuntimeError("--par-type n'est défini que pour la méthode B")
     table: dict[str, tuple[int, int]] = {}
     for lid, lab in labels.items():
         ok, n = table.get(lab.type_id, (0, 0))
@@ -76,7 +79,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("run_dirs", nargs="+", type=Path)
     parser.add_argument("--dataset", default="toy")
-    parser.add_argument("--par-type", action="store_true", help="détail par type_id (méthode B)")
+    parser.add_argument("--par-type", action="store_true", help="détail par type_id ")
     args = parser.parse_args(argv)
     for run_dir in args.run_dirs:
         tree, correct, n = measure(run_dir, args.dataset)
