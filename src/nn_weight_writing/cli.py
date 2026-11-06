@@ -78,9 +78,36 @@ def _train(args: argparse.Namespace) -> int:
             seed=args.seed,
             runs_root=Path(args.runs_root),
             lot=args.lot,
+            prepared=args.prepared,
         )
     except (FileExistsError, ValueError) as exc:
         print(f"train refusé : {exc}", file=sys.stderr)
+        return 1
+    print(run_dir)
+    return 0
+
+
+def _retrain(args: argparse.Namespace) -> int:
+    try:
+        from nn_weight_writing.baselines.train import retrain  # PyTorch : groupe `train` (AD-13)
+    except ModuleNotFoundError as exc:
+        if exc.name != "torch":
+            raise
+        print(f"torch absent ({exc}) : uv sync --group train", file=sys.stderr)
+        return 2
+    from nn_weight_writing.evaluation.verify import EvaluationRefused
+
+    try:
+        run_dir = retrain(
+            Path(args.session_dir),
+            Path(args.data),
+            n=args.n,
+            seed=args.seed,
+            runs_root=Path(args.runs_root),
+            lot=args.lot,
+        )
+    except (FileExistsError, ValueError, EvaluationRefused) as exc:
+        print(f"retrain refusé : {exc}", file=sys.stderr)
         return 1
     print(run_dir)
     return 0
@@ -190,13 +217,26 @@ def build_parser() -> argparse.ArgumentParser:
     datagen.add_argument("--root", default=".", help="racine de data/ et heldout/")
     datagen.set_defaults(handler=_datagen)
     train = sub.add_parser("train", help="témoin C : entraîne l'architecture de référence")
-    train.add_argument("task", choices=["parity", "compare", "automaton"])
+    train.add_argument(
+        "task", choices=["parity", "compare", "automaton", "legal_s", "legal_s_reserved"]
+    )
+    train.add_argument("--prepared", action="store_true", help="témoin F : entrées préparées")
     train.add_argument("--data", required=True, help="data/<task>/<dataset>")
     train.add_argument("--n", type=int, required=True, help="nombre d'exemples étiquetés")
     train.add_argument("--seed", type=int, required=True)
     train.add_argument("--lot", default="toy")
     train.add_argument("--runs-root", default="runs")
     train.set_defaults(handler=_train)
+    retrain = sub.add_parser(
+        "retrain", help="C « même réseau » : réentraîne l'architecture gelée d'une séance"
+    )
+    retrain.add_argument("session_dir", help="runs/<lot>/<session_id> (gelée)")
+    retrain.add_argument("--data", required=True, help="data/<task>/train")
+    retrain.add_argument("--n", type=int, required=True, help="nombre d'exemples (8192)")
+    retrain.add_argument("--seed", type=int, required=True)
+    retrain.add_argument("--lot", default="1")
+    retrain.add_argument("--runs-root", default="runs")
+    retrain.set_defaults(handler=_retrain)
 
     session = sub.add_parser("session", help="mène une séance d'écriture (AD-10, AD-11, AD-14)")
     session.add_argument("--task", required=True)
