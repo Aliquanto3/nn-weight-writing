@@ -36,11 +36,11 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 ## Brief
 
 - **Tâche du run** : run autonome sur le lot 1 de `stories.yaml`, 1-1 à 1-6 d'abord ; 1-2 et 1-3 attendent la clé OpenRouter et le compte PISTE d'Anaël ; conforme à ARCHITECTURE-SPINE.md ; topic GitHub passé à `status-dev`.
-- **Intention courante** : run en pause depuis le 2026-11-06 06:46 : 1-1 à 1-9 fusionnées, budget de passes figé à 20 ; 1-10 et suivantes attendent les décisions d'Anaël ci-dessous. Historique de la reprise : reprise le 2026-11-06 05:22 (connexion Claude Code et compte PISTE activés, CAP-1 sur S tranché) : 1-8 moitié Sonnet puis recalibrage unique du budget de passes (décision avant 1-9) ; 1-3 T1-T8 et verdict du point 1 ; puis 1-9. Décisions encore en attente (MNIST A-D, D13 linalg, D4 max_tokens, `max_session_usd`, `session_timeout_s`, effort des séances) : valeurs actuelles gardées, aucune story qui en dépend.
+- **Intention courante** : reprise le 2026-11-06 06:59 sur 1-10 puis 1-11 (décisions D4, max_session_usd, session_timeout_s, effort, S-réservé et AD-4 validées par Anaël). 1-10 en deux moitiés parallèles : MiMo (worktree 1-10m, plafond 15 $ facturés) et Sonnet + Fable (worktree 1-10s, abonnement). Ancienne intention : run en pause depuis le 2026-11-06 06:46 : 1-1 à 1-9 fusionnées, budget de passes figé à 20. Historique de la reprise : reprise le 2026-11-06 05:22 (connexion Claude Code et compte PISTE activés, CAP-1 sur S tranché) : 1-8 moitié Sonnet puis recalibrage unique du budget de passes (décision avant 1-9) ; 1-3 T1-T8 et verdict du point 1 ; puis 1-9.
 - **Plan des vagues restantes** : 1-8 moitié Sonnet + recalibrage unique du budget de passes (décision au journal, avant 1-9) ; 1-9 (après décision CAP-1 sur S) ; 1-10 et 1-11 ensuite ; 1-12 (après PISTE, Ollama, collecte) ; 1-13, 1-14 et v0.1.0.
 - **Artefacts utiles** : constats dans `docs/verifications/` ; specs de story dans `_bmad-output/implementation-artifacts/stories/` ; décisions D1-D12 de 1-5 dans sa spec de story.
 - **Ressources activées (2026-11-06)** : connexion `~/.nnww/claude-config` faite ; `NNWW_CLAUDE_CWD_ROOT='C:\nnww-cwd'` à poser dans chaque commande de séance, jamais de façon permanente ; identifiants PISTE dans `.env` (ignoré), chargés seulement dans la commande (`set -a; . ./.env; set +a`), valeurs jamais affichées. Pas d'`ANTHROPIC_API_KEY` : aucun test réel du repli API.
-- **Attentes Anaël** : Ollama + GPU pour la collecte (avant 1-12) et place de la story de collecte (R9) ; décisions MNIST A-D (1-4), D13 linalg (1-5), `max_session_usd = 5`, `session_timeout_s = 7200`, effort medium Sonnet/Fable (1-6).
+- **Attentes Anaël** : Ollama + GPU pour la collecte (avant 1-12) et place de la story de collecte (R9) ; décisions MNIST A-D (1-4, avant 2-1), D13 linalg (1-5) ; version des CGU PISTE (avant 1-14).
 - **Pièges rencontrés** : `setup-uv` sans tag majeur (épingler la version exacte) ; `file_prs.py` lancé trop tôt après `gh pr create` saute la PR (« aucun contrôle ») : attendre ~30 s.
 
 ## Reports au rapport du lot 1 (1-14)
@@ -59,6 +59,13 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 | V1 | 1.6 ★ (mixte) · 1.7 | 1.6 ← 1.5 ; 1.6 ← 1.2 ; 1.7 ← 1.5 | 1-6 `providers/`, `session/` pilotes, `budget/`, `config/{models,pricing}.toml` ; 1-7 `tasks/toy/`, `datasets/`, `baselines/`, `cli.py` (ajouts) |
 | V2 | 1.8 (mixte, moitié MiMo puis moitié Sonnet) | 1.8 ← 1.6 ; 1.8 ← 1.7 | `docs/experiences/`, `budget/ledger.csv`, `session/claude_code.py` (moitié Sonnet) ; 1-3 suite T1-T8 dans sa ligne V0 |
 | V3 | 1.9 | 1.9 ← 1.8 ; 1.9 ← 1.1 | générateurs de S (`tasks/`, `datasets/`) |
+
+## Sprint 1 bis — Lot 1, juridique (1-10 et 1-11)
+
+| Vague | Stories en parallèle | Après |
+|---|---|---|
+| V4 | 1.10 (moitié MiMo) · 1.10 (moitié Sonnet + Fable) | 1.10 ← 1.9 ; 1.10 ← 1.8 |
+| V5 | 1.11 | 1.11 ← 1.10 |
 
 ## Journal
 
@@ -210,3 +217,9 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-06 06:46 · 1.9 · fusion · #19 fusionnée, MERGED vérifié · 0c99d84
 - 2026-11-06 06:46 · 1.9 · attente humaine · à confirmer : 45 % de Cour de cassation dans S-réservé, phrase propre à S-réservé, amendement de AD-4 (encodeur par famille legal, tâche contrôlée à l'évaluation) · 0c99d84
 - 2026-11-06 06:46 · run · report · run en pause : 1-1 à 1-9 fusionnées ; 1-10 à 1-14 attendent les décisions d'Anaël (D4 max_tokens, max_session_usd, session_timeout_s, effort des séances pour 1-10 ; MNIST A-D avant 2-1 ; D13 linalg ; CGU PISTE avant 1-14 ; Ollama + GPU et place de la collecte avant 1-12) · 0c99d84
+- 2026-11-06 06:59 · run · décision · reprise ; validées par Anaël : D4 max_tokens (MiMo 64000, Sonnet et Fable API 16000), max_session_usd = 5, session_timeout_s = 7200, effort medium Sonnet/Fable, 45 % de Cour de cassation dans S-réservé, phrase propre à S-réservé, amendement de AD-4 (porté dans la spine) · —
+- 2026-11-06 06:59 · 1.10 · décision · cases par modèle : S = A-programme vers 10⁴, A-programme vers 10⁵, A-littéral, B ; S-réservé = A-programme vers 10⁵, A-littéral, B ; 3 tentatives par case pour Sonnet et MiMo (porte jouée sur les 3 premières séances Sonnet de S) ; Fable 1 tentative par case de S (4 séances) ; plafond 1-10 : 15 $ facturés (MiMo) · —
+- 2026-11-06 07:02 · 1.10 · décision · taille cible absente du harnais : story préparatoire 1-10a (option de taille cible, fenêtre d'une demi-décade [N/√10, N·√10], refus size_out_of_range sans passe) avant les cases A ; cases B lancées en parallèle · —
+- 2026-11-06 07:02 · 1.10a · dev · lancé (dev-story Sonnet, worktree 1-10a) · 64ad628
+- 2026-11-06 07:02 · 1.10 · dev · lancé, moitié MiMo, cases B (dev-story Sonnet, worktree 1-10m, ≤ 4 $ facturés) · 64ad628
+- 2026-11-06 07:02 · 1.10 · dev · lancé, moitié Sonnet + Fable, cases B et porte de coût (dev-story Sonnet, worktree 1-10s) · 64ad628
