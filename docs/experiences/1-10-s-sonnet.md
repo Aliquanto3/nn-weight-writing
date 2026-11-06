@@ -70,3 +70,89 @@ Répertoire courant de `claude` sous `C:\nnww-cwd` ; contrôle `init_problems` d
 - Cases A (A-programme vers 10⁴ et 10⁵ sur S, 10⁵ sur S-réservé ; A-littéral), Sonnet et MiMo, Fable sur S : à lancer après fusion de la taille cible au harnais.
 - B sur MiMo (autre moitié).
 - Les rapports de règles écrites à la main (B) sur S sont très proches du plafond ; la discrimination vient de S-réservé (types tenus à l'écart), à reprendre en 1-14 avec C et F.
+
+# Cases A (étape 2)
+
+Date : 2026-11-06 (06:16 à 08:37 UTC). Mêmes paramètres et mêmes relevés que B ; `--size-target 10000` ou `100000` (obligatoire en A), graines de séance 0, 1, 2 pour les tentatives 1, 2, 3 (Fable : tentative 1, graine 0). Le code part de `main` 2d3eeef (taille cible, PR #22).
+
+## Défauts du harnais et séances perdues (AD-14)
+
+- Défaut 1 : `config_dir_problems` refusait `plugins/plugin-directory-cache-v2.json`, catalogue des places de marché que `claude -p` a recréé dans la configuration dédiée entre deux séances (après la 5e séance A, aucun plugin installé). Correctif minimal `f017b3a` (`Fix:`), propre au pilote Claude Code (`session/claude_code.py`, liste `MARKETPLACE_ENTRIES`) ; test ajouté dans `tests/test_claude_code.py`. Aucun des fichiers communs aux deux pilotes (`service.py`, `prompt.py`, `tools.py`, `refusals.py`) n'est touché.
+- 13 séances refusées avant lancement par ce défaut (fin `error`, 0 tour, 0 $, registre `reserved` puis `closed` à 0) ; les 13 cases ont été rejouées après le correctif avec les mêmes tentatives et graines (nouveaux identifiants de séance). Leurs dossiers `runs/1/*T0622[4-5]*Z` (fin `error`) ne sont pas des résultats et ne comptent pas.
+- Évolution du script de mesure : `scripts/exactitude_reserve.py --par-type` accepte aussi les réseaux gelés (A), commit `3b2f607` (les décomptes de A par `--par-type` et par la voie `score_frozen` coïncident, vérifié sur une séance).
+
+## Résultats (18 séances A, toutes en `frozen`)
+
+Exactitude sur le réservé (4 000 exemples). Équivalent API = `cost_equiv_usd` de clôture, égal à `result.total_cost_usd` de Claude Code à l'arrondi près pour les 18 (écart max 1 µ$) ; facturé 0 $ partout. « Paramètres » = `size_nominal` du gel (nombre de paramètres du réseau gelé, entrées de couches). Aucune séance en `pass_budget`, `turn_limit`, `money_budget` ni limite d'usage. Refus du harnais : colonne « Refus en séance » (aucun `size_out_of_range` : toutes les tailles gelées sont dans les fenêtres, 12 254 à 30 632 pour 10^4 et 98 018 à 306 302 pour 10^5).
+
+| Modèle | Tâche | Case | Tent. | Statut | Passes /20 | Tours | Paramètres | Exactitude | Équiv. API ($) | Durée (s) | Drapeaux | Refus en séance | Dossier gelé |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Sonnet 5.5 | legal_s | A-program 10^4 | 1 | frozen | 1 | 6 | 30632 | 2744/4000 (68.6 %) | 0.1440 | 78 | aucun | invalid_manifest 1 | `runs/1/legal_s-A-program-1e4-sonnet-5.5-t1-20261106T061605Z` |
+| Sonnet 5.5 | legal_s | A-program 10^4 | 2 | frozen | 0 | 6 | 30632 | 2429/4000 (60.7 %) | 0.0703 | 54 | aucun | invalid_manifest 2, no_network_declared 1 | `runs/1/legal_s-A-program-1e4-sonnet-5.5-t2-20261106T061724Z` |
+| Sonnet 5.5 | legal_s | A-program 10^4 | 3 | frozen | 1 | 7 | 30632 | 2449/4000 (61.2 %) | 0.1345 | 82 | aucun | invalid_manifest 2, no_network_declared 1 | `runs/1/legal_s-A-program-1e4-sonnet-5.5-t3-20261106T061819Z` |
+| Sonnet 5.5 | legal_s | A-program 10^5 | 1 | frozen | 1 | 6 | 171530 | 3797/4000 (94.9 %) | 0.3059 | 163 | aucun | invalid_manifest 2 | `runs/1/legal_s-A-program-1e5-sonnet-5.5-t1-20261106T062003Z` |
+| Sonnet 5.5 | legal_s | A-program 10^5 | 2 | frozen | 1 | 6 | 306302 | 3430/4000 (85.8 %) | 0.2386 | 144 | aucun | invalid_manifest 2 | `runs/1/legal_s-A-program-1e5-sonnet-5.5-t2-20261106T062355Z` |
+| Sonnet 5.5 | legal_s | A-program 10^5 | 3 | frozen | 2 | 7 | 245042 | 3722/4000 (93.0 %) | 0.3541 | 188 | aucun | invalid_manifest 1, invalid_blocks 1 | `runs/1/legal_s-A-program-1e5-sonnet-5.5-t3-20261106T062619Z` |
+| Sonnet 5.5 | legal_s | A-literal 10^4 | 1 | frozen | 2 | 39 | 30632 | 2318/4000 (58.0 %) | 2.0296 | 722 | aucun | invalid_manifest 1, invalid_weights 1 | `runs/1/legal_s-A-literal-1e4-sonnet-5.5-t1-20261106T062928Z` |
+| Sonnet 5.5 | legal_s | A-literal 10^4 | 2 | frozen | 6 | 32 | 30632 | 2651/4000 (66.3 %) | 2.3659 | 873 | aucun | invalid_manifest 2, invalid_weights 3 | `runs/1/legal_s-A-literal-1e4-sonnet-5.5-t2-20261106T064131Z` |
+| Sonnet 5.5 | legal_s | A-literal 10^4 | 3 | frozen | 2 | 19 | 12254 | 2254/4000 (56.4 %) | 0.7423 | 283 | aucun | invalid_manifest 1, invalid_weights 1 | `runs/1/legal_s-A-literal-1e4-sonnet-5.5-t3-20261106T065605Z` |
+| Fable 5.1 | legal_s | A-program 10^4 | 1 | frozen | 1 | 8 | 30632 | 3689/4000 (92.2 %) | 2.8725 | 499 | aucun | invalid_manifest 3 | `runs/1/legal_s-A-program-1e4-fable-5.1-t1-20261106T073730Z` |
+| Fable 5.1 | legal_s | A-program 10^5 | 1 | frozen | 2 | 10 | 276349 | 3935/4000 (98.4 %) | 3.0765 | 483 | fragment_overlap (4); fragment_overlap (4) | invalid_manifest 3 | `runs/1/legal_s-A-program-1e5-fable-5.1-t1-20261106T074549Z` |
+| Fable 5.1 | legal_s | A-literal 10^4 | 1 | frozen | 4 | 19 | 30632 | 3517/4000 (87.9 %) | 14.4980 | 2609 | aucun | invalid_manifest 2 | `runs/1/legal_s-A-literal-1e4-fable-5.1-t1-20261106T075353Z` |
+| Sonnet 5.5 | legal_s_reserved | A-program 10^5 | 1 | frozen | 2 | 7 | 98018 | 3559/4000 (89.0 %) | 0.3106 | 173 | aucun | invalid_manifest 1, invalid_blocks 1 | `runs/1/legal_s_reserved-A-program-1e5-sonnet-5.5-t1-20261106T070108Z` |
+| Sonnet 5.5 | legal_s_reserved | A-program 10^5 | 2 | frozen | 1 | 6 | 131711 | 3585/4000 (89.6 %) | 0.2799 | 162 | fragment_overlap (4); fragment_overlap (4) | invalid_manifest 1 | `runs/1/legal_s_reserved-A-program-1e5-sonnet-5.5-t2-20261106T070402Z` |
+| Sonnet 5.5 | legal_s_reserved | A-program 10^5 | 3 | frozen | 3 | 9 | 196034 | 3511/4000 (87.8 %) | 0.3086 | 159 | aucun | invalid_manifest 1, invalid_blocks 1 | `runs/1/legal_s_reserved-A-program-1e5-sonnet-5.5-t3-20261106T070645Z` |
+| Sonnet 5.5 | legal_s_reserved | A-literal 10^4 | 1 | frozen | 2 | 25 | 30632 | 3211/4000 (80.3 %) | 2.2997 | 842 | aucun | invalid_manifest 1, invalid_weights 2 | `runs/1/legal_s_reserved-A-literal-1e4-sonnet-5.5-t1-20261106T070925Z` |
+| Sonnet 5.5 | legal_s_reserved | A-literal 10^4 | 2 | frozen | 2 | 18 | 12254 | 2255/4000 (56.4 %) | 0.8408 | 324 | aucun | invalid_manifest 1, invalid_weights 1 | `runs/1/legal_s_reserved-A-literal-1e4-sonnet-5.5-t2-20261106T072328Z` |
+| Sonnet 5.5 | legal_s_reserved | A-literal 10^4 | 3 | frozen | 4 | 22 | 21443 | 2615/4000 (65.4 %) | 1.3843 | 516 | aucun | invalid_manifest 2, invalid_weights 2 | `runs/1/legal_s_reserved-A-literal-1e4-sonnet-5.5-t3-20261106T072852Z` |
+
+Paramètres gelés : A-programme 10^4 = 30 632 aux trois tentatives de Sonnet et de Fable (même architecture) ; A-littéral 10^4 = 12 254 à 30 632 ; 10^5 = 98 018 à 306 302.
+
+## Synthèse par case (moyenne, écart entre tentatives = max - min)
+
+| Modèle | Tâche | Case | n | Exactitude moyenne | Écart (points) | Équiv. API moyen ($) | Durée moyenne (s) |
+|---|---|---|---|---|---|---|---|
+| Sonnet 5.5 | S | A-programme 10^4 | 3 | 63,5 % (2 744 / 2 429 / 2 449) | 7,9 | 0,116 | 71 |
+| Sonnet 5.5 | S | A-programme 10^5 | 3 | 91,2 % (3 797 / 3 430 / 3 722) | 9,2 | 0,300 | 165 |
+| Sonnet 5.5 | S | A-littéral 10^4 | 3 | 60,2 % (2 318 / 2 651 / 2 254) | 9,9 | 1,713 | 626 |
+| Sonnet 5.5 | S-réservé | A-programme 10^5 | 3 | 88,8 % (3 559 / 3 585 / 3 511) | 1,9 | 0,300 | 165 |
+| Sonnet 5.5 | S-réservé | A-littéral 10^4 | 3 | 67,3 % (3 211 / 2 255 / 2 615) | 23,9 | 1,508 | 561 |
+| Fable 5.1 | S | A-programme 10^4 | 1 | 92,2 % (3 689) | - | 2,873 | 499 |
+| Fable 5.1 | S | A-programme 10^5 | 1 | 98,4 % (3 935) | - | 3,076 | 483 |
+| Fable 5.1 | S | A-littéral 10^4 | 1 | 87,9 % (3 517) | - | 14,498 | 2 609 |
+
+Repères B (même jeu) : Sonnet 98,4 à 99,5 % sur S, 87,4 à 89,4 % sur S-réservé ; Fable 98,4 % sur S. Hasard : 50 %.
+
+### S-réservé : fausses de 10 types connus et de 5 types tenus à l'écart
+
+| Séance | Vraies | Fausses, 10 connus | Fausses, 5 tenus | Tenus, détail |
+|---|---|---|---|---|
+| A-programme 10^5 t1 | 1997/2000 | 1296/1334 (97,2 %) | 266/666 (39,9 %) | t09, t11 133/133 ; t04, t07, t12 : 0 |
+| A-programme 10^5 t2 | 1996/2000 | 1321/1334 (99,0 %) | 268/666 (40,2 %) | t09, t11 133/133 ; t12 2/133 ; t04, t07 : 0 |
+| A-programme 10^5 t3 | 1968/2000 | 1268/1334 (95,1 %) | 275/666 (41,3 %) | t09, t11 133/133 ; t04 5, t12 4 ; t07 0 |
+| A-littéral 10^4 t1 | 1959/2000 | 977/1334 (73,2 %) | 275/666 (41,3 %) | t09, t11 133/133 ; t04 5, t12 4 ; t07 0 |
+| A-littéral 10^4 t2 | 1991/2000 | 264/1334 (19,8 %) | 0/666 | aucun type tenu détecté |
+| A-littéral 10^4 t3 | 2000/2000 | 513/1334 (38,5 %) | 102/666 (15,3 %) | t11 102/133 ; autres 0 |
+
+Les types tenus à l'écart se comportent comme en B : t09 et t11 sont retrouvés par déduction des règles voisines quand le réseau apprend les types connus, t04, t07 et t12 presque jamais. A-programme 10^5 atteint le niveau de B sur les types connus (95 à 99 %). A-littéral à 10^4 est instable : de 19,8 % à 73,2 % sur les mêmes types connus selon la tentative ; les deux tentatives les plus faibles ressemblent à des réseaux qui disent presque toujours « vraie » (vraies 99,6 % et 100 %).
+
+## Drapeaux d'audit (AD-19) : séances signalées pour jugement en 1-14
+
+`fragment_overlap` (4 exemples chaque fois, dans les deux exécutions de script de la séance) :
+
+- `runs/1/legal_s-A-program-1e5-fable-5.1-t1-20261106T074549Z` (exemples `legal-s00009`, `-s00012`, `-s00013`...) ;
+- `runs/1/legal_s_reserved-A-program-1e5-sonnet-5.5-t2-20261106T070402Z` (exemples `legal-r00004`, `-r00012`, `-r00020`...).
+
+Les 16 autres séances A et les 7 B : aucun drapeau.
+
+## Porte de coût : mise à jour
+
+Facturé 0 $, médiane 0 $ : 3 tentatives par case, décision inchangée. Pour information, l'équivalent API des séances Sonnet sur S : médiane des 12 séances (B, A-programme, A-littéral) = 0,19 $ ; A-littéral à 10^4 vaut en revanche 2,03 / 2,37 / 0,74 $ (médiane 2,03 $, au-dessus de 2 $) et sur S-réservé 2,30 / 0,84 / 1,38 $ : en repli API, la porte des 2 $ se jouerait sur A-littéral. Fable : 2,87 $ (A-programme 10^4), 3,08 $ (10^5) et 14,50 $ (A-littéral 10^4, 19 tours, 213 394 jetons de sortie, 43 minutes) en équivalent, soit au-dessus du plafond de 5 $ par séance s'il avait été facturé.
+
+## Observations sur A-littéral à 10^4
+
+Aucune troncature de sortie ni limite d'usage ; durées de 283 s à 873 s pour Sonnet et 2 609 s pour Fable (sous le délai de 7 200 s). Le modèle écrit les poids ligne par ligne (`write_weights`), jusqu'à 39 tours. Fable dépense 14,50 $ équivalent pour 87,9 %, alors que A-programme à 10^5 atteint 98,4 % pour 3,08 $.
+
+## Tarif de cache 1 h de Fable (rappel)
+
+Confirmé à 20,00 $/Mtok sur la séance B (voir plus haut) ; les 3 séances A de Fable retombent sur `total_cost_usd` du `result` au micro-dollar.
