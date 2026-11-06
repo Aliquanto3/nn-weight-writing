@@ -257,3 +257,7 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-06 22:29 · 1.10 · dev · moitié MiMo, effort medium : 9 séances, 4 tronquées à 64000, 1 réponse vide (classée pass_budget à tort), 2 B gelées sur S-réservé (89,7 et 90,0 %) ; 3 A-program 1e4 tronquées → arrêt ; 0,868 $ facturés au total · b74d8e3
 - 2026-11-06 22:29 · 1.10 · décision · Anaël : essai de MiMo à max_tokens 131072 (plafond OpenRouter), effort medium, graine transmise au fournisseur ; une séance d'essai A-program 1e4 ; si elle gèle, toute la moitié MiMo rejouée dans ce réglage, sinon MiMo arrêté sur S et consigné comme résultat · —
 - 2026-11-06 22:29 · 1.10 · dev · relancé, moitié MiMo : correctifs (131072, seed, réponse vide) puis séance d'essai · b74d8e3
+- 2026-11-06 22:57 · 1.10 · dev · moitié MiMo, essai à 131072 : encore tronqué (131072 jetons de raisonnement au premier appel, 1 412 s, 0,116 $) ; MiMo arrêté sur S selon la décision d'Anaël ; correctifs : seed transmis à OpenRouter, réponse vide en error, délai par appel 3600 s ; 0,984 $ facturés pour la moitié MiMo · e9b8a95
+- 2026-11-06 22:57 · 1.10 · décision · résultat consigné : MiMo-V2.6-Pro ne tient pas S dans le budget de sortie du fournisseur (64000 et 131072, effort par défaut et medium) ; pas d'architecture MiMo à réentraîner en 1-11 ; MiMo hors du choix du modèle du lot 2 (règle des 3 points) · e9b8a95
+- 2026-11-06 22:57 · 1.10 · second-avis · lancé, moitié MiMo · e9b8a95
+- 2026-11-06 22:57 · 1.11 · second-avis · lancé, seconde partie (réentraînement Sonnet + Fable seul) · 3a7d336
