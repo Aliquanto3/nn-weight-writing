@@ -24,15 +24,35 @@ def _evaluate(args: argparse.Namespace) -> int:
     return 0
 
 
+def _datagen_legal(args: argparse.Namespace) -> int:
+    from nn_weight_writing.datasets.legal import generate
+
+    if args.n is not None or args.n_heldout is not None:
+        print("datagen legal : tailles fixées, --n et --n-heldout refusés", file=sys.stderr)
+        return 2
+    try:
+        paths = generate(seed=args.seed, root=Path(args.root))
+    except (FileExistsError, ValueError, RuntimeError) as exc:
+        print(f"datagen refusé : {exc}", file=sys.stderr)
+        return 1
+    for path in paths:
+        print(path)
+    return 0
+
+
 def _datagen(args: argparse.Namespace) -> int:
+    if args.task == "legal":
+        return _datagen_legal(args)
     from nn_weight_writing.datasets.toy import generate
     from nn_weight_writing.tasks.toy import TASKS
 
+    n = 256 if args.n is None else args.n
+    n_heldout = 400 if args.n_heldout is None else args.n_heldout
     names = sorted(TASKS) if args.task == "all" else [args.task]
     for name in names:
         try:
             data_dir, held_dir = generate(
-                name, seed=args.seed, n=args.n, n_heldout=args.n_heldout, root=Path(args.root)
+                name, seed=args.seed, n=n, n_heldout=n_heldout, root=Path(args.root)
             )
         except (FileExistsError, ValueError) as exc:
             print(f"datagen refusé : {exc}", file=sys.stderr)
@@ -86,7 +106,18 @@ def _session(args: argparse.Namespace) -> int:
     except KeyError as exc:
         print(exc.args[0], file=sys.stderr)
         return 2
-    examples = examples_path(args.task, args.dataset, args.data_dir and Path(args.data_dir))
+    if args.dataset == "train":
+        print("jeu d'entraînement des témoins, pas un jeu de séance", file=sys.stderr)
+        return 2
+    try:
+        examples = examples_path(args.task, args.dataset, args.data_dir and Path(args.data_dir))
+    except ValueError as exc:
+        print(exc, file=sys.stderr)
+        return 2
+    if args.dataset not in task.session_datasets:
+        allowed = ", ".join(task.session_datasets)
+        print(f"jeu de séance inconnu : {args.dataset} ; autorisés : {allowed}", file=sys.stderr)
+        return 2
     if not examples.is_file():
         print(f"exemples absents : {examples}", file=sys.stderr)
         return 2
@@ -141,11 +172,13 @@ def build_parser() -> argparse.ArgumentParser:
     evaluate = sub.add_parser("evaluate", help="évalue un dossier gelé, hors séance (AD-9)")
     evaluate.add_argument("run_dir", help="runs/<lot>/<session_id> ou runs/<lot>/train/<run_id>")
     evaluate.set_defaults(handler=_evaluate)
-    datagen = sub.add_parser("datagen", help="génère un jeu jouet et son jeu réservé (AD-16)")
-    datagen.add_argument("task", choices=["parity", "compare", "automaton", "all"])
+    datagen = sub.add_parser(
+        "datagen", help="génère les jeux jouet ou ceux de S et S-réservé (AD-16)"
+    )
+    datagen.add_argument("task", choices=["parity", "compare", "automaton", "all", "legal"])
     datagen.add_argument("--seed", type=int, required=True, help="graine explicite")
-    datagen.add_argument("--n", type=int, default=256, help="taille du jeu de séance")
-    datagen.add_argument("--n-heldout", type=int, default=400, help="taille du jeu réservé")
+    datagen.add_argument("--n", type=int, default=None, help="jouet : jeu de séance (256)")
+    datagen.add_argument("--n-heldout", type=int, default=None, help="jouet : jeu réservé (400)")
     datagen.add_argument("--root", default=".", help="racine de data/ et heldout/")
     datagen.set_defaults(handler=_datagen)
     train = sub.add_parser("train", help="témoin C : entraîne l'architecture de référence")

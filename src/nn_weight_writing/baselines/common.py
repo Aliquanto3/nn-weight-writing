@@ -27,6 +27,7 @@ def freeze_run(
     n: int,
     seed: int,
     dataset: dict | None = None,
+    task: str = "",
 ) -> RunRecord:
     """Écrit `frozen/` (manifeste, poids) puis `run.json` ; refuse un dossier déjà gelé."""
     run_dir = Path(run_dir)
@@ -54,6 +55,7 @@ def freeze_run(
         files=files,
         tree_sha256=network.tree_sha256(files),
         dataset=dict(dataset or {}),
+        task=task,
     )
     text = json.dumps(asdict(record), ensure_ascii=False, indent=2, sort_keys=True)
     netio.atomic_write_bytes(run_dir / "run.json", (text + "\n").encode("utf-8"))

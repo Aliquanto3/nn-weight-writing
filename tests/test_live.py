@@ -87,7 +87,7 @@ def test_claude_code_one_real_session(tmp_path, protocol):
     short = dataclasses.replace(protocol, turn_limit=2)
     outcome = run_session(
         task=TASK,
-        dataset="toy-dev",
+        dataset="toy",
         examples=write_examples(tmp_path / "examples.jsonl", EXAMPLES),
         method="B",
         model=claude_model(),

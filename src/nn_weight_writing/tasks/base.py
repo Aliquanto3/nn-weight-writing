@@ -10,6 +10,7 @@ import numpy as np
 class Codec(Protocol):
     """`encode(raw) -> ndarray[float32]` et `decode(outputs) -> label`, sous `encoder_id`."""
 
+    name: str  # tâche, contrôlée par l'évaluation (1-9 O4)
     encoder_id: str
 
     def encode(self, raw: object) -> np.ndarray: ...

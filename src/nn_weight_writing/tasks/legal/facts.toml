@@ -1,0 +1,184 @@
+# Faits juridiques et conventions du générateur de S et S-réservé (story 1-9, CAP-9).
+#
+# Chaque section porte `status` et `source` :
+#   - "primary"    : source officielle (Légifrance, site d'une juridiction, service-public.gouv.fr,
+#                    taxonomie de l'API Judilibre) ;
+#   - "sample"     : mesuré sur un échantillon de l'API Judilibre (production, 2026-11-06) ;
+#   - "convention" : choix du générateur, ce n'est pas un fait juridique ;
+#   - "unverified" : non vérifié, n'entre pas dans le générateur (le chargeur le refuse).
+# Toute modification de ce fichier change `facts_sha256` des jeux et impose une nouvelle version
+# du générateur (GENERATOR_VERSION).
+
+schema = 1
+checked = "2026-11-06"
+
+# --- Dates ---------------------------------------------------------------------------------
+
+[dates]
+status = "convention"
+source = "story 1-9, décision 1 ; borne basse : CJA R. 122-1 (dix sous-sections dès 2001), voir [conseil_etat]"
+# Fenêtre des vraies références et des fausses autres que t06.
+window_start = "2001-01-02"
+window_end = "2026-10-31"
+# Date d'arrêt du corpus : une décision postérieure est une décision future (t06).
+corpus_date = "2026-11-01"
+# Fenêtre des décisions futures de t06.
+future_start = "2026-11-02"
+future_end = "2029-12-31"
+
+[holidays]
+status = "primary"
+source = "Code du travail, art. L. 3133-1 (onze fêtes légales), reproduit par service-public.gouv.fr F2405, page « vérifiée le 01 janvier 2026 », relue le 2026-11-06 ; même texte sur travail-industrie.com (LEGIARTI000033020489 cité, non ouvert sur Légifrance)"
+# Fêtes légales : dates fixes (mois-jour) et fêtes mobiles (jours après le dimanche de Pâques,
+# comput grégorien). Contrôle : lundi de Pâques 2026-04-06 et 2027-03-29, Ascension 2026-05-14,
+# lundi de Pentecôte 2026-05-25 (service-public.gouv.fr).
+fixed = ["01-01", "05-01", "05-08", "07-14", "08-15", "11-01", "11-11", "12-25"]
+easter_offsets = { easter_monday = 1, ascension = 39, whit_monday = 50 }
+# Jours tenus à l'écart des vraies références sans être une incohérence (droit local
+# d'Alsace-Moselle : Vendredi saint, 26 décembre) ; ni vraies ni fausses ne les portent.
+local_excluded = { good_friday = -2, fixed = ["12-26"] }
+# Le lundi de Pentecôte est une fête légale (règle t12) mais aussi la journée de solidarité :
+# aucune fausse t12 ne le prend, aucune vraie non plus.
+t12_excluded = ["whit_monday"]
+# Fêtes légales tirées par t12 (moitié « fête ») : les mobiles seulement ; les fixes ne servent
+# qu'au vérificateur (une vraie n'y tombe jamais).
+
+[holidays.sample]
+status = "sample"
+source = "API Judilibre, /scan, date_type=creation, 2026-11-06 : Cour de cassation 1 000 décisions de 2019 et 1 000 de 1997, cours d'appel 1 000 de 2023, 300 de 2012, 300 de 2005"
+finding = "Cour de cassation : aucune décision un samedi, un dimanche ou une fête légale fixe (2 000 décisions, du mardi au jeudi surtout). Cours d'appel : ordonnances le week-end et le 25 décembre 2023 (rétention, étrangers) ; arrêts : 1 samedi sur 398, aucun dimanche. S ne contient que des arrêts et décisions de formation collégiale."
+
+# --- Cour de cassation ---------------------------------------------------------------------
+
+[cassation]
+status = "primary"
+source = "API Judilibre, /taxonomy?id=chamber&context_value=cc (2026-11-06) : pl, mi, civ1, civ2, civ3, comm, soc, cr, creun, ordo, allciv, other ; justice.gouv.fr (« six chambres : trois chambres civiles, une chambre commerciale, une chambre sociale, une chambre criminelle ») ; chambre mixte vue en 2001-2003 et assemblée plénière en 2000 (Perruche) par /search"
+# Forme abrégée de S -> code Judilibre. creun (chambres réunies, avant 1967), ordo et allciv
+# ne sont pas des chambres de jugement d'un arrêt de S.
+chambers = { "civ. 1re" = "civ1", "civ. 2e" = "civ2", "civ. 3e" = "civ3", "com." = "comm", "soc." = "soc", "crim." = "cr", "ch. mixte" = "mi", "ass. plén." = "pl" }
+civil = ["civ. 1re", "civ. 2e", "civ. 3e", "com.", "soc."]
+criminal = ["crim."]
+# Chambres exemptées de la règle de série (t14) : elles jugent des pourvois civils ou pénaux.
+series_exempt = ["ch. mixte", "ass. plén."]
+# Chambres qui n'existent pas (t03) : rang ou nom absent de la taxonomie.
+nonexistent = ["civ. 4e", "civ. 5e", "com. 2e", "soc. 2e", "crim. 2e", "ch. fiscale"]
+
+[cassation.number]
+status = "sample"
+source = "API Judilibre, /scan Cour de cassation 2019 et 1997 (2 000 décisions), /search 99-13.701 (Perruche, 1-3 T4)"
+# Numéro de pourvoi : AA-NN.NNN, AA = deux derniers chiffres de l'année d'enregistrement.
+pattern = '^\d{2}-\d{2}\.\d{3}$'
+finding_format = "977 sur 1 000 (2019) et 996 sur 1 000 (1997) au format AA-NN.NNN ; les autres sont plusieurs numéros joints."
+# Série : la chambre criminelle numérote à partir de 80.000, les chambres civiles en dessous.
+criminal_series_min = 80000
+finding_series = "2019 : chambre criminelle 269 en 8x.xxx et 3 en 9x.xxx, aucune sous 80.000 ; chambres civiles, commerciale, sociale : séries 1 à 6, aucune à 80.000 ou plus. 1997 : criminelle 157 sur 157 en 8x.xxx ; civiles séries 0 à 7. Assemblée plénière : une en 8x.xxx (2019), d'où l'exemption."
+# Écart entre l'année de la décision et celle du pourvoi.
+finding_gap = "2019 : 0 an 270, 1 an 655, 2 ans 47, 3 à 6 ans 5 ; 1997 : 0 à 2 ans 953, 3 ans 37, 4 et 5 ans 6 ; chambre mixte 2002-2003 : 4 ans observés."
+
+[cassation.generator]
+status = "convention"
+source = "story 1-9 ; poids arrondis d'après l'échantillon 2019 (chambres et écarts)"
+chamber_weights = { "civ. 1re" = 0.14, "civ. 2e" = 0.20, "civ. 3e" = 0.18, "com." = 0.08, "soc." = 0.14, "crim." = 0.25, "ch. mixte" = 0.005, "ass. plén." = 0.005 }
+# Écart de 0 à 6 ans : distribution de l'échantillon 2019 et 1997 jusqu'à son maximum observé.
+gap_weights = [0.27, 0.60, 0.09, 0.025, 0.01, 0.004, 0.001]
+civil_serial = [10000, 79999]
+criminal_serial = [80000, 89999]
+# Pourvoi trop ancien (t08) : écart d'au moins `old_gap_min` ans ; les fausses t08 tirent dans
+# [old_gap_min, old_gap_max]. Les vraies vont jusqu'à 6 ans, les fausses t08 commencent à 10.
+old_gap_min = 10
+old_gap_max = 15
+# Pourvoi après la décision (t01) : de 1 à 3 ans après.
+after_gap = [1, 3]
+
+# --- Conseil d'État -----------------------------------------------------------------------
+
+[conseil_etat]
+status = "primary"
+source = "CJA, art. R. 122-1 en vigueur du 2001-01-01 au 2015-10-03 (Légifrance LEGIARTI000018221932) : « divisée en dix sous-sections » ; conseil-etat.fr, « Changement d'appellation des sous-sections en chambres » (29 avril 2016) : loi « Déontologie » promulguée le 21 avril 2016, « dix chambres »"
+# Formations de jugement de S : Assemblée du contentieux, Section du contentieux, chambre ou
+# sous-section numérotée de 1 à 10. Chambres réunies et juge des référés : hors de S
+# (appariements des chambres réunies non vérifiés).
+assembly = "Ass."
+section = "Sect."
+numbered_max = 10
+# Nommage des formations numérotées selon la date de la décision :
+#   « Ne sous-sect. » jusqu'au 20 avril 2016, « Ne ch. » à partir du 1er janvier 2017 ;
+#   entre les deux (loi du 20 avril 2016, décret d'application n° 2016-899 en vigueur le
+#   3 juillet 2016 d'après la presse juridique) : zone grise, aucune formation numérotée tirée.
+subsection_until = "2016-04-20"
+chamber_from = "2017-01-01"
+
+[conseil_etat.number]
+status = "primary"
+source = "1-3 § 3 (open data de la justice administrative : CE, 10 juillet 2020, n° 428409) ; Dalloz actualité, CE 13 févr. 2019, req. n° 406606 ; CE, Ass., 20 oct. 1989, Nicolo, n° 108243 (citations doctrinales)"
+# Numéro de requête : six chiffres sur toute la fenêtre (passé 100 000 avant 1990, loin de
+# 1 000 000 en 2026). Aucune table vérifiée des numéros par année : aucun type ne porte sur la
+# valeur du numéro du CE (le type « numéro de requête incompatible avec l'année » est écarté).
+pattern = '^\d{6}$'
+
+[conseil_etat.generator]
+status = "convention"
+source = "story 1-9"
+formation_weights = { assembly = 0.02, section = 0.05, numbered = 0.93 }
+number_range = [200000, 499999]
+
+# --- Cours d'appel ------------------------------------------------------------------------
+
+[cours_appel]
+status = "primary"
+source = "API Judilibre, /taxonomy?id=location&context_value=ca (2026-11-06) : 36 cours d'appel"
+# Les 36 sièges (règle t04 : un siège absent de cette liste est une cour d'appel inexistante).
+all_seats = [
+  "Agen", "Aix-en-Provence", "Amiens", "Angers", "Basse-Terre", "Bastia", "Besançon",
+  "Bordeaux", "Bourges", "Caen", "Cayenne", "Chambéry", "Colmar", "Dijon", "Douai",
+  "Fort-de-France", "Grenoble", "Limoges", "Lyon", "Metz", "Montpellier", "Nancy", "Nîmes",
+  "Nouméa", "Orléans", "Papeete", "Paris", "Pau", "Poitiers", "Reims", "Rennes", "Riom",
+  "Rouen", "Saint-Denis de la Réunion", "Toulouse", "Versailles",
+]
+# Sièges des vraies références : les 36 sauf Cayenne, dont la date de création n'est pas
+# vérifiée (une vraie « CA Cayenne » de 2005 pourrait être fausse).
+excluded_from_real = ["Cayenne"]
+
+[cours_appel.cayenne_creation]
+status = "unverified"
+source = "non vérifié ; ancienne chambre détachée de la cour d'appel de Fort-de-France"
+
+[cours_appel.fake_seats]
+status = "primary"
+source = "API Judilibre, /taxonomy?id=location&context_value=tj (2026-11-06) : chacune est le siège d'un tribunal judiciaire et aucune n'est dans les 36 cours d'appel"
+# Villes sans cour d'appel (t04). Mamoudzou (chambre d'appel rattachée) est écartée.
+seats = [
+  "Lille", "Marseille", "Strasbourg", "Nantes", "Nice", "Toulon", "Brest", "Clermont-Ferrand",
+  "Tours", "Perpignan", "Avignon", "Mulhouse", "Créteil", "Nanterre", "Bobigny", "Annecy",
+  "Valence", "Bayonne", "Pontoise", "Meaux",
+]
+
+[cours_appel.number]
+status = "sample"
+source = "API Judilibre, /scan cours d'appel 2023 (1 000), 2012 (300), 2005 (300)"
+# Numéro RG : AA/NNNNN, AA = deux derniers chiffres de l'année d'enregistrement de l'appel.
+pattern = '^\d{2}/\d{5}$'
+finding_format = "2023 : 1 000 sur 1 000 au format AA/NNNNN ; 2012 : 286 sur 300 ; 2005 : 212 sur 300 (autres formes : NNNN, NN/NNNN, NNNN/NN…). La forme canonique de S est AA/NNNNN, zéros compris ; les malformations de t10 évitent les formes réelles anciennes (pas de chiffre retiré au numéro d'ordre)."
+finding_gap = "arrêts 2023 : 0 an 51, 1 an 166, 2 ans 88, 3 ans 59, 4 ans 32, 5 ans 2 ; 2012 : 0 à 2 ans 276, 3 à 5 ans 9, 8 ans 1 ; numéro d'ordre maximal observé 21304."
+# Chambre ou pôle : texte libre et hétérogène dans Judilibre (« Pôle 1 - Chambre 11 »,
+# « 5ème CH (référés) », vide en 2005) : hors du format de S.
+
+[cours_appel.generator]
+status = "convention"
+source = "story 1-9 ; écarts arrondis d'après les arrêts de 2023"
+# Écart de 0 à 8 ans : arrêts 2023 et 2012 jusqu'au maximum observé (8 ans).
+gap_weights = [0.13, 0.415, 0.22, 0.15, 0.08, 0.003, 0.001, 0.0005, 0.0005]
+# Numéro d'ordre jusqu'à 24999 (maximum observé : 21304) : aucun numéro >= 20000 ne marque une classe.
+serial = [1, 24999]
+old_gap_min = 10
+old_gap_max = 15
+after_gap = [1, 3]
+
+# --- Champs écartés du format -------------------------------------------------------------
+
+[excluded_fields]
+status = "sample"
+source = "API Judilibre, mêmes échantillons ; 1-3 T4 (Perruche, ecli vide) ; open data administratif (1-3 § 3)"
+ecli = "vide pour 999 décisions de la Cour de cassation sur 1 000 en 1997 et pour toutes les décisions de cours d'appel échantillonnées (2005, 2012, 2023) ; rempli en 2019"
+solution = "Cour de cassation : rejet, cassation… ; cours d'appel : « other » pour 91 % (2023) et 100 % (2005) ; absente des champs de l'open data du Conseil d'État"
+publication = "Cour de cassation : codes b, r, c, n ; cours d'appel : vide partout ; Conseil d'État : Code_Publication (A, B, C) dans une autre nomenclature"
