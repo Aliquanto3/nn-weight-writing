@@ -19,3 +19,16 @@ hidden = [16]
 
 [tasks.automaton]
 hidden = [32]
+
+# S et S-réservé (1-9 D5, 1-11) : 3 060 × 32 + 32 + 32 × 2 + 2 = 98 018 paramètres pour C ;
+# F (entrées `legal.fields@2`, 2 408 valeurs) garde la même couche cachée : 77 154 paramètres.
+# `epochs` fixe : N = 32 768 fait 512 pas par époque ; durée relevée par run.
+[tasks.legal_s]
+hidden = [32]
+epochs = 100
+n_values = [64, 256, 1024, 8192, 32768]
+
+[tasks.legal_s_reserved]
+hidden = [32]
+epochs = 100
+n_values = [64, 256, 1024, 8192, 32768]

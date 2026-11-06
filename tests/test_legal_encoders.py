@@ -10,8 +10,10 @@ from nn_weight_writing.tasks.legal.encoders import (
     ALPHABET,
     N_CHARS,
     N_FIELDS,
+    N_FIELDS_V2,
     encode_chars,
     encode_fields,
+    encode_fields_v2,
 )
 
 REF = "Cass. civ. 1re, 12 mars 2015, n° 13-27.123"
@@ -106,6 +108,25 @@ def test_fields_first_day_unreadable_tokens_and_bounds():
     for ref in (low, high, encode_fields("Cass. soc., 12 mars 2029, n° 29-13.701")):
         assert ref[2244:].min() >= 0 and ref[2244:].max() <= 1
     assert encode_fields("Cass. soc., 12 mars 2029, n° 29-13.701")[2246] == pytest.approx(0.98)
+
+
+def test_fields_v2_layout_one_hot():
+    x = encode_fields_v2(PERRUCHE)
+    assert x.shape == (N_FIELDS_V2,) == (2408,) and x.dtype == np.float32
+    assert np.array_equal(x[:2244], encode_fields(PERRUCHE)[:2244])  # mêmes caractères qu'@1
+    # jour 17, novembre, 2000, AA présent, AA 1999 : un seul 1 par groupe
+    assert list(np.flatnonzero(x[2244:]) + 2244) == [2260, 2285, 2307, 2347, 2367]
+    assert TASK_S.prepared_encoder_id == "legal.fields@2"
+    assert np.array_equal(TASK_S.encode_prepared(PERRUCHE), x)
+
+
+def test_fields_v2_unreadable_or_out_of_range_groups_are_zero():
+    x = encode_fields_v2("CE, Sect., 1er mars 2015, n° 381234")
+    assert list(np.flatnonzero(x[2244:]) + 2244) == [2244, 2277, 2287 + 35]  # pas d'AA
+    odd = encode_fields_v2("Cass. soc., 32 zzz 2040, n° 52-13.701")  # jour, mois, année hors
+    assert list(np.flatnonzero(odd[2244:]) + 2244) == [2347]  # AA 1952 hors de 1980-2039
+    last = encode_fields_v2("Cass. soc., 29 février 2039, n° 39-13.701")
+    assert list(np.flatnonzero(last[2244:]) + 2244) == [2272, 2276, 2346, 2347, 2407]
 
 
 def test_decode_argmax_and_tie():
