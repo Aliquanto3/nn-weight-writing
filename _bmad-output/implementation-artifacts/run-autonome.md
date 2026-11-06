@@ -241,3 +241,9 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-06 07:49 · 1.11 · review · passe 2 : 0 Important, 2 low (chiffres du compte rendu corrigés ; plateau des époques montré à 8 192 seulement, réserve) · 3a1b882
 - 2026-11-06 07:49 · 1.11 · CI · verte sur les trois OS (PR #23) · 3a1b882
 - 2026-11-06 07:49 · 1.11 · fusion · #23 fusionnée (première partie), MERGED vérifié ; seconde partie (réentraînement des architectures de 1-10) après 1-10 · ad127ca
+- 2026-11-06 17:51 · 1.10 · dev · moitié MiMo, cases B finies : 5/6 en error (réponse tronquée : 64000 jetons de raisonnement au premier appel, aucun outil), 1 gelée (S t3 99,2 %) ; 0,359 $ facturés · cfd3e11
+- 2026-11-06 17:51 · 1.10 · décision · MiMo en effort medium (Anaël), aligné sur Sonnet et Fable, max_tokens 64000 gardé ; les 6 séances B rejouées, graines 0, 1, 2 ; les 6 premières passent en annexe · —
+- 2026-11-06 17:51 · 1.10 · dev · relancé, moitié MiMo : effort medium, B rejouées puis 15 cases A · cfd3e11
+- 2026-11-06 17:51 · 1.10 · dev · moitié Sonnet + Fable, cases A finies : 18/18 gelées ; Sonnet S A-prog 1e4 63,5 %, 1e5 91,2 %, A-lit 60,2 % ; S-réservé A-prog 1e5 88,8 %, A-lit 67,3 % ; Fable S 92,2 / 98,4 / 87,9 % ; 0 $ facturé ; 13 séances refusées avant lancement (cache de plugins recréé par claude -p) rejouées ; 2 séances signalées fragment_overlap · 3976bca
+- 2026-11-06 17:51 · 1.10 · second-avis · lancé, moitié Sonnet + Fable · 3976bca
+- 2026-11-06 17:51 · 1.11 · dev · seconde partie lancée : réentraînement à N = 8 192 des 18 architectures Sonnet et Fable · ad127ca
