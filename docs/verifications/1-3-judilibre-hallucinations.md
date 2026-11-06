@@ -311,5 +311,11 @@ Corrections de spec proposées, sans modification des fichiers de spec :
 - Important, medium, second avis 3 : « la preuve publique concorde » présentait le PDF V8 comme une preuve. Corrigé (indice public ; `Last-Modified` 2026-11-04 interprété : fichier republié sans changement de version, ne dit rien du compte).
 - Nit, low, second avis 4 : 17 appels décomptés contre 18 appels de production ; 12 000 contre ~12 900 rangs. Corrigé (écart d'un appel déclaré non expliqué ; ~12 900 partout).
 - Nit, low, second avis 5 : consigne T8 restée à l'impératif. Corrigé (au passé, relevés d'interface laissés à Anaël).
-- Nit, low, second avis 6 : motif littéral `Bearer ` dans le constat. Rejeté sur le fond : `nnww publish` n'existe pas encore dans `src/` ; le seul filtre (`journal/writer.py`, `SECRET_PATTERNS`) masque les journaux, pas `docs/`, et son motif `bearer` exige un jeton de 8 caractères ou plus (`Bearer %s` ne le déclenche pas). Mention reformulée sans le motif.
+- Nit, low, second avis 6 : mot-clé d'en-tête d'autorisation cité dans le constat. Rejeté sur le fond : `nnww publish` n'existe pas encore dans `src/` ; le seul filtre (`journal/writer.py`, `SECRET_PATTERNS`) masque les journaux, pas `docs/`, et son motif `bearer` exige un jeton de 8 caractères ou plus (`Bearer %s` ne le déclenche pas). Mention reformulée sans le motif.
 - Verdicts : point 1 et ensemble en « feu vert avec réserve », cohérents avec CAP-1 ; aucun secret (recherche de chaînes longues : URL seulement).
+
+### Passe 4 (2026-11-06, SHA revu bff83f9)
+
+- Aucun Important. Les correctifs de la passe 3 tiennent : R2 et la condition 5 concordent avec le verdict d'ensemble et la section sur `r_republish` ; l'hypothèse « même quota » n'apparaît plus comme un fait (section 1, « Quotas ») ; le PDF V8 est un indice ; ~12 900 rangs et 18 appels / 17 décomptés cohérents dans le tableau, T7, les hypothèses et le bilan.
+- Nit, low, reviewer : la ligne de la passe 3 sur le filtre de secrets citait encore le mot-clé d'autorisation. Corrigé (reformulé). Le script d'exemple de la section T1-T2 garde `Bearer %s` en gabarit, sans valeur : non secret, laissé.
+- Aucun secret (recherche de chaînes longues : URL seulement).
