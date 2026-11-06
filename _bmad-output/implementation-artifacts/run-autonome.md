@@ -35,12 +35,16 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 ## Brief
 
 - **Tâche du run** : run autonome sur le lot 1 de `stories.yaml`, 1-1 à 1-6 d'abord ; 1-2 et 1-3 attendent la clé OpenRouter et le compte PISTE d'Anaël ; conforme à ARCHITECTURE-SPINE.md ; topic GitHub passé à `status-dev`.
-- **Intention courante** : run en pause depuis le 2026-11-06 : 1-1 à 1-7 et la moitié MiMo de 1-8 fusionnées (1-3 provisoire), suite complète verte sur main aec4924 ; reprise sur les attentes d'Anaël ci-dessous.
+- **Intention courante** : reprise le 2026-11-06 05:22 (connexion Claude Code et compte PISTE activés, CAP-1 sur S tranché) : 1-8 moitié Sonnet puis recalibrage unique du budget de passes (décision avant 1-9) ; 1-3 T1-T8 et verdict du point 1 ; puis 1-9. Décisions encore en attente (MNIST A-D, D13 linalg, D4 max_tokens, `max_session_usd`, `session_timeout_s`, effort des séances) : valeurs actuelles gardées, aucune story qui en dépend.
 - **Plan des vagues restantes** : 1-8 moitié Sonnet + recalibrage unique du budget de passes (décision au journal, avant 1-9) ; 1-9 (après décision CAP-1 sur S) ; 1-10 et 1-11 ensuite ; 1-12 (après PISTE, Ollama, collecte) ; 1-13, 1-14 et v0.1.0.
 - **Artefacts utiles** : constats dans `docs/verifications/` ; specs de story dans `_bmad-output/implementation-artifacts/stories/` ; décisions D1-D12 de 1-5 dans sa spec de story.
-- **Attentes Anaël** : connexion `CLAUDE_CONFIG_DIR=~/.nnww/claude-config` + `NNWW_CLAUDE_CWD_ROOT=C:
-nww-cwd` (procédure dans la spec 1-6) ; `ANTHROPIC_API_KEY` si repli API ; compte PISTE (1-3 T1-T8) ; Ollama + GPU pour la collecte (avant 1-12) et place de la story de collecte (R9) ; décisions CAP-1 sur S (1-1), MNIST A-D (1-4), D13 linalg (1-5), `max_session_usd = 5`, `session_timeout_s = 7200`, effort medium Sonnet/Fable (1-6).
+- **Ressources activées (2026-11-06)** : connexion `~/.nnww/claude-config` faite ; `NNWW_CLAUDE_CWD_ROOT='C:\nnww-cwd'` à poser dans chaque commande de séance, jamais de façon permanente ; identifiants PISTE dans `.env` (ignoré), chargés seulement dans la commande (`set -a; . ./.env; set +a`), valeurs jamais affichées. Pas d'`ANTHROPIC_API_KEY` : aucun test réel du repli API.
+- **Attentes Anaël** : Ollama + GPU pour la collecte (avant 1-12) et place de la story de collecte (R9) ; décisions MNIST A-D (1-4), D13 linalg (1-5), `max_session_usd = 5`, `session_timeout_s = 7200`, effort medium Sonnet/Fable (1-6).
 - **Pièges rencontrés** : `setup-uv` sans tag majeur (épingler la version exacte) ; `file_prs.py` lancé trop tôt après `gh pr create` saute la PR (« aucun contrôle ») : attendre ~30 s.
+
+## Reports au rapport du lot 1 (1-14)
+
+- Réserves de CAP-1 sur S (constat 1-1, décision d'Anaël du 2026-11-06) : liste des 15 types (3 attestés, 12 reconstruits), format des références, proportions vraies/fausses et par juridiction, chiffre de référence divergent selon les republications (97,7 % contre 82,8 %, ou 97,8 % contre 94,6 %).
 
 ## Sprint 1 — Lot 1, reproduction critique (1-1 à 1-6)
 
@@ -160,3 +164,7 @@ nww-cwd` (procédure dans la spec 1-6) ; `ANTHROPIC_API_KEY` si repli API ; comp
 - 2026-11-06 00:48 · 1-8 · fusion · #12 fusionnée (moitié MiMo), MERGED vérifié · aec4924
 - 2026-11-06 00:48 · 1-8 · attente humaine · moitié Sonnet et recalibrage unique du budget de passes : connexion CLAUDE_CONFIG_DIR + NNWW_CLAUDE_CWD_ROOT ; décision D4 max_tokens · aec4924
 - 2026-11-06 00:48 · run · report · run en pause : tout ce qui ne demande pas Anaël est fusionné ; worktrees gardés (runs/ de 1-8 dans .claude/worktrees/1-8) · aec4924
+- 2026-11-06 05:22 · run · décision · reprise : connexion Claude Code des séances et compte PISTE activés par Anaël ; pas d'ANTHROPIC_API_KEY ; décisions MNIST A-D, D13, D4, max_session_usd, session_timeout_s et effort toujours en attente, valeurs actuelles gardées · b8b1a4b
+- 2026-11-06 05:22 · 1-1 · décision · CAP-1 sur S : feu vert avec réserve (Anaël) ; réserves (types, format, proportions, chiffre de référence divergent) portées au rapport du lot 1 ; consigné dans jeux-de-donnees.md · b8b1a4b
+- 2026-11-06 05:24 · 1-8 · dev · lancé, moitié Sonnet (dev-story Sonnet, worktree 1-8s) ; étape 0 : contrôle du dossier de configuration à corriger (cache marketplace plugins/ et settings.json {theme}) · b8b1a4b
+- 2026-11-06 05:24 · 1-3 · dev · lancé, T1-T8 bac à sable puis production (general-purpose Opus, worktree 1-3p) · b8b1a4b
