@@ -1,10 +1,24 @@
 # Story 1-10 (partie MiMo) : séances sur S et S-réservé
 
-Deux étapes. Les cases comptées sont celles de l'effort medium (sections B et A ci-dessous) ; l'étape 1, à l'effort par défaut, est en annexe.
+Trois étapes. Réglage retenu (étape 3) et résultat de l'essai en tête ; les réglages précédents (étape 2 : 64000, medium ; étape 1 : 64000, effort par défaut) sont en annexes, non comptés dans les cases.
 
 Date : 2026-11-06 (séances 06:03 à 07:23 UTC, en série). Lot 1, pilote API, OpenRouter, modèle `xiaomi/mimo-v2.6-pro`. Paramètres validés par Anaël, inchangés : `pass_budget = 20`, `max_tokens = 64000`, `max_session_usd = 5`, `session_timeout_s = 7200`. Code : `origin/main` 64ad628, sans modification du harnais.
 
-## Étape 2 : effort medium (cases comptées)
+## Réglage retenu (étape 3) : 131 072 jetons, effort medium, graine envoyée
+
+Décision d'Anaël (2026-11-06) : `max_tokens = 131072` (plafond de sortie de `xiaomi/mimo-v2.6-pro` sur OpenRouter, relevé par l'API `/models`, qui liste `seed` parmi les paramètres admis), effort medium gardé, graine de séance transmise au fournisseur. Commits (branche `exp/1-10-s-mimo`, rebasée sur `main` 8fe5c4d) :
+
+- `config/models.toml` : `max_tokens = 131072` (test `test_models_config`).
+- `4fe9975` : (b) `ChatRequest.seed`, envoyé dans le corps OpenRouter (`"seed"`), jamais lu par l'adaptateur Anthropic (test : paramètres identiques avec ou sans graine), l'empreinte du prompt système n'est pas touchée (la graine n'entre pas dans le prompt), la graine reste journalisée dans l'événement `open` ; (c) une réponse sans texte ni appel d'outil (`stop`/`end_turn`) finit en `error` (« réponse vide ... »), même classe que la troncature, parce que le protocole réserve `pass_budget` à un agent qui rend la main avec une réponse, et que `error` est déjà le code des échecs du fournisseur ; (d) délai par appel OpenRouter passé de 600 à 3600 s (`OPENROUTER_TIMEOUT_S`, `session/run.py`), pour tenir un appel de 131072 jetons (~25 à 30 min) ; `session_timeout_s = 7200` n'est appliqué qu'au pilote Claude Code, jamais au pilote API (aucun plafond de durée de séance côté API, seulement `max_session_usd`). Aucun fichier commun aux deux pilotes (`service.py`, `prompt.py`, `tools.py`, `refusals.py`) n'est touché ; `providers/types.py` gagne un champ optionnel.
+- `--par-type` : celui de `main` (moitié Sonnet) est gardé, mon commit `365c268` est abandonné.
+
+### Résultat de l'essai : `legal_s` A-programme 10⁴, tentative 1, graine 0
+
+Fin `error`, « réponse tronquée (length) à 131072 jetons » : un seul appel, 131 072 jetons de sortie consommés en raisonnement sans réponse visible, 1 412 s, 0 passe, facturé 0,115659 $ (`legal_s-A-program-1e4-mimo-v2.6-pro-t1-20261106T213133Z`, graine 0 et effort medium bien journalisés). **Résultat : MiMo ne tient pas S dans le budget de sortie du fournisseur** (même au plafond de 131 072 jetons, une première réponse de raisonnement ne se termine pas). Selon la règle posée, rien d'autre n'a été lancé : pas de B, ni d'autres A au nouveau réglage, pas de dossier gelé A.
+
+Total facturé de la moitié MiMo de 1-10 : 0,867970 $ (étapes 1 et 2) + 0,115659 $ = **0,983629 $** (plafond 15 $). Séances signalées par drapeau d'audit : aucune.
+
+## Annexe 2 : 64000 jetons, effort medium (étape 2)
 
 Décision d'Anaël (2026-11-06) : MiMo à `effort = "medium"` (aligné sur Sonnet et Fable), `max_tokens` 64000 gardé. `config/models.toml` modifié (commit `6313c1d`, test `test_models_config`). Vérifié : le pilote OpenRouter envoie `reasoning: {effort: "medium"}` (`providers/openrouter.py:91`) et le journal `open` porte `"effort": "medium"` (et `size_target`). Graines 0, 1, 2 (tentatives 1, 2, 3). Même base de code que l'étape 1 rebasée sur `origin/main` (taille cible, PR #22). Jeux : ceux de l'étape 1 (graine 0).
 
@@ -44,7 +58,7 @@ Option `--size-target` 10000 (fenêtre [3162 ; 31623]) ou 100000. Seules les tro
 - Jeux : `nnww datagen legal --seed 0` ; jeux de séance `data/<tâche>/session/` (40 exemples), réservés `heldout/<tâche>/eval/` (4 000), non commités.
 - Commande : `nnww session --task <tâche> --dataset session --method B --model mimo-v2.6-pro --attempt N --seed N --lot 1`. Graine de séance = numéro de tentative (1, 2, 3).
 
-## Annexe : séances à l'effort par défaut (étape 1, non comptées dans les cases)
+## Annexe 1 : 64000 jetons, effort par défaut (étape 1)
 
 Première étape, avant la décision d'Anaël (effort medium). Graines 1, 2, 3.
 
@@ -75,4 +89,4 @@ Aucune.
 
 ## Ce qui reste
 
-- 12 cases A non jouées (voir section A) : décision d'Anaël sur la troncature à effort medium (effort `low`, plafond de sortie, ou autre fournisseur) avant de les lancer.
+- Toutes les cases A et B de MiMo sur S : bloquées par la troncature à 131 072 jetons. Pistes pour Anaël : effort `low` ou `minimal`, autre fournisseur ou autre mode de raisonnement, ou retenir le résultat (MiMo hors d'état de tenir S) pour la sélection du modèle.
