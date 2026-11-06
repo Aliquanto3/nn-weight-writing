@@ -36,8 +36,8 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 ## Brief
 
 - **Tâche du run** : run autonome sur le lot 1 de `stories.yaml`, 1-1 à 1-6 d'abord ; 1-2 et 1-3 attendent la clé OpenRouter et le compte PISTE d'Anaël ; conforme à ARCHITECTURE-SPINE.md ; topic GitHub passé à `status-dev`.
-- **Intention courante** : reprise le 2026-11-06 06:59 sur 1-10 puis 1-11 (décisions D4, max_session_usd, session_timeout_s, effort, S-réservé et AD-4 validées par Anaël). 1-10 en deux moitiés parallèles : MiMo (worktree 1-10m, plafond 15 $ facturés) et Sonnet + Fable (worktree 1-10s, abonnement). Ancienne intention : run en pause depuis le 2026-11-06 06:46 : 1-1 à 1-9 fusionnées, budget de passes figé à 20. Historique de la reprise : reprise le 2026-11-06 05:22 (connexion Claude Code et compte PISTE activés, CAP-1 sur S tranché) : 1-8 moitié Sonnet puis recalibrage unique du budget de passes (décision avant 1-9) ; 1-3 T1-T8 et verdict du point 1 ; puis 1-9.
-- **Plan des vagues restantes** : 1-8 moitié Sonnet + recalibrage unique du budget de passes (décision au journal, avant 1-9) ; 1-9 (après décision CAP-1 sur S) ; 1-10 et 1-11 ensuite ; 1-12 (après PISTE, Ollama, collecte) ; 1-13, 1-14 et v0.1.0.
+- **Intention courante** : run en pause depuis le 2026-11-06 23:12 : 1-1 à 1-11 fusionnées (1-10a comprise). MiMo arrêté sur S (ne tient pas le budget de sortie, décision d'Anaël). Restent 1-12 (Ollama + GPU, collecte, place de la story de collecte), 1-13, puis 1-14 et v0.1.0 (CGU PISTE avant).
+- **Plan des vagues restantes** : 1-12 (après Ollama + GPU et collecte) ; 1-13 ; 1-14 et v0.1.0 (après confirmation des CGU PISTE).
 - **Artefacts utiles** : constats dans `docs/verifications/` ; specs de story dans `_bmad-output/implementation-artifacts/stories/` ; décisions D1-D12 de 1-5 dans sa spec de story.
 - **Ressources activées (2026-11-06)** : connexion `~/.nnww/claude-config` faite ; `NNWW_CLAUDE_CWD_ROOT='C:\nnww-cwd'` à poser dans chaque commande de séance, jamais de façon permanente ; identifiants PISTE dans `.env` (ignoré), chargés seulement dans la commande (`set -a; . ./.env; set +a`), valeurs jamais affichées. Pas d'`ANTHROPIC_API_KEY` : aucun test réel du repli API.
 - **Attentes Anaël** : Ollama + GPU pour la collecte (avant 1-12) et place de la story de collecte (R9) ; décisions MNIST A-D (1-4, avant 2-1), D13 linalg (1-5) ; version des CGU PISTE (avant 1-14).
@@ -50,6 +50,13 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - Écarts de distribution de S relevés en revue de 1-9 : t02 au Conseil d'État (3 lignes en graine 0 gardent « sous-sect. » à une date postérieure au 20 avril 2016, forme qu'aucune vraie n'a) ; t14 (chambre tirée parmi 6, criminelle à 1/6) ; t07 (formation numérotée à 100 % contre 93 % chez les vraies).
 - S-réservé : 45 % de Cour de cassation parmi les fausses et les vraies de séance et d'entraînement (4 des 10 types connus ne visent qu'elle), journalisé dans dataset.json.
 - Coût équivalent API du pilote Claude Code sous-compté avant 1-8 (0,42 $ au journal contre 0,83 $ réels sur les 9 séances Sonnet), corrigé en 1-8.
+
+- Séances signalées par les drapeaux d'audit (1-10), à juger avant conclusion : `fragment_overlap` sur `legal_s-A-program-1e5-fable-5.1-t1-20261106T074549Z` et `legal_s_reserved-A-program-1e5-sonnet-5.5-t2-20261106T070402Z` (dossiers dans `.claude/worktrees/1-10s/runs/1/`).
+- MiMo-V2.6-Pro ne tient pas S : réponses tronquées en raisonnement à 64000 (effort par défaut puis medium) et 131072 jetons ; 2 séances B gelées sur S-réservé (89,7 et 90,0 %) ; MiMo sort du choix du modèle du lot 2. Graine non transmise au fournisseur avant 4fe9975 (champ `seed` des journaux des étapes 1 et 2 = graine prévue).
+- Coût équivalent API en abonnement non plafonné : Fable A-littéral 10⁴ à 14,50 $ équivalent (plafond de séance sur le facturé seul, AD-11).
+- F avec `legal.fields@1` (scalaires) en annexe de 1-11 ; F retenu avec `legal.fields@2` (one-hot). Plateau des 100 époques montré à N = 8 192 seulement.
+- Fable A-programme 10⁵ : goulet relu de 2 unités, réentraînement en prédiction constante sur 2 graines sur 3.
+- Commentaire de `config/protocol.toml` laissé tel quel (session_timeout_s appliqué aussi au pilote API depuis 1-10) pour garder une seule `protocol_sha256` au lot 1.
 
 ## Sprint 1 — Lot 1, reproduction critique (1-1 à 1-6)
 
@@ -223,3 +230,51 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-06 07:02 · 1.10a · dev · lancé (dev-story Sonnet, worktree 1-10a) · 64ad628
 - 2026-11-06 07:02 · 1.10 · dev · lancé, moitié MiMo, cases B (dev-story Sonnet, worktree 1-10m, ≤ 4 $ facturés) · 64ad628
 - 2026-11-06 07:02 · 1.10 · dev · lancé, moitié Sonnet + Fable, cases B et porte de coût (dev-story Sonnet, worktree 1-10s) · 64ad628
+- 2026-11-06 07:05 · 1.11 · dev · lancé, première partie : courbes C et F sur S et S-réservé (dev-story Sonnet, worktree 1-11) ; réentraînement des architectures de 1-10 ensuite · 1bd3b6b
+- 2026-11-06 07:06 · 1.10a · dev · fini : --size-target 10⁴/10⁵, fenêtre [N/√10, N·√10], refus size_out_of_range, taille dans le prompt, l'événement open et l'identifiant · e63d306
+- 2026-11-06 07:08 · 1.10 · dev · moitié Sonnet + Fable, cases B finies : 7/7 gelées, 0 à 1 passe, aucun drapeau ; S 98,4 à 99,5 % ; S-réservé 87,4 à 89,4 % (fausses : 98,5 à 100 % sur les 10 types connus, 40 à 41 % sur les 5 tenus à l'écart) ; Fable S 98,4 % ; 0 $ facturé, 0,61 $ équivalent API · 22e27cc
+- 2026-11-06 07:08 · 1.10 · décision · porte de coût : médiane facturée des 3 premières séances Sonnet de S = 0 $ (abonnement), médiane équivalente 0,047 $ → 3 tentatives par case, la porte ne joue pas · 22e27cc
+- 2026-11-06 07:08 · 1.8 · report · levé : end.totals.cost_equiv_usd égale result.total_cost_usd (écart ≤ 7e-7 $) ; cache 1 h de Fable à 20 $/Mtok confirmé sur séance réelle · 22e27cc
+- 2026-11-06 07:09 · 1.10a · second-avis · 1 high (journaux antérieurs sans size_target illisibles : exactitude et evaluate en échec), 2 low · e63d306
+- 2026-11-06 07:12 · 1.10a · review · passe 1 : 1 high corrigé (champ optionnel, test, vérifié sur les 7 journaux B de 1-10), 1 low corrigé, 1 rejeté · d137653
+- 2026-11-06 07:13 · 1.10a · review · passe 2 (Sonnet) : rien · d137653
+- 2026-11-06 07:15 · 1.10a · CI · verte sur les trois OS (PR #22) · d137653
+- 2026-11-06 07:15 · 1.10a · fusion · #22 fusionnée, MERGED vérifié · 2d3eeef
+- 2026-11-06 07:15 · 1.10 · dev · relancé, moitié Sonnet + Fable, cases A (15 séances Sonnet, 3 Fable) · 2d3eeef
+- 2026-11-06 07:21 · 1.11 · dev · première partie finie : 60 runs C et F, 3 graines, N = 64 à 32 768 ; S C 51,7 → 94,6 % ; F (legal.fields@1) sous C dès 8 192 · d6df200
+- 2026-11-06 07:26 · 1.11 · second-avis · 2 medium (legal.fields@1 en scalaires rend t01, t02, t06, t09, t15 quasi inapprenables ; 100 époques peut-être choisies sur le réservé), 2 low · d6df200
+- 2026-11-06 07:26 · 1.11 · décision · F refait avec legal.fields@2 (mêmes champs en one-hot, aucun indice calculé ; @1 gardé pour la traçabilité, résultats en annexe) · —
+- 2026-11-06 07:49 · 1.11 · review · passe 1 : 4 Important corrigés (legal.fields@2 et courbe F rejouée, époques rechoisies sur validation tirée de l'entraînement : 100 gardées, refus d'un jeu d'une autre tâche, reprise clé par encodeur), 1 low corrigé ; F@2 = C à ±1 point à 8 192 et 32 768 · 70b0bb7
+- 2026-11-06 07:49 · 1.11 · review · passe 2 : 0 Important, 2 low (chiffres du compte rendu corrigés ; plateau des époques montré à 8 192 seulement, réserve) · 3a1b882
+- 2026-11-06 07:49 · 1.11 · CI · verte sur les trois OS (PR #23) · 3a1b882
+- 2026-11-06 07:49 · 1.11 · fusion · #23 fusionnée (première partie), MERGED vérifié ; seconde partie (réentraînement des architectures de 1-10) après 1-10 · ad127ca
+- 2026-11-06 17:51 · 1.10 · dev · moitié MiMo, cases B finies : 5/6 en error (réponse tronquée : 64000 jetons de raisonnement au premier appel, aucun outil), 1 gelée (S t3 99,2 %) ; 0,359 $ facturés · cfd3e11
+- 2026-11-06 17:51 · 1.10 · décision · MiMo en effort medium (Anaël), aligné sur Sonnet et Fable, max_tokens 64000 gardé ; les 6 séances B rejouées, graines 0, 1, 2 ; les 6 premières passent en annexe · —
+- 2026-11-06 17:51 · 1.10 · dev · relancé, moitié MiMo : effort medium, B rejouées puis 15 cases A · cfd3e11
+- 2026-11-06 17:51 · 1.10 · dev · moitié Sonnet + Fable, cases A finies : 18/18 gelées ; Sonnet S A-prog 1e4 63,5 %, 1e5 91,2 %, A-lit 60,2 % ; S-réservé A-prog 1e5 88,8 %, A-lit 67,3 % ; Fable S 92,2 / 98,4 / 87,9 % ; 0 $ facturé ; 13 séances refusées avant lancement (cache de plugins recréé par claude -p) rejouées ; 2 séances signalées fragment_overlap · 3976bca
+- 2026-11-06 17:51 · 1.10 · second-avis · lancé, moitié Sonnet + Fable · 3976bca
+- 2026-11-06 17:51 · 1.11 · dev · seconde partie lancée : réentraînement à N = 8 192 des 18 architectures Sonnet et Fable · ad127ca
+- 2026-11-06 18:08 · 1.10 · review · moitié Sonnet + Fable, passe 1 : 2 medium corrigés (catalogue de plugins contrôlé sur sa forme et son contenu, 14 séances refusées et non 13), 3 low corrigés, 2 rejetés ; décision : plafond de séance sur le facturé seul (AD-11), Fable A-littéral 14,50 $ équivalent reporté à 1-14 · 03acd22
+- 2026-11-06 18:08 · 1.10 · review · moitié Sonnet + Fable, passe 2 : 0 Important, 2 low corrigés (RecursionError rattrapée, liens refusés) · acc13e6
+- 2026-11-06 18:08 · 1.11 · dev · seconde partie, volet Sonnet + Fable fini : 18 architectures réentraînées à 8 192 (3 graines) ; défaut de retrain corrigé (clé blocks des manifestes de séance) ; revue groupée avec le volet MiMo · 3a7d336
+- 2026-11-06 18:08 · 1.10 · CI · rouge Linux et macOS (PR #24) : test de JSON trop profond dépendant de la pile ; correctif de profondeur explicite lancé (dev-story Sonnet) · acc13e6
+- 2026-11-06 18:12 · 1.10 · CI · verte sur les trois OS après profondeur maximale explicite (32, catalogue réel à 7) · 0cdab32
+- 2026-11-06 18:12 · 1.10 · fusion · #24 fusionnée (moitié Sonnet + Fable), MERGED vérifié · 8fe5c4d
+- 2026-11-06 22:29 · 1.10 · report · moitié MiMo arrêtée de 08:31 à 17:52 (relance reçue tard), reprise en effort medium · 6313c1d
+- 2026-11-06 22:29 · 1.10 · dev · moitié MiMo, effort medium : 9 séances, 4 tronquées à 64000, 1 réponse vide (classée pass_budget à tort), 2 B gelées sur S-réservé (89,7 et 90,0 %) ; 3 A-program 1e4 tronquées → arrêt ; 0,868 $ facturés au total · b74d8e3
+- 2026-11-06 22:29 · 1.10 · décision · Anaël : essai de MiMo à max_tokens 131072 (plafond OpenRouter), effort medium, graine transmise au fournisseur ; une séance d'essai A-program 1e4 ; si elle gèle, toute la moitié MiMo rejouée dans ce réglage, sinon MiMo arrêté sur S et consigné comme résultat · —
+- 2026-11-06 22:29 · 1.10 · dev · relancé, moitié MiMo : correctifs (131072, seed, réponse vide) puis séance d'essai · b74d8e3
+- 2026-11-06 22:57 · 1.10 · dev · moitié MiMo, essai à 131072 : encore tronqué (131072 jetons de raisonnement au premier appel, 1 412 s, 0,116 $) ; MiMo arrêté sur S selon la décision d'Anaël ; correctifs : seed transmis à OpenRouter, réponse vide en error, délai par appel 3600 s ; 0,984 $ facturés pour la moitié MiMo · e9b8a95
+- 2026-11-06 22:57 · 1.10 · décision · résultat consigné : MiMo-V2.6-Pro ne tient pas S dans le budget de sortie du fournisseur (64000 et 131072, effort par défaut et medium) ; pas d'architecture MiMo à réentraîner en 1-11 ; MiMo hors du choix du modèle du lot 2 (règle des 3 points) · e9b8a95
+- 2026-11-06 22:57 · 1.10 · second-avis · lancé, moitié MiMo · e9b8a95
+- 2026-11-06 22:57 · 1.11 · second-avis · lancé, seconde partie (réentraînement Sonnet + Fable seul) · 3a7d336
+- 2026-11-06 23:04 · 1.10 · review · moitié MiMo lancée (reviewer Opus) : décisions : pas de nouvel essai silencieux sur timeout, réponse vide au classement commun des deux pilotes, troncature avec appel partiel en error, session_timeout_s appliqué au pilote API · e9b8a95
+- 2026-11-06 23:04 · 1.11 · second-avis · seconde partie : 0 high, 2 medium (mécanisme Fable 10⁵ mal désigné, conclusions causales sur un seul N), 4 low ; étanchéité, chiffres et retrain vérifiés · 3a7d336
+- 2026-11-06 23:04 · 1.11 · review · passe 1 (Sonnet) : 2 medium et 4 low corrigés (compte rendu factuel, clé de reprise avec N) ; passe 2 : relue par l'orchestrateur (texte seul), rien · 273c9d0
+- 2026-11-06 23:04 · 1.11 · CI · verte sur les trois OS (PR #25) · 273c9d0
+- 2026-11-06 23:04 · 1.11 · fusion · #25 fusionnée, MERGED vérifié ; 1-11 terminée · 785d260
+- 2026-11-06 23:12 · 1.10 · review · moitié MiMo, passe 1 : 2 medium corrigés (plus de nouvel essai silencieux sur OpenRouter et Anthropic, réponse vide au classement commun), 5 low corrigés (troncature avec appel en error, max_tokens et délai journalisés, session_timeout_s au pilote API) ; décision : commentaire de protocol.toml inchangé (une seule protocol_sha256 au lot 1) · fb8810a
+- 2026-11-06 23:12 · 1.10 · review · moitié MiMo, passe 2 : 0 Important, 2 low acceptés, 1 pre-existing noté · b01f0eb
+- 2026-11-06 23:12 · 1.10 · CI · verte sur les trois OS (PR #26) · b01f0eb
+- 2026-11-06 23:12 · 1.10 · fusion · #26 fusionnée (moitié MiMo), MERGED vérifié ; 1-10 terminée · dd1b8a7
+- 2026-11-06 23:12 · run · report · run en pause : 1-1 à 1-11 fusionnées ; 1-12 attend Ollama + GPU et la place de la collecte, 1-14 la version des CGU PISTE ; décisions MNIST A-D (avant 2-1) et D13 linalg toujours en attente · dd1b8a7
