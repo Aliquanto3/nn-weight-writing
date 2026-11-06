@@ -80,6 +80,10 @@ DIRECTORY_CACHE = "plugin-directory-cache-v2.json"
 DIRECTORY_CACHE_KEYS = frozenset(
     {"schemaVersion", "fetchedAt", "listings", "entryNames", "entryNameClaims"}
 )
+# Imbrication maximale admise (objet racine = 1) : le catalogue réel (relevé le 2026-11-06) va à 7.
+# Parcours itératif, donc indépendant de la pile de la plateforme ; `json.loads` garde son
+# rattrapage de `RecursionError` pour les cas extrêmes.
+DIRECTORY_CACHE_MAX_DEPTH = 32
 INSTALL_KEY = re.compile(r"install|enabl", re.I)
 # `skills/` : seul `synced` (copie des skills du compte claude.ai que Claude Code recrée à chaque
 # lancement, sans réglage `syncClaudeAiSkills: false`). Elle n'est pas chargée :
@@ -174,15 +178,20 @@ def _directory_cache_ok(cache: Path) -> bool:
         return False
     if not isinstance(data.get("listings", []), list):
         return False
-    stack: list = [data]
+    stack: list[tuple[object, int]] = [(data, 1)]
     while stack:
-        node = stack.pop()
+        node, depth = stack.pop()
+        if not isinstance(node, dict | list):
+            continue
+        if depth > DIRECTORY_CACHE_MAX_DEPTH:
+            return False
         if isinstance(node, dict):
             if any(INSTALL_KEY.search(str(key)) for key in node):
                 return False
-            stack.extend(node.values())
-        elif isinstance(node, list):
-            stack.extend(node)
+            children = node.values()
+        else:
+            children = node
+        stack.extend((child, depth + 1) for child in children)
     return True
 
 

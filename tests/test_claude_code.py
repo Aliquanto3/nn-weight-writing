@@ -14,6 +14,7 @@ from conftest import TEST_PRICE, claude_model, read_journal, scenario
 from nn_weight_writing.budget import ledger
 from nn_weight_writing.session import prompt
 from nn_weight_writing.session.claude_code import (
+    DIRECTORY_CACHE_MAX_DEPTH,
     ancestor_memory_files,
     build_command,
     child_env,
@@ -304,6 +305,20 @@ def test_config_dir_directory_cache_unknown_shape_refused(tmp_path, content):
 
 
 def test_config_dir_directory_cache_too_deep_refused(tmp_path):
+    levels = DIRECTORY_CACHE_MAX_DEPTH  # racine = 1, donc profondeur totale = max + 1
+    deep = '{"listings": ' + "[" * levels + "]" * levels + "}"
+    assert _cache_problems(tmp_path, deep) == [
+        "plugins/plugin-directory-cache-v2.json de forme inconnue"
+    ]
+
+
+def test_config_dir_directory_cache_max_depth_admitted(tmp_path):
+    levels = DIRECTORY_CACHE_MAX_DEPTH - 1  # profondeur totale = max exactement
+    deep = '{"listings": ' + "[" * levels + "]" * levels + "}"
+    assert _cache_problems(tmp_path, deep) == []
+
+
+def test_config_dir_directory_cache_extreme_depth_refused(tmp_path):
     deep = '{"listings": ' + "[" * 100_000 + "]" * 100_000 + "}"
     assert _cache_problems(tmp_path, deep) == [
         "plugins/plugin-directory-cache-v2.json de forme inconnue"
