@@ -40,6 +40,8 @@ local_excluded = { good_friday = -2, fixed = ["12-26"] }
 # Le lundi de Pentecôte est une fête légale (règle t12) mais aussi la journée de solidarité :
 # aucune fausse t12 ne le prend, aucune vraie non plus.
 t12_excluded = ["whit_monday"]
+# Fêtes légales tirées par t12 (moitié « fête ») : les mobiles seulement ; les fixes ne servent
+# qu'au vérificateur (une vraie n'y tombe jamais).
 
 [holidays.sample]
 status = "sample"
@@ -77,11 +79,12 @@ finding_gap = "2019 : 0 an 270, 1 an 655, 2 ans 47, 3 à 6 ans 5 ; 1997 : 0 à 2
 status = "convention"
 source = "story 1-9 ; poids arrondis d'après l'échantillon 2019 (chambres et écarts)"
 chamber_weights = { "civ. 1re" = 0.14, "civ. 2e" = 0.20, "civ. 3e" = 0.18, "com." = 0.08, "soc." = 0.14, "crim." = 0.25, "ch. mixte" = 0.005, "ass. plén." = 0.005 }
-gap_weights = [0.27, 0.55, 0.15, 0.02, 0.01]  # écart de 0 à 4 ans
+# Écart de 0 à 6 ans : distribution de l'échantillon 2019 et 1997 jusqu'à son maximum observé.
+gap_weights = [0.27, 0.60, 0.09, 0.025, 0.01, 0.004, 0.001]
 civil_serial = [10000, 79999]
 criminal_serial = [80000, 89999]
 # Pourvoi trop ancien (t08) : écart d'au moins `old_gap_min` ans ; les fausses t08 tirent dans
-# [old_gap_min, old_gap_max]. Aucune vraie entre 5 et 9 ans.
+# [old_gap_min, old_gap_max]. Les vraies vont jusqu'à 6 ans, les fausses t08 commencent à 10.
 old_gap_min = 10
 old_gap_max = 15
 # Pourvoi après la décision (t01) : de 1 à 3 ans après.
@@ -163,8 +166,10 @@ finding_gap = "arrêts 2023 : 0 an 51, 1 an 166, 2 ans 88, 3 ans 59, 4 ans 32, 5
 [cours_appel.generator]
 status = "convention"
 source = "story 1-9 ; écarts arrondis d'après les arrêts de 2023"
-gap_weights = [0.13, 0.42, 0.22, 0.15, 0.08]  # écart de 0 à 4 ans
-serial = [1, 19999]
+# Écart de 0 à 8 ans : arrêts 2023 et 2012 jusqu'au maximum observé (8 ans).
+gap_weights = [0.13, 0.415, 0.22, 0.15, 0.08, 0.003, 0.001, 0.0005, 0.0005]
+# Numéro d'ordre jusqu'à 24999 (maximum observé : 21304) : aucun numéro >= 20000 ne marque une classe.
+serial = [1, 24999]
 old_gap_min = 10
 old_gap_max = 15
 after_gap = [1, 3]

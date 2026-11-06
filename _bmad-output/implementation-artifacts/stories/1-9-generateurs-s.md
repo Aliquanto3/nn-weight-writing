@@ -394,3 +394,10 @@ Second avis : décisions O1 à O10 en tête de spec. Reviewer : à compléter.
 ## Tests ajoutés par les décisions
 
 O1 : chemin relatif, `train` et `eval` refusés, jouet inchangé ; O2 : vraies à 5 et 6 ans ; O3 : t12 mobile ; O4 : refus d'une tâche différente ; O5 : table de Pâques ; O6 : 29 février hors t12 ; O7 : bornes de `fields` ; O10 : numéros d'ordre ≥ 20 000.
+
+## Écarts d'implémentation
+
+- `Sizes` ne valide pas à la construction : `generate_rows` (donc `generate`) lève `ValueError` pour une taille impaire ou inférieure à 2 (`Sizes(session=41)` se construit, comme dans le test nommé).
+- O1 : `TaskSpec.session_datasets` (défaut `("toy",)`, `("session",)` pour les deux tâches legal) porte la liste blanche ; `nnww session` refuse avant tout (code 2) `train`, tout nom hors `[a-z0-9_]+` et tout jeu hors liste.
+- O4 : `RunRecord.task` (défaut vide, donc un `run.json` ancien est refusé par `score_frozen`) et le premier événement `open` du journal donnent la tâche du réseau ; le manifeste gelé reste inchangé (AD-3). Évaluation croisée journalisée : reportée à 1-14.
+- Graine 0 : `nnww datagen legal --seed 0` donne 4 000 / 40 / 8 192, 6 dossiers sans recouvrement ; préfixes sha256 de `dataset.json` : eval `0a76a818cd11`, eval réservé `25bc55ad1984`, séance S `5fcbc7e0296d`, entraînement S `2360a52e7dc6`, séance R `4d0af15e5628`, entraînement R `654549f97903`.

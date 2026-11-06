@@ -128,6 +128,15 @@ def train(
             name: sha256_file(data_dir / name) for name in ("examples.jsonl", "labels.jsonl")
         },
     }
-    freeze_run(run_dir, manifest, weights, baseline=BASELINE, n=n, seed=seed, dataset=dataset)
+    freeze_run(
+        run_dir,
+        manifest,
+        weights,
+        baseline=BASELINE,
+        n=n,
+        seed=seed,
+        dataset=dataset,
+        task=task_name,
+    )
     evaluate(run_dir)
     return run_dir

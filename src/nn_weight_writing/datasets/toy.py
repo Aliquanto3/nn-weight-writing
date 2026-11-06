@@ -14,6 +14,7 @@ from pathlib import Path
 import numpy as np
 
 from nn_weight_writing.datasets.io import Row, write_dataset
+from nn_weight_writing.tasks.registry import validate_name
 from nn_weight_writing.tasks.toy import TASKS, automaton, get_task, parity
 from nn_weight_writing.tasks.toy import compare as compare_task
 
@@ -126,6 +127,7 @@ def generate(
     """Écrit `data/<task>/<dataset>/` et `heldout/<task>/<dataset>/` sous `root`."""
     if task_name not in TASKS:
         raise KeyError(f"tâche jouet inconnue : {task_name!r}")
+    validate_name("jeu", dataset)
     data_rows, held_rows = generate_rows(task_name, seed, n, n_heldout)
     generator = f"toy.{task_name}"
     root = Path(root)

@@ -26,7 +26,13 @@ def _jsonl(records: list[dict]) -> bytes:
 
 
 def write_dataset(
-    directory: Path, rows: list[Row], *, generator: str, version: int, seed: int
+    directory: Path,
+    rows: list[Row],
+    *,
+    generator: str,
+    version: int,
+    seed: int,
+    composition: dict | None = None,
 ) -> Path:
     """Écrit le jeu dans un dossier neuf ou vide ; `dataset.json` porte les sha256 des fichiers."""
     directory = Path(directory)
@@ -44,6 +50,8 @@ def write_dataset(
         "n": len(rows),
         "files": {EXAMPLES_FILE: sha256_bytes(examples), LABELS_FILE: sha256_bytes(labels)},
     }
+    if composition is not None:
+        meta["composition"] = composition
     atomic_write_bytes(
         directory / META_FILE,
         (json.dumps(meta, ensure_ascii=False, indent=2, sort_keys=True) + "\n").encode("utf-8"),

@@ -29,7 +29,7 @@ def datasets(tmp_path_factory):
 def frozen_handmade(tmp_path, task):
     manifest, weights = handmade.build(task)
     run_dir = tmp_path / "runs" / "toy" / "train" / run_id(task, "handmade", 0, 0)
-    freeze_run(run_dir, manifest, weights, baseline="handmade", n=0, seed=0)
+    freeze_run(run_dir, manifest, weights, baseline="handmade", n=0, seed=0, task=task)
     return run_dir
 
 
@@ -140,3 +140,16 @@ def test_run_rules_reports_a_sandbox_failure(monkeypatch):
     monkeypatch.setitem(rules.RULES, "parity", "import os\n")
     with pytest.raises(rules.RulesError, match="parity : refused"):
         rules.run_rules("parity", ["1000000000"])
+
+
+def test_score_refuses_a_network_written_for_another_task(tmp_path, datasets):  # O4
+    _, held = datasets["parity"]
+    manifest, weights = handmade.build("parity")
+    for name, task in (("other", "legal_s"), ("legacy", "")):
+        run_dir = tmp_path / "runs" / name
+        freeze_run(run_dir, manifest, weights, baseline="handmade", n=0, seed=0, task=task)
+        with pytest.raises(ValueError, match="évaluation croisée non prise en charge") as exc:
+            score_frozen(
+                run_dir, get_task("parity"), held / "examples.jsonl", held / "labels.jsonl"
+            )
+        assert f"tâche {task!r}" in str(exc.value) and "'parity'" in str(exc.value)
