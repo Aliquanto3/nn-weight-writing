@@ -247,3 +247,7 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-06 17:51 · 1.10 · dev · moitié Sonnet + Fable, cases A finies : 18/18 gelées ; Sonnet S A-prog 1e4 63,5 %, 1e5 91,2 %, A-lit 60,2 % ; S-réservé A-prog 1e5 88,8 %, A-lit 67,3 % ; Fable S 92,2 / 98,4 / 87,9 % ; 0 $ facturé ; 13 séances refusées avant lancement (cache de plugins recréé par claude -p) rejouées ; 2 séances signalées fragment_overlap · 3976bca
 - 2026-11-06 17:51 · 1.10 · second-avis · lancé, moitié Sonnet + Fable · 3976bca
 - 2026-11-06 17:51 · 1.11 · dev · seconde partie lancée : réentraînement à N = 8 192 des 18 architectures Sonnet et Fable · ad127ca
+- 2026-11-06 18:08 · 1.10 · review · moitié Sonnet + Fable, passe 1 : 2 medium corrigés (catalogue de plugins contrôlé sur sa forme et son contenu, 14 séances refusées et non 13), 3 low corrigés, 2 rejetés ; décision : plafond de séance sur le facturé seul (AD-11), Fable A-littéral 14,50 $ équivalent reporté à 1-14 · 03acd22
+- 2026-11-06 18:08 · 1.10 · review · moitié Sonnet + Fable, passe 2 : 0 Important, 2 low corrigés (RecursionError rattrapée, liens refusés) · acc13e6
+- 2026-11-06 18:08 · 1.11 · dev · seconde partie, volet Sonnet + Fable fini : 18 architectures réentraînées à 8 192 (3 graines) ; défaut de retrain corrigé (clé blocks des manifestes de séance) ; revue groupée avec le volet MiMo · 3a7d336
+- 2026-11-06 18:08 · 1.10 · CI · rouge Linux et macOS (PR #24) : test de JSON trop profond dépendant de la pile ; correctif de profondeur explicite lancé (dev-story Sonnet) · acc13e6
