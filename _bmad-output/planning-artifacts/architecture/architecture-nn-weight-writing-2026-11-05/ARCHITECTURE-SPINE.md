@@ -102,6 +102,7 @@ Les flèches sont les seules dépendances permises. `cli` n'importe `baselines` 
 - **Binds:** CAP-5, CAP-6, CAP-7, CAP-9, CAP-11
 - **Prevents:** un écart A − C qui viendrait de deux représentations d'entrée plutôt que des poids.
 - **Rule:** chaque tâche de `tasks/` expose `encode(raw) -> ndarray[float32]` et `decode(outputs) -> label`, purs et fixes, partagés par A, C et E, sous l'identifiant `{task}.{encoder}@{version}`. F utilise un second encodeur, `encode_prepared`, déclaré par la même tâche. B reçoit la chaîne brute. L'agent n'écrit jamais d'encodeur.
+- **Amendement (2026-11-06, validé par Anaël, O4 de la story 1-9) :** une famille de tâches au même encodage déclare `{famille}.{encodeur}@{version}` (ex. `legal.chars@1`, commun à `legal_s`, `legal_s_reserved` et R). La tâche reste dans `dataset.json`, et l'évaluation la contrôle : elle lit la tâche de la séance (premier événement `open` du journal) ou du témoin (`run.json`), et refuse un réseau dont la tâche diffère de celle du jeu évalué. L'évaluation croisée journalisée (réseau de S évalué sur S-réservé ou R) est laissée à 1-14.
 
 ### AD-5 — Un bac à sable unique pour le code de l'agent
 
