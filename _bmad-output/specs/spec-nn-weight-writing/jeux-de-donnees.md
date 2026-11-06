@@ -11,6 +11,8 @@ Parité, comparaison de nombres, petit automate. Solution exacte connue : sert �
 - Références de la Cour de cassation, du Conseil d'État et des cours d'appel, fausses références selon 15 types d'erreurs typiques d'une invention de LLM (exemples cités par Nuss : pourvoi formé après la décision, 30 février, chambre inexistante).
 - Reconstruit d'après un post LinkedIn, sans code ni données publiés : la reproduction reste approximative, et les écarts sont documentés (CAP-1, CAP-9).
 - Repères de Nuss : réseau ~97 000 paramètres, 40 exemples non annotés, 97,7 % sur 4 000 références jamais vues, contre 82,8 % pour le même réseau entraîné sur 8 192 exemples annotés.
+- Liste des 15 types reconstruite : 3 attestés, 12 de notre fait (`docs/verifications/1-1-reconstruction-s.md`). Format des références, proportions et métrique de Nuss inconnus, fixés et journalisés par 1-9. Le chiffre de référence diverge selon les republications (97,7 % contre 82,8 %, ou 97,8 % contre 94,6 %).
+- Décision d'Anaël (CAP-1, 2026-11-06) : **feu vert avec réserve**. Réserves portées au rapport du lot 1 : types, format, proportions, chiffre de référence divergent.
 
 ## S-réservé (lot 1)
 
@@ -31,7 +33,7 @@ Formes synthétiques ; chiffres 8×8 de scikit-learn ; MNIST ; Fashion-MNIST. Li
 
 | Point | Ce qu'il faut établir | Ressource d'Anaël |
 |---|---|---|
-| S d'après Nuss | Liste des 15 types et écarts connus avec l'original | — |
+| S d'après Nuss | Liste des 15 types et écarts connus avec l'original — traité : `docs/verifications/1-1-reconstruction-s.md`, feu vert avec réserve (Anaël, 2026-11-06) | — |
 | MiMo via OpenRouter | Identifiant, prix, appels d'outils, vision ; son 97 % vient de la calibration du juge de `slm-quality-bench` et ne se transfère pas forcément à l'écriture de poids | Clé OpenRouter |
 | Judilibre | Accès, licence de réutilisation, source équivalente pour le Conseil d'État, collecte des hallucinations via `slm-quality-bench` | Compte PISTE |
 | Licences d'images | MNIST, Fashion-MNIST, chiffres de scikit-learn : réutilisation et republication des résultats | — |
