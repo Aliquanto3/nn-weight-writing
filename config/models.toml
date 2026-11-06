@@ -28,6 +28,9 @@ max_tokens = 64000
 # Fournisseur fixé pour garder le cache et un prix stable (constat 1-2) : Xiaomi, éditeur du
 # modèle, au prix de pricing.toml ; aucun repli vers un autre fournisseur.
 provider_order = ["xiaomi"]
+# Effort medium, aligné sur Sonnet et Fable (décision d'Anaël, 2026-11-06) : à l'effort par défaut,
+# 5 séances B sur 6 de 1-10 ont été coupées à 64000 jetons de raisonnement sans réponse.
+effort = "medium"
 
 # Repli du pilote Claude Code (harnais.md) : API Anthropic, facturée.
 [models."sonnet-5.5-api"]

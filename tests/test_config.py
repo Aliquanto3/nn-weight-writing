@@ -64,6 +64,7 @@ def test_models_config():
         "fable-5.1-api": ("api", "anthropic", "claude-fable-5-1"),
     }
     assert models["mimo-v2.6-pro"].provider_order == ("xiaomi",)
+    assert models["mimo-v2.6-pro"].effort == "medium"
     assert not models["sonnet-5.5"].billed and models["sonnet-5.5-api"].billed
 
 
