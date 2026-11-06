@@ -72,6 +72,19 @@ def test_answer_without_tool_call_ends_in_pass_budget(session_env):
     assert (outcome.reason, outcome.detail) == ("pass_budget", "l'agent a rendu la main sans geler")
 
 
+def test_empty_answer_is_error_not_pass_budget(session_env):
+    provider = FakeProvider([reply()])
+    outcome = session_env.run(fake_model(), method="B", provider=provider)
+    assert outcome.reason == "error"
+    assert outcome.detail == "réponse vide (end_turn) : ni texte ni appel d'outil"
+
+
+def test_session_seed_is_sent_in_every_request(session_env):
+    provider = FakeProvider([reply("fini")])
+    session_env.run(fake_model(), method="B", provider=provider)
+    assert [r.seed for r in provider.requests] == [7]
+
+
 @pytest.mark.parametrize("stop", ["length", "max_tokens"])
 def test_truncated_answer_is_error_not_pass_budget(session_env, stop):
     provider = FakeProvider([dataclasses.replace(reply(), stop_reason=stop)])

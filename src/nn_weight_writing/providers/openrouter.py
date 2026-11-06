@@ -87,6 +87,8 @@ def build_body(request: ChatRequest, provider_order: tuple[str, ...]) -> dict:
     }
     if provider_order:
         body["provider"] = {"order": list(provider_order), "allow_fallbacks": False}
+    if request.seed is not None:
+        body["seed"] = request.seed
     if request.effort:
         body["reasoning"] = {"effort": request.effort}
     return body

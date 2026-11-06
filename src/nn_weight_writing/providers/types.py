@@ -60,6 +60,8 @@ class ChatRequest:
     max_tokens: int
     sampling: dict = field(default_factory=dict)
     effort: str | None = None
+    # Graine de séance transmise au fournisseur qui l'admet (OpenRouter) ; ignorée des autres.
+    seed: int | None = None
 
 
 @dataclass(frozen=True)

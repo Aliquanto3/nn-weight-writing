@@ -71,7 +71,14 @@ TRUNCATED_STOPS = ("length", "max_tokens")
 class ApiLoopDriver:
     name = DRIVER
 
-    def __init__(self, provider: ModelProvider, model: ModelConfig, price: Price) -> None:
+    def __init__(
+        self,
+        provider: ModelProvider,
+        model: ModelConfig,
+        price: Price,
+        seed: int | None = None,
+    ) -> None:
+        self.seed = seed
         self.provider = provider
         self.model = model
         self.price = price
@@ -107,6 +114,7 @@ class ApiLoopDriver:
                 max_tokens=self.model.max_tokens,
                 sampling=dict(self.model.sampling),
                 effort=self.model.effort,
+                seed=self.seed,
             )
             started = time.perf_counter()
             try:
@@ -134,6 +142,12 @@ class ApiLoopDriver:
                 # l'agent qui rend la main ; séance perdue par le harnais, à rejouer (AD-14).
                 return EndReason.ERROR, (
                     f"réponse tronquée ({response.stop_reason}) à {self.model.max_tokens} jetons"
+                )
+            if not response.message.tool_calls and not response.message.text.strip():
+                # Réponse vide (raisonnement non rendu, `stop`) : ni texte ni outil, même échec
+                # qu'une troncature, pas un agent qui rend la main.
+                return EndReason.ERROR, (
+                    f"réponse vide ({response.stop_reason}) : ni texte ni appel d'outil"
                 )
             if not response.message.tool_calls:
                 return EndReason.PASS_BUDGET, "l'agent a rendu la main sans geler"

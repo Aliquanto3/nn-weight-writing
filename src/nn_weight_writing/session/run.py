@@ -42,12 +42,18 @@ class SessionOutcome:
     cost_equiv_usd: float
 
 
+# Délai par appel du pilote OpenRouter : un appel de 131072 jetons de sortie dure jusqu'à ~30 min.
+OPENROUTER_TIMEOUT_S = 3600.0
+
+
 def make_provider(model: ModelConfig) -> ModelProvider:
     """Adaptateur du pilote API selon `models.toml` ; `fake` ne s'obtient qu'en test."""
     if model.provider == "openrouter":
         from nn_weight_writing.providers.openrouter import OpenRouterProvider
 
-        return OpenRouterProvider(provider_order=model.provider_order)
+        return OpenRouterProvider(
+            provider_order=model.provider_order, timeout_s=OPENROUTER_TIMEOUT_S
+        )
     if model.provider == "anthropic":
         from nn_weight_writing.providers.anthropic import AnthropicProvider
 
@@ -129,7 +135,7 @@ def run_session(
                 cwd_root=claude_cwd_root,
             ).run(service, system_path, task_text)
         else:
-            ApiLoopDriver(provider or make_provider(model), model, price).run(
+            ApiLoopDriver(provider or make_provider(model), model, price, seed=seed).run(
                 service, system, task_text, max_session
             )
     except Exception as exc:

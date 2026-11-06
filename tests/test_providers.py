@@ -3,6 +3,7 @@ simulé ; normalisation de l'usage et formule de coût (AD-11)."""
 
 from __future__ import annotations
 
+import dataclasses
 import json
 
 import httpx2
@@ -102,6 +103,9 @@ def test_openrouter_body_pins_provider_and_requests_cost():
     assert "reasoning" not in body
     assert openrouter.build_body(request(effort="high"), ())["reasoning"] == {"effort": "high"}
     assert "provider" not in openrouter.build_body(request(), ())
+    assert "seed" not in openrouter.build_body(request(), ())
+    assert openrouter.build_body(request(seed=0), ())["seed"] == 0
+    assert openrouter.build_body(request(seed=5), ())["seed"] == 5
 
 
 def test_openrouter_call_through_sdk_normalizes_usage():
@@ -182,6 +186,8 @@ def test_anthropic_params_cache_points_and_tool_results():
     assert params["tools"][-1]["cache_control"] == {"type": "ephemeral"}
     assert "cache_control" not in params["tools"][0]
     assert params["output_config"] == {"effort": "medium"}
+    seeded = anthropic_adapter.build_params(dataclasses.replace(two_results, seed=3))
+    assert seeded == params and "seed" not in seeded
     assert params["messages"] == [
         {"role": "user", "content": [{"type": "text", "text": "tâche"}]},
         {
