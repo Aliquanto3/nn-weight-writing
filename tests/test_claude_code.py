@@ -14,6 +14,7 @@ from conftest import TEST_PRICE, claude_model, read_journal, scenario
 from nn_weight_writing.budget import ledger
 from nn_weight_writing.session import prompt
 from nn_weight_writing.session.claude_code import (
+    DIRECTORY_CACHE_MAX_DEPTH,
     ancestor_memory_files,
     build_command,
     child_env,
@@ -251,6 +252,100 @@ def test_config_dir_plugins_cache_only_admitted(tmp_path):
     assert config_dir_problems(tmp_path) == []  # cache de place de marché seul
     (plugins / "installed_plugins.json").write_text('{"version": 2, "plugins": {}}', "utf-8")
     assert config_dir_problems(tmp_path) == []  # table vide
+    (plugins / "plugin-directory-cache-v2.json").write_text('{"listings": []}', "utf-8")
+    assert config_dir_problems(tmp_path) == []  # catalogue des places de marché
+
+
+def _cache_problems(tmp_path, content=None, directory=False, name="plugin-directory-cache-v2.json"):
+    plugins = tmp_path / "plugins"
+    plugins.mkdir()
+    if directory:
+        (plugins / name).mkdir()
+    else:
+        (plugins / name).write_text(content, "utf-8")
+    return config_dir_problems(tmp_path)
+
+
+def test_config_dir_directory_cache_real_shape_admitted(tmp_path):
+    listing = {
+        "id": "plugin_01",
+        "name": "X",
+        "summary": "s",
+        "release": {"version": "1"},
+        "links": {},
+        "surfaces": ["claude_code"],
+        "source": {"type": "github"},
+        "checks": {"review": {"state": "ok"}},
+    }
+    data = {
+        "schemaVersion": 2,
+        "fetchedAt": "2026-11-06T07:31:57Z",
+        "listings": [listing],
+        "entryNames": {"plugin_01": "x"},
+        "entryNameClaims": {"plugin_01": {"repositoryKey": "github.com/a/b#", "lastSeen": "t"}},
+    }
+    assert _cache_problems(tmp_path, json.dumps(data)) == []
+
+
+@pytest.mark.parametrize(
+    "content",
+    [
+        '{"listings": [{"id": "p", "installed": true}]}',  # fiche marquée installée
+        '{"listings": [], "enabledPlugins": {"x@y": true}}',  # clé inconnue d'activation
+        '{"listings": [], "plugins": {"x": {}}}',  # clé inconnue
+        '{"listings": {"x": 1}}',  # listings n'est pas une liste
+        "[]",  # pas un objet
+        "{pas du json",
+    ],
+)
+def test_config_dir_directory_cache_unknown_shape_refused(tmp_path, content):
+    assert _cache_problems(tmp_path, content) == [
+        "plugins/plugin-directory-cache-v2.json de forme inconnue"
+    ]
+
+
+def test_config_dir_directory_cache_too_deep_refused(tmp_path):
+    levels = DIRECTORY_CACHE_MAX_DEPTH  # racine = 1, donc profondeur totale = max + 1
+    deep = '{"listings": ' + "[" * levels + "]" * levels + "}"
+    assert _cache_problems(tmp_path, deep) == [
+        "plugins/plugin-directory-cache-v2.json de forme inconnue"
+    ]
+
+
+def test_config_dir_directory_cache_max_depth_admitted(tmp_path):
+    levels = DIRECTORY_CACHE_MAX_DEPTH - 1  # profondeur totale = max exactement
+    deep = '{"listings": ' + "[" * levels + "]" * levels + "}"
+    assert _cache_problems(tmp_path, deep) == []
+
+
+def test_config_dir_directory_cache_extreme_depth_refused(tmp_path):
+    deep = '{"listings": ' + "[" * 100_000 + "]" * 100_000 + "}"
+    assert _cache_problems(tmp_path, deep) == [
+        "plugins/plugin-directory-cache-v2.json de forme inconnue"
+    ]
+
+
+def test_config_dir_directory_cache_symlink_refused(tmp_path):
+    target = tmp_path / "ailleurs.json"
+    target.write_text('{"listings": []}', "utf-8")
+    plugins = tmp_path / "plugins"
+    plugins.mkdir()
+    try:
+        (plugins / "plugin-directory-cache-v2.json").symlink_to(target)
+    except OSError:
+        pytest.skip("liens symboliques non permis sur ce poste")
+    assert config_dir_problems(tmp_path) == [
+        "plugins/plugin-directory-cache-v2.json de forme inconnue"
+    ]
+
+
+def test_config_dir_directory_cache_as_directory_refused(tmp_path):
+    assert _cache_problems(tmp_path, directory=True) != []
+
+
+def test_config_dir_directory_cache_neighbour_name_refused(tmp_path):
+    problems = _cache_problems(tmp_path, '{"listings": []}', name="plugin-directory-cache-v3.json")
+    assert problems == ["plugins présent : ['plugin-directory-cache-v3.json']"]
 
 
 def test_config_dir_synced_account_copies_admitted(tmp_path):

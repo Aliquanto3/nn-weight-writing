@@ -64,8 +64,27 @@ HARMLESS_SETTINGS_KEYS = frozenset({"$schema", "theme"})
 # `plugins/` : fichiers et dossiers que Claude Code crée de lui-même à la connexion (liste et
 # cache des places de marché, sans plugin installé).
 MARKETPLACE_ENTRIES = frozenset(
-    {"known_marketplaces.json", "marketplaces", "installed_plugins.json", "store", "synced"}
+    {
+        "known_marketplaces.json",
+        "marketplaces",
+        "installed_plugins.json",
+        "plugin-directory-cache-v2.json",  # catalogue des places de marché, recréé par `claude -p`
+        "store",
+        "synced",
+    }
 )
+# `plugins/plugin-directory-cache-v2.json` : catalogue public des places de marché (forme relevée
+# le 2026-11-06 : ces cinq clés, 3604 fiches `listings`). Admis seulement en fichier ordinaire, de
+# cette forme, sans aucune clé d'installation ni d'activation à quelque profondeur que ce soit.
+DIRECTORY_CACHE = "plugin-directory-cache-v2.json"
+DIRECTORY_CACHE_KEYS = frozenset(
+    {"schemaVersion", "fetchedAt", "listings", "entryNames", "entryNameClaims"}
+)
+# Imbrication maximale admise (objet racine = 1) : le catalogue réel (relevé le 2026-11-06) va à 7.
+# Parcours itératif, donc indépendant de la pile de la plateforme ; `json.loads` garde son
+# rattrapage de `RecursionError` pour les cas extrêmes.
+DIRECTORY_CACHE_MAX_DEPTH = 32
+INSTALL_KEY = re.compile(r"install|enabl", re.I)
 # `skills/` : seul `synced` (copie des skills du compte claude.ai que Claude Code recrée à chaque
 # lancement, sans réglage `syncClaudeAiSkills: false`). Elle n'est pas chargée :
 # `--disable-slash-commands` vide `skills` dans l'événement `init`, contrôlé à chaque séance.
@@ -141,7 +160,39 @@ def _plugin_problems(plugins: Path) -> list[str]:
             table = {"?": 1}
         if table:
             return ["plugin installé"]
+    cache = plugins / DIRECTORY_CACHE
+    if (cache.exists() or cache.is_symlink()) and not _directory_cache_ok(cache):
+        return [f"plugins/{DIRECTORY_CACHE} de forme inconnue"]
     return []
+
+
+def _directory_cache_ok(cache: Path) -> bool:
+    """Catalogue des places de marché : fichier ordinaire, clés connues, rien d'installé."""
+    if cache.is_symlink() or not cache.is_file():  # lien (même mort) ou dossier refusés
+        return False
+    try:
+        data = json.loads(cache.read_text("utf-8"))
+    except OSError, ValueError, RecursionError:  # illisible, ou JSON trop profond
+        return False
+    if not isinstance(data, dict) or not set(data) <= DIRECTORY_CACHE_KEYS:
+        return False
+    if not isinstance(data.get("listings", []), list):
+        return False
+    stack: list[tuple[object, int]] = [(data, 1)]
+    while stack:
+        node, depth = stack.pop()
+        if not isinstance(node, dict | list):
+            continue
+        if depth > DIRECTORY_CACHE_MAX_DEPTH:
+            return False
+        if isinstance(node, dict):
+            if any(INSTALL_KEY.search(str(key)) for key in node):
+                return False
+            children = node.values()
+        else:
+            children = node
+        stack.extend((child, depth + 1) for child in children)
+    return True
 
 
 def ancestor_memory_files(cwd: Path) -> list[Path]:
