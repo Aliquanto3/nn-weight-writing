@@ -8,7 +8,7 @@ Date : 2026-11-06 (séances 06:03 à 06:07 UTC). Lot 1, pilote Claude Code (`cla
 
 - Jeux : `nnww datagen --seed 0 legal` dans le worktree (non commités) : `data/<tâche>/session/` (40 exemples non annotés montrés à l'agent) et `heldout/<tâche>/eval/` (4 000 exemples).
 - Séances : jeu `session`, tentative `n`, graine de séance `n - 1` (Sonnet : tentatives 1, 2, 3 de graines 0, 1, 2 ; Fable : tentative 1, graine 0), `--lot 1`.
-- Code : branche `exp/1-10-s-sonnet` sur `main` 64ad628 ; un seul commit de code, `c262ccc` (option `--par-type` de `scripts/exactitude_reserve.py`). Aucun défaut du harnais trouvé, aucune séance perdue ni rejouée.
+- Code : branche `exp/1-10-s-sonnet` sur `main` 64ad628 (rebasée depuis sur `ad127ca`, PR #23) ; un seul commit de code pour B, `d34901b` (option `--par-type` de `scripts/exactitude_reserve.py`). Aucun défaut du harnais trouvé, aucune séance perdue ni rejouée.
 
 ## Résultats (7 séances B)
 
@@ -24,7 +24,7 @@ Exactitude sur le réservé (4 000 exemples) par `uv run python scripts/exactitu
 | Sonnet 5.5 | legal_s_reserved | 3 | 0 | 2 | 3574/4000 (89,4 %) | 0,031399 | 18,9 | 4 / 2 284 / 10 462 / 1 876 | `d970f38f8852f8ee` |
 | Fable 5.1 | legal_s | 1 | 1 | 4 | 3935/4000 (98,4 %) | 0,330858 | 34,4 | 98 / 2 777 / 22 749 / 9 267 | `4610a350f3c449c2` |
 
-Total des 7 séances : 0 $ facturé, 0,611476 $ équivalent API. Registre `budget/ledger.csv` : 14 lignes ajoutées (réservation puis clôture), `billed_usd` = 0.
+Total des 7 séances : 0 $ facturé, 0,611075 $ équivalent API au journal (0,611076 $ au registre, arrondi par séance à 6 décimales). Registre `budget/ledger.csv` : 14 lignes ajoutées (réservation puis clôture), `billed_usd` = 0.
 
 Détail par type (S, 4 000 exemples : 2 000 vraies, 133 ou 134 fausses par type) : sur `legal_s`, Sonnet t1 et Fable séparent les 15 types sans erreur ; leurs 65 erreurs sont des vraies jugées fausses. Sonnet t2 et t3 classent toutes les vraies correctement et se trompent sur 20 fausses de t05 (114/134). Détail complet : sortie de `--par-type`.
 
@@ -77,9 +77,14 @@ Date : 2026-11-06 (06:16 à 08:37 UTC). Mêmes paramètres et mêmes relevés qu
 
 ## Défauts du harnais et séances perdues (AD-14)
 
-- Défaut 1 : `config_dir_problems` refusait `plugins/plugin-directory-cache-v2.json`, catalogue des places de marché que `claude -p` a recréé dans la configuration dédiée entre deux séances (après la 5e séance A, aucun plugin installé). Correctif minimal `f017b3a` (`Fix:`), propre au pilote Claude Code (`session/claude_code.py`, liste `MARKETPLACE_ENTRIES`) ; test ajouté dans `tests/test_claude_code.py`. Aucun des fichiers communs aux deux pilotes (`service.py`, `prompt.py`, `tools.py`, `refusals.py`) n'est touché.
-- 13 séances refusées avant lancement par ce défaut (fin `error`, 0 tour, 0 $, registre `reserved` puis `closed` à 0) ; les 13 cases ont été rejouées après le correctif avec les mêmes tentatives et graines (nouveaux identifiants de séance). Leurs dossiers `runs/1/*T0622[4-5]*Z` (fin `error`) ne sont pas des résultats et ne comptent pas.
-- Évolution du script de mesure : `scripts/exactitude_reserve.py --par-type` accepte aussi les réseaux gelés (A), commit `3b2f607` (les décomptes de A par `--par-type` et par la voie `score_frozen` coïncident, vérifié sur une séance).
+- Défaut 1 : `config_dir_problems` refusait `plugins/plugin-directory-cache-v2.json`, catalogue des places de marché que `claude -p` a recréé dans la configuration dédiée entre deux séances (après la 5e séance A, aucun plugin installé). Correctif minimal `ddd62c2` (`Fix:`), durci en revue par `98c3c6d` (fichier ordinaire de forme connue exigé, voir la revue), propre au pilote Claude Code (`session/claude_code.py`, liste `MARKETPLACE_ENTRIES`) ; test ajouté dans `tests/test_claude_code.py`. Aucun des fichiers communs aux deux pilotes (`service.py`, `prompt.py`, `tools.py`, `refusals.py`) n'est touché.
+- 14 séances refusées avant lancement par ce défaut, de 06:22:47 à 06:22:58 (fin `error`, 0 tour, 0 $, registre `reserved` puis `closed` à 0) ; les 14 cases ont été rejouées après le correctif avec les mêmes tentatives et graines (nouveaux identifiants de séance). Leurs 14 dossiers (fin `error`), seuls à répondre au motif `runs/1/*T0622[4-5]*Z`, ne sont pas des résultats et ne comptent pas :
+  - `legal_s-A-program-1e5-sonnet-5.5-t2-20261106T062247Z`, `legal_s-A-program-1e5-sonnet-5.5-t3-20261106T062248Z` ;
+  - `legal_s-A-literal-1e4-sonnet-5.5-t1-20261106T062248Z`, `-t2-20261106T062249Z`, `-t3-20261106T062250Z` ;
+  - `legal_s_reserved-A-program-1e5-sonnet-5.5-t1-20261106T062251Z`, `-t2-20261106T062252Z`, `-t3-20261106T062253Z` ;
+  - `legal_s_reserved-A-literal-1e4-sonnet-5.5-t1-20261106T062254Z`, `-t2-20261106T062255Z`, `-t3-20261106T062255Z` ;
+  - `legal_s-A-program-1e4-fable-5.1-t1-20261106T062256Z`, `legal_s-A-program-1e5-fable-5.1-t1-20261106T062257Z`, `legal_s-A-literal-1e4-fable-5.1-t1-20261106T062258Z`.
+- Évolution du script de mesure : `scripts/exactitude_reserve.py --par-type` accepte aussi les réseaux gelés (A), commit `8351652` (les décomptes de A par `--par-type` et par la voie `score_frozen` coïncident, vérifié sur une séance).
 
 ## Résultats (18 séances A, toutes en `frozen`)
 
@@ -147,7 +152,7 @@ Les 16 autres séances A et les 7 B : aucun drapeau.
 
 ## Porte de coût : mise à jour
 
-Facturé 0 $, médiane 0 $ : 3 tentatives par case, décision inchangée. Pour information, l'équivalent API des séances Sonnet sur S : médiane des 12 séances (B, A-programme, A-littéral) = 0,19 $ ; A-littéral à 10^4 vaut en revanche 2,03 / 2,37 / 0,74 $ (médiane 2,03 $, au-dessus de 2 $) et sur S-réservé 2,30 / 0,84 / 1,38 $ : en repli API, la porte des 2 $ se jouerait sur A-littéral. Fable : 2,87 $ (A-programme 10^4), 3,08 $ (10^5) et 14,50 $ (A-littéral 10^4, 19 tours, 213 394 jetons de sortie, 43 minutes) en équivalent, soit au-dessus du plafond de 5 $ par séance s'il avait été facturé.
+Facturé 0 $, médiane 0 $ : 3 tentatives par case, décision inchangée. Pour information, l'équivalent API des séances Sonnet sur S : médiane des 12 séances (B, A-programme, A-littéral) = 0,19 $ ; A-littéral à 10^4 vaut en revanche 2,03 / 2,37 / 0,74 $ (médiane 2,03 $, au-dessus de 2 $) et sur S-réservé 2,30 / 0,84 / 1,38 $ : en repli API, la porte des 2 $ se jouerait sur A-littéral. Fable : 2,87 $ (A-programme 10^4), 3,08 $ (10^5) et 14,50 $ (A-littéral 10^4, 19 tours, 213 394 jetons de sortie, 43 minutes) en équivalent, soit au-dessus du plafond de 5 $ par séance s'il avait été facturé. En abonnement, `max_session_usd` porte sur le facturé (AD-11), qui reste à 0 $ : rien ne plafonne l'équivalent API, et la séance est allée à son terme. Pas de changement de code dans cette story ; le point est reporté au rapport de 1-14 (comparaison des coûts).
 
 ## Observations sur A-littéral à 10^4
 
@@ -156,3 +161,19 @@ Aucune troncature de sortie ni limite d'usage ; durées de 283 s à 873 s pour S
 ## Tarif de cache 1 h de Fable (rappel)
 
 Confirmé à 20,00 $/Mtok sur la séance B (voir plus haut) ; les 3 séances A de Fable retombent sur `total_cost_usd` du `result` au micro-dollar.
+
+## Revue
+
+### Passe 1 (2026-11-06, SHA revu c719d12)
+
+Branche rebasée sur `origin/main` `ad127ca` (PR #23) sans conflit avant la revue (`budget/ledger.csv` en union, `scripts/exactitude_reserve.py` sans recouvrement). Commits après rebase : `d34901b`, `b165956`, `fec930a`, `ddd62c2`, `8351652`, `c719d12`.
+
+- Important, medium, second avis 1 : `plugins/plugin-directory-cache-v2.json` admis par son nom seul (dossier homonyme ou contenu quelconque acceptés, jamais lu). Corrigé `98c3c6d` : fichier ordinaire exigé, objet JSON aux seules clés relevées sur le fichier réel (`schemaVersion`, `fetchedAt`, `listings`, `entryNames`, `entryNameClaims` ; 3 604 fiches publiques du catalogue, sans aucune clé d'installation ou d'activation), `listings` en liste, aucune clé `install*` ni `enabl*` à aucune profondeur ; tests négatifs (dossier homonyme, nom voisin, fiche installée, clé d'activation, clé inconnue, JSON illisible). La configuration dédiée réelle passe toujours (`config_dir_problems` vide).
+- Important, medium (en partie), second avis 2 : 13 séances refusées annoncées, 14 au registre et dans `runs/1/`. Corrigé (compte et liste exacte des 14 dossiers). Partie rejetée : le motif `*T0622[4-5]*Z` couvre bien les 3 dossiers Fable (`T062256Z` à `T062258Z`) et seulement les 14 dossiers refusés (vérifié par `ls`).
+- Nit, low, second avis 3 : total B 0,611476 $ au lieu de 0,611075 $ (journal) / 0,611076 $ (registre). Corrigé.
+- Nit, low, second avis 4 : sha `c262ccc`, `f017b3a` et `3b2f607` obsolètes après rebase. Corrigé (`d34901b`, `ddd62c2`, `8351652`).
+- Rejeté, low, second avis 5 : la ligne à 0 $ de 04:26:04 (`compare-A-program-sonnet-5.5-t1-20261106T042604Z`) est déjà sur `main` : c'est la séance refusée de 1-8, documentée dans `docs/experiences/1-8-jouet-sonnet.md`. Registre inchangé.
+- Nit, low, second avis 6 : équivalent Fable A-littéral 14,50 $ au-delà de `max_session_usd = 5`, non plafonné en abonnement. Décision de l'orchestrateur : pas de code ; dit en clair dans la porte de coût, reporté à 1-14.
+- Rejeté, second avis 7 : fenêtres de taille citées à tort par le second avis ; `size_window` (`session/tools.py`) rend round(N/√10) et round(N·√10), soit [3 162 ; 31 623] et [31 623 ; 316 228], conformes à la spec de 1-10a ; tailles gelées relevées (12 254 à 30 632, 98 018 à 306 302) dans ces fenêtres.
+- Vérifié, revue : exactitudes reproduites depuis `runs/1/` en lecture seule (Fable A-littéral 3517/4000, S-réservé A-programme 10^5 t2 3585/4000, A-programme 10^4 t1 2744/4000), et la voie `--par-type` des réseaux gelés coïncide avec `score_frozen` sur deux séances ; paquets S-réservé limités à `examples.jsonl` et `task.json`, sans étiquette ni `type_id`.
+- Complexité : 0 constat.
