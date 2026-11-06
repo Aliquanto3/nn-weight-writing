@@ -55,10 +55,10 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--n", type=int, default=8192)
     args = parser.parse_args(argv)
     out = args.root / "runs" / "1" / "reentrainement.jsonl"
-    done = {(r["session"], r["seed"]) for r in read_jsonl(out)}
+    done = {(r["session"], r["seed"], r.get("n")) for r in read_jsonl(out)}
     for row in parse_table(args.table.read_text("utf-8")):
         for seed in args.seeds:
-            if (row["session"], seed) in done:
+            if (row["session"], seed, args.n) in done:
                 continue
             run_dir = retrain(
                 args.runs_from / row["session"],
