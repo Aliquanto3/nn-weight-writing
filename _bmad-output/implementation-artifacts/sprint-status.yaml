@@ -1,0 +1,36 @@
+# Statuts de développement du projet nn-weight-writing, tirés de stories.yaml
+# (_bmad-output/specs/spec-nn-weight-writing/) et du journal de run-autonome.md.
+# Statuts : backlog, ready-for-dev, in-progress, review, done. Lu par /agent-cost-kit:avancement-run.
+project: nn-weight-writing
+tracking_system: file-system
+story_location: _bmad-output/implementation-artifacts/stories
+last_updated: 2026-11-06 05:47
+
+development_status:
+  epic-1: in-progress
+  1-1-verifier-reconstruction-s-nuss: done
+  1-2-verifier-mimo-openrouter: done
+  1-3-verifier-judilibre-hallucinations: done
+  1-4-verifier-licences-images: done
+  1-5-noyau-harnais-seance: done
+  1-6-pilotes-fournisseurs-cout-plafond: done
+  1-7-taches-jouet-temoins: done
+  1-8-seances-jouet-calibrage-budget-passes: review
+  1-9-generateurs-s-s-reserve: backlog
+  1-10-seances-a-b-s-porte-cout: backlog
+  1-11-temoins-c-f-s: backlog
+  1-12-pre-etude-r-porte-30: backlog
+  1-13-jeu-r-seances-r: backlog
+  1-14-mesures-rapport-lot1-v0-1-0: backlog
+  epic-1-retrospective: optional
+  epic-2: backlog
+  2-1-jeux-images-vision-harnais: backlog
+  2-2-temoins-c-methode-e-images: backlog
+  2-3-seances-a-b-images: backlog
+  2-4-echelle-tailles-mnist: backlog
+  2-5-rapport-lot2-v0-2-0: backlog
+  epic-2-retrospective: optional
+  epic-3: backlog
+  3-1-taches-algorithmiques-temoins: backlog
+  3-2-seances-transformer-ecrit-rapport-lot3: backlog
+  epic-3-retrospective: optional
