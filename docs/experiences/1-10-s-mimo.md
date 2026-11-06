@@ -24,7 +24,7 @@ Exactitude sur le réservé (4 000 exemples) après gel, par `scripts/exactitude
 
 Total facturé de l'étape : **0,359066 $** (plafond de l'étape 4 $, de la moitié MiMo 15 $).
 
-Séance gelée (t3, `legal_s`) : 3 tours, 57 954 jetons en entrée, 57 832 en sortie, 68 352 lus au cache, `tree_sha256` `76ffecbfcd8629c5`... (complet : événement `freeze` de son journal, non commité). Détail sur le réservé : vraies 1988/2000 ; fausses 1 970/2 000 ; t05 114/134, tous les 14 autres types 100 %. Sur S-réservé : aucune séance gelée, donc pas d'exactitude (ni séparée sur les 10 types connus et les 5 tenus à l'écart).
+Séance gelée (t3, `legal_s`) : 3 tours, 57 954 jetons en entrée, 57 832 en sortie, 68 352 lus au cache, `tree_sha256` `76ffecbfcd8629c5`... (complet : événement `freeze` de son journal, non commité). Détail sur le réservé : vraies 1988/2000 ; fausses 1 980/2 000 ; t05 114/134, tous les 14 autres types 100 %. Sur S-réservé : aucune séance gelée, donc pas d'exactitude (ni séparée sur les 10 types connus et les 5 tenus à l'écart).
 
 ## Constat : 5 séances sur 6 finissent par réponse tronquée
 
