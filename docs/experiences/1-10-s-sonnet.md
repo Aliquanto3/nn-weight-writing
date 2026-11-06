@@ -26,7 +26,7 @@ Exactitude sur le réservé (4 000 exemples) par `uv run python scripts/exactitu
 
 Total des 7 séances : 0 $ facturé, 0,611476 $ équivalent API. Registre `budget/ledger.csv` : 14 lignes ajoutées (réservation puis clôture), `billed_usd` = 0.
 
-Détail par type (S, 4 000 exemples : 2 000 vraies, 133 ou 134 fausses par type) : sur `legal_s`, les trois séances Sonnet et Fable séparent tous les types sans erreur (15 types à 100 %) ; les erreurs sont toutes sur les vraies jugées fausses (65 pour Sonnet t1 et Fable, 20 pour t2 et t3). Détail complet : sortie de `--par-type`.
+Détail par type (S, 4 000 exemples : 2 000 vraies, 133 ou 134 fausses par type) : sur `legal_s`, Sonnet t1 et Fable séparent les 15 types sans erreur ; leurs 65 erreurs sont des vraies jugées fausses. Sonnet t2 et t3 classent toutes les vraies correctement et se trompent sur 20 fausses de t05 (114/134). Détail complet : sortie de `--par-type`.
 
 ### S-réservé : types connus et types tenus à l'écart
 
