@@ -4,7 +4,11 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import os
 import re
+import shutil
+import stat
+import subprocess
 from pathlib import Path
 
 import pytest
@@ -94,7 +98,11 @@ def test_reprise_et_ligne(tmp_path: Path) -> None:
     assert col.deja_ecrits(tmp_path / "absent.jsonl") == set()
 
 
-def test_figer(tmp_path: Path) -> None:
+def test_figer(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    # figer() met requetes.json en lecture seule : travailler sur une copie.
+    copie = tmp_path / "requetes.json"
+    shutil.copyfile(col.REQUETES, copie)
+    monkeypatch.setattr(col, "REQUETES", copie)
     ligne = {"model": "m1", "digest": "d1", "ollama_version": "9.9"}
     (tmp_path / "pilote.jsonl").write_text(json.dumps(ligne) + "\n", encoding="utf-8")
     man = col.figer(tmp_path)
@@ -106,6 +114,74 @@ def test_figer(tmp_path: Path) -> None:
     assert "collecte.jsonl" not in man["fichiers"]
     assert not (tmp_path / "pilote.jsonl").stat().st_mode & 0o200
     col.figer(tmp_path)  # idempotent : le manifeste en lecture seule est réécrit
+    assert not copie.stat().st_mode & 0o200
+    assert os.access(RACINE / "scripts" / "collecte" / "requetes.json", os.W_OK)
+    for f in tmp_path.iterdir():
+        os.chmod(f, stat.S_IWRITE | stat.S_IREAD)  # nettoyage de tmp_path sous Windows
+
+
+def test_reprise_apres_ligne_tronquee(tmp_path: Path) -> None:
+    reqs = col.selectionner(col.charger_requetes(), "pilote")
+    rep = {"message": {"content": "x"}, "done_reason": "stop"}
+    l1 = col.construire_ligne("m1", "d", "0.1", reqs[0], rep)
+    f = tmp_path / "c.jsonl"
+    f.write_text(json.dumps(l1) + "\n" + '{"model": "m1", "requ', encoding="utf-8")
+    assert col.reparer_fin(f) == len('{"model": "m1", "requ')
+    assert col.reparer_fin(f) == 0
+    l2 = col.construire_ligne("m1", "d", "0.1", reqs[1], rep)
+    with f.open("a", encoding="utf-8", newline="\n") as h:
+        h.write(json.dumps(l2) + "\n")
+    assert [d["request_id"] for d in col.lire_jsonl(f)] == [reqs[0]["id"], reqs[1]["id"]]
+    g = tmp_path / "seule.jsonl"
+    g.write_text('{"model"', encoding="utf-8")
+    col.reparer_fin(g)
+    assert g.read_bytes() == b""
+    assert col.reparer_fin(tmp_path / "absent.jsonl") == 0
+
+
+def _git(*args: str, cwd: Path) -> None:
+    subprocess.run(["git", *args], cwd=cwd, check=True, capture_output=True)
+
+
+def test_sortie_defaut_vise_le_depot_principal(tmp_path: Path) -> None:
+    principal = tmp_path / "principal"
+    principal.mkdir()
+    _git("init", "-q", cwd=principal)
+    _git(
+        "-c",
+        "user.email=t@t",
+        "-c",
+        "user.name=t",
+        "commit",
+        "-q",
+        "--allow-empty",
+        "-m",
+        "i",
+        cwd=principal,
+    )
+    _git("worktree", "add", "-q", str(tmp_path / "wt"), cwd=principal)
+    (tmp_path / "wt" / "scripts").mkdir()
+    attendu = principal.resolve()
+    assert col.racine_depot_principal(tmp_path / "wt" / "scripts") == attendu
+    assert col.racine_depot_principal(principal) == attendu
+    assert col.sortie_defaut().is_absolute()
+    assert col.sortie_defaut().parts[-3:] == ("data", "r", "collecte")
+
+
+def test_rapport_pilote_exclut_les_erreurs(tmp_path: Path, capsys) -> None:
+    reqs = col.selectionner(col.charger_requetes(), "pilote")
+    ok = col.construire_ligne(
+        "qwen3.5:2b", "d", "0.1", reqs[0], {"message": {"content": "18-12.345"}}
+    )
+    err = col.construire_ligne("qwen3.5:2b", "d", "0.1", reqs[1], {"done_reason": "error"})
+    ancien = {k: v for k, v in ok.items() if k != "error"}  # ligne antérieure à la clé « error »
+    (tmp_path / "pilote.jsonl").write_text(
+        "".join(json.dumps(d) + "\n" for d in (ok, err, ancien)), encoding="utf-8"
+    )
+    col.rapport_pilote(tmp_path)
+    sortie = capsys.readouterr().out
+    assert "1 génération(s) en erreur exclue(s)" in sortie
+    assert '"generations": 2' in sortie and '"sans_motif": 0' in sortie
 
 
 def test_paquet_nimporte_ni_script_ni_ollama() -> None:

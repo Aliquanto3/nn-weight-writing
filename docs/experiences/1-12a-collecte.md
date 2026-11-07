@@ -74,7 +74,14 @@ continue ; reprise ensuite sans perte. 4 générations en erreur, toutes nemotro
 (cass-014-directe, ce-002-directe, ce-009-directe, ce-019-directe). `done_reason` : 482 `length`,
 314 `stop`, 4 `error`.
 
-Comptes du compteur grossier (générations ; motifs ; distincts ; part distincte ; sans motif) :
+**Schéma mixte.** Les 746 premières lignes de `collecte.jsonl` (et les 30 de `pilote.jsonl`) ont
+été écrites avant ce correctif : elles n'ont pas de clé `error`. Les 854 suivantes (à partir de
+la ligne 747, nemotron-3-nano:4b cass-014-directe) l'ont, à `null` hors erreur. Un lecteur doit
+lire `d.get("error")` ; le critère d'erreur fiable est `done_reason == "error"`, présent partout.
+
+Comptes du compteur grossier (générations ; motifs ; distincts ; part distincte ; sans motif).
+**Les générations en erreur (réponse vide) sont comptées dans « gén. » et dans « sans motif »**
+dans les trois tableaux de ce compte rendu. Hors erreurs, voir la note sous chaque tableau.
 
 | Modèle | gén. | motifs | distincts | part | sans motif |
 |---|---|---|---|---|---|
@@ -91,6 +98,9 @@ Comptes du compteur grossier (générations ; motifs ; distincts ; part distinct
 | Cour de cassation | 400 | 893 | 320 | 0,36 | 164 |
 | Conseil d'État | 400 | 555 | 297 | 0,54 | 182 |
 | Total | 800 | 1 448 | 574 | 0,40 | 346 |
+
+Hors les 4 erreurs : nemotron-3-nano:4b 76 générations, 7 sans motif ; Cour de cassation 399, 163 ;
+Conseil d'État 397, 179 ; total 796 générations, 342 sans motif (motifs et distincts inchangés).
 
 Le rendement réel (574 motifs distincts tous types confondus, dates comprises) est inférieur à
 l'estimation du pilote (1 280) : la part distincte baisse avec le nombre de générations et le pilote
@@ -117,12 +127,17 @@ nouvelles erreurs HTTP 500 déterministes, toutes nemotron-3-nano:4b, consignée
 10 `error` (4 du noyau + 6 de la réserve).
 
 **Incident.** Un premier lancement, sans `--sortie`, a écrit dans `data/r/collecte/` du worktree
-(le script ne voyait pas le noyau figé) et a regénéré qwen3.5:0.8b : 81 lignes du noyau + 80 de la
-réserve. Arrêté, fichier écarté (hors dépôt, jamais utilisé). Contrôle de reproductibilité gratuit
-(`temperature 0`, `seed 0`) : les 81 lignes du noyau regénérées ont une réponse et un `done_reason`
-identiques à l'octet à celles du fichier figé, 0 différence. La collecte retenue est la seconde
-exécution, avec `--sortie` sur le dépôt principal ; les 80 lignes de réserve de qwen3.5:0.8b y ont
-été regénérées.
+(la sortie par défaut était relative au dossier courant : le script ne voyait pas le noyau figé).
+Il a produit 161 lignes avant l'arrêt : qwen3.5:0.8b sur les 80 requêtes du noyau et les 80 de la
+réserve, puis une ligne de qwen3.5:2b (cass-001-directe, noyau). Les « 81 lignes du noyau » sont
+donc 80 de qwen3.5:0.8b et 1 de qwen3.5:2b. Fichier écarté (`regenere-par-erreur.jsonl`, hors
+dépôt, jamais utilisé). Contrôle de reproductibilité gratuit (`temperature 0`, `seed 0`) : les
+161 lignes ont une réponse et un `done_reason` identiques à ceux du fichier figé pour le même
+couple (modèle, requête), 0 différence. La collecte retenue est la seconde exécution, avec
+`--sortie` sur le dépôt principal ; les 80 lignes de réserve de qwen3.5:0.8b y ont été regénérées.
+Correctif (revue) : sans `--sortie`, le script vise désormais `data/r/collecte/` du dépôt
+principal (parent de `git rev-parse --git-common-dir`), même lancé depuis un worktree, et affiche
+la sortie retenue. Une reprise retire aussi une dernière ligne tronquée avant d'ajouter.
 
 Comptes de la réserve (compteur grossier ; les distincts sont comptés au sein de la réserve) :
 
@@ -142,6 +157,9 @@ Comptes de la réserve (compteur grossier ; les distincts sont comptés au sein 
 | Conseil d'État | 400 | 589 | 298 | 0,51 | 182 |
 | Réserve | 800 | 1 289 | 574 | 0,45 | 355 |
 
+Hors les 6 erreurs : nemotron-3-nano:4b 74 générations, 12 sans motif ; Cour de cassation 397, 170 ;
+Conseil d'État 397, 179 ; réserve 794 générations, 349 sans motif.
+
 Total noyau + réserve (distincts sur l'ensemble) :
 
 | Modèle | gén. | motifs | distincts | part | sans motif | erreurs |
@@ -159,6 +177,10 @@ Total noyau + réserve (distincts sur l'ensemble) :
 | Cour de cassation | 800 | 1 593 | 564 | 0,35 | 337 | |
 | Conseil d'État | 800 | 1 144 | 534 | 0,47 | 364 | |
 | Total | 1 600 | 2 737 | 1 007 | 0,37 | 701 | 10 |
+
+Hors les 10 erreurs : nemotron-3-nano:4b 150 générations, 19 sans motif ; Cour de cassation 796,
+333 ; Conseil d'État 794, 358 ; total 1 590 générations, 691 sans motif. Les trois tableaux ont été
+recalculés depuis le `collecte.jsonl` figé (sha256 `5aae29d6…9b73`) en revue : identiques.
 
 Le nombre de références complètes reste à mesurer à l'extraction de 1-12 (les 1 007 distincts
 mélangent toujours pourvois, numéros, ECLI, « Cass. … chambre » et dates).
@@ -180,3 +202,22 @@ références de décisions, et il peut rater des formes inhabituelles.
 - `num_predict` 512 et mêmes réglages pour tous ; les modèles à raisonnement sont en `think: false`.
 - Le pilote a été lancé avec la version initiale du script (sans gestion de l'erreur 500) ; il n'a
   eu aucune erreur.
+
+## Revue
+
+### Passe 1 (2026-11-07, SHA revu d564073)
+
+- Important, medium, second avis : reprise après ligne tronquée, la ligne suivante s'y collait et
+  `figer()` échouait. Corrigé (`reparer_fin` avant l'ajout, test). Données figées : 0 ligne invalide.
+- Important, medium, second avis : les 10 erreurs HTTP 500 comptées « sans motif ». Corrigé :
+  `rapport_pilote` les exclut ; le compte rendu le dit et donne les chiffres hors erreurs
+  (tableaux recalculés depuis le fichier figé, identiques).
+- Important, medium, second avis : sortie par défaut relative au dossier courant, cause de
+  l'incident du worktree. Corrigé (racine du dépôt principal par `--git-common-dir`, test).
+- Nit, low, second avis : `test_figer` mettait le vrai `requetes.json` en lecture seule. Corrigé
+  (copie dans `tmp_path`).
+- Rejeté, second avis : `think` non pris en charge. Ollama 0.40.14 le prend en charge.
+- Nit, low, second avis : schéma mixte (746 lignes sans clé `error`). Documenté ; lectures en
+  `.get`.
+- Nit, low, second avis : « 81 lignes du noyau ». Expliqué (80 qwen3.5:0.8b + 1 qwen3.5:2b),
+  vérifié sur le fichier écarté.

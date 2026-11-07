@@ -24,6 +24,7 @@ import json
 import os
 import re
 import stat
+import subprocess
 import sys
 import time
 import urllib.error
@@ -33,7 +34,31 @@ from pathlib import Path
 
 OLLAMA = "http://localhost:11434"
 REQUETES = Path(__file__).with_name("collecte") / "requetes.json"
-SORTIE_DEFAUT = Path("data") / "r" / "collecte"
+SORTIE_RELATIVE = Path("data") / "r" / "collecte"
+
+
+def racine_depot_principal(depart: Path) -> Path:
+    """Racine du dépôt principal, même depuis un worktree (parent du `--git-common-dir`).
+
+    Sans git, repli sur le parent de `depart` (le dossier `scripts/`).
+    """
+    try:
+        sortie = subprocess.run(
+            ["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
+            cwd=depart,
+            capture_output=True,
+            text=True,
+            check=True,
+        ).stdout.strip()
+    except OSError, subprocess.CalledProcessError:
+        return depart.resolve().parent
+    return Path(sortie).resolve().parent
+
+
+def sortie_defaut() -> Path:
+    """Sortie par défaut, absolue, dans le dépôt principal (jamais celle d'un worktree)."""
+    return racine_depot_principal(Path(__file__).resolve().parent) / SORTIE_RELATIVE
+
 
 MODELES = [
     "qwen3.5:0.8b",
@@ -110,7 +135,11 @@ def compter_motifs(reponse: str) -> list[tuple[str, str]]:
 
 
 def rendement(reponses: list[str]) -> dict:
-    """Rendement grossier d'un ensemble de réponses."""
+    """Rendement grossier d'un ensemble de réponses.
+
+    L'appelant exclut les générations en erreur (`done_reason == "error"`, réponse vide) : sinon
+    elles comptent comme « sans motif ».
+    """
     n = len(reponses)
     motifs = [compter_motifs(r) for r in reponses]
     total = sum(len(m) for m in motifs)
@@ -168,6 +197,23 @@ def deja_ecrits(chemin: Path) -> set[tuple[str, str]]:
             continue
         faits.add((d["model"], d["request_id"]))
     return faits
+
+
+def reparer_fin(chemin: Path) -> int:
+    """Retire une dernière ligne tronquée (sans fin de ligne) avant de reprendre en ajout.
+
+    Sans cela, la ligne suivante serait collée à la ligne tronquée et le JSONL deviendrait
+    invalide. Renvoie le nombre d'octets retirés.
+    """
+    if not chemin.exists():
+        return 0
+    contenu = chemin.read_bytes()
+    if not contenu or contenu.endswith(b"\n"):
+        return 0
+    garde = contenu.rfind(b"\n") + 1
+    with chemin.open("r+b") as f:
+        f.truncate(garde)
+    return len(contenu) - garde
 
 
 def a_faire(modeles: list[str], requetes: list[dict], faits: set[tuple[str, str]]):
@@ -256,6 +302,9 @@ def executer(sortie: Path, fichier: str, modeles: list[str], requetes: list[dict
     chemin = sortie / fichier
     version = version_ollama()
     dig = digests(modeles)
+    retires = reparer_fin(chemin)
+    if retires:
+        print(f"Ligne finale tronquée retirée ({retires} octets)", flush=True)
     restants = a_faire(modeles, requetes, deja_ecrits(chemin))
     total = len(modeles) * len(requetes)
     print(f"Ollama {version} ; {len(restants)} générations à faire sur {total}", flush=True)
@@ -317,15 +366,19 @@ def lire_jsonl(chemin: Path) -> list[dict]:
 
 
 def rapport_pilote(sortie: Path) -> None:
-    lignes = lire_jsonl(sortie / "pilote.jsonl")
+    toutes = lire_jsonl(sortie / "pilote.jsonl")
+    # Les erreurs HTTP 500 consignées n'ont pas de réponse : hors dénominateur du rendement.
+    # Les lignes écrites avant la gestion des erreurs n'ont pas la clé « error » : `.get`.
+    lignes = [d for d in toutes if d.get("done_reason") != "error"]
+    print(f"{len(toutes) - len(lignes)} génération(s) en erreur exclue(s)")
     g = rendement([d["response"] for d in lignes])
     est = choisir_ensemble(g["motifs_par_generation"], g["part_distincte"])
     print(json.dumps(g, indent=1))
     for m in MODELES_PILOTE:
         r = rendement([d["response"] for d in lignes if d["model"] == m])
         print(m, json.dumps(r))
-    duree = sum(d["total_duration_ns"] or 0 for d in lignes) / 1e9
-    print(f"durée cumulée {duree:.0f} s ; par génération {duree / len(lignes):.1f} s")
+    duree = sum(d.get("total_duration_ns") or 0 for d in toutes) / 1e9
+    print(f"durée cumulée {duree:.0f} s ; par génération {duree / len(toutes):.1f} s")
     print(f"estimation sur 800 générations : {est[1]:.0f} ; ensemble retenu : {est[0]}")
 
 
@@ -334,10 +387,13 @@ def main(argv: list[str] | None = None) -> int:
     sp = p.add_subparsers(dest="cmd", required=True)
     for nom in ("pilote", "collecte", "figer"):
         s = sp.add_parser(nom)
-        s.add_argument("--sortie", type=Path, default=SORTIE_DEFAUT)
+        s.add_argument("--sortie", type=Path, default=None)
         if nom == "collecte":
             s.add_argument("--ensemble", choices=["noyau", "tout"], required=True)
     a = p.parse_args(argv)
+    if a.sortie is None:
+        a.sortie = sortie_defaut()
+    print(f"Sortie : {a.sortie}", flush=True)
     requetes = charger_requetes()
     if a.cmd == "pilote":
         executer(a.sortie, "pilote.jsonl", MODELES_PILOTE, selectionner(requetes, "pilote"))
