@@ -1,0 +1,13 @@
+# Décision de la porte R (story 1-12, R4 et P0), écrite par `pre_etude_r.py porte`.
+# Pas dans protocol.toml (empreinté par séance) : P12.
+decision = "comparatif"
+basis = "p_d1"
+p = 0.675057
+low = 0.629785
+high = 0.717278
+n = 437
+tight = false
+reserves = ["réserve forte : contrôle de qualité en échec après le tour de correction"]
+classement_sha256 = "527869b523444148eae709919a079a092449d7eeba8746efd2f9c74ee4ca62de"
+grid_commit = "ab8e60d225b28201cf87d114d0ef87e7465f968b"
+spec_commit = "ab8e60d225b28201cf87d114d0ef87e7465f968b"
