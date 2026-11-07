@@ -1,7 +1,7 @@
 ---
 story: "1-14"
 title: Mesures, rapport du lot 1 et v0.1.0
-status: review (1-14a parties 1 et 2) ; en attente de 1-13 (1-14b)
+status: review
 branch: feat/1-14-mesures-publication
 ---
 
@@ -399,6 +399,20 @@ Exécution sur les artefacts réels (2026-11-07, CPU seul, aucune écriture dans
 Pour 1-13 : jeux `data/legal_r/<jeu>/` et `heldout/legal_r/<jeu>/` avec `sources.jsonl` (mêmes `id`), `extraction_date` dans `dataset.json`, `raw` de 160 caractères au plus sans motif de partie, aucune clé `text`, `zones`, `text_highlight`. Rassemblement : `uv run python scripts/rassembler_runs.py --to C:\Users\Utilisateur\nnww-artefacts --from .claude/worktrees/1-13` (ajout seul ; un `data/*/train` régénéré donnera un conflit, à traiter par `--only runs heldout`).
 
 Pour 1-14b : créer `NOTICE` (phrase, URL, « extraction du AAAA-MM-JJ » de chaque jeu R), puis `nnww publish 1 --root C:\Users\Utilisateur\nnww-artefacts` ; `nnww publish --check docs/rapport-lot1.md <notes> <billet> --root …` avant la release ; le classement de 1-12 se contrôle par `--check` avant d'être mis en asset.
+
+## Réalisé : 1-14b (rapport, préparation de v0.1.0)
+
+Livré : jugements dans `docs/mesures/decisions-lot1.toml` (plus aucun `pending`), `docs/mesures/lot1.{md,json}` régénérés (`nnww table --lot 1 --strict` vert sur `C:\Users\Utilisateur\nnww-artefacts`, 87 séances, 144 témoins), `NOTICE`, code de B des 13 séances B comptées dans `docs/rapport-lot1/b/`, `docs/rapport-lot1.md`, version 0.1.0 (`pyproject.toml`, `__init__.py`, `uv.lock`). Hors dépôt : `dist/lot1/` (`runs-lot1.tar.gz` sha256 `742fdad1…a1bbae`, `r-lot1.tar.gz` sha256 `a69088a1…f52e54`, `SHA256SUMS`), notes de release et brouillon du billet. Étapes 1 à 7 faites jusqu'à la PR ; étapes 8 à 10 préparées seulement (tag, release, topic et billet : orchestrateur, après accord d'Anaël).
+
+Jugements (2026-11-07) : les 4 `fragment_overlap` (2 de 1-10, Sonnet B t2 et t3 sur R) maintenus, fragments limités à des noms de chambre ; MiMo B t2 sur R maintenu (alerte D8 : heuristique générique sur les numéros, aucune référence recopiée) ; MiMo étapes 1 et 2 en annexe, conformément à 1-10, y compris le groupe A-programme 10⁴ `8e081aa1` de l'étape 2 (non listé dans la spec, même motif) ; l'essai de l'étape 3 compte pour A-programme 10⁴ t1 ; F `fields@1` et séances jouet en annexe.
+
+Écarts à la spec, assumés :
+
+- Correctif de `report/table.py` : les décisions des témoins étaient indexées par `run_id`, que l'annexe `annexe-fields1/` partage avec le F retenu ; le groupe `path = "annexe-fields1"` restait sans effet sur le tableau. Indexées par chemin ; test `test_annex_group_does_not_hide_counted_baseline_with_same_run_id`.
+- `NOTICE` : phrase de la condition 2 du constat 1-3 sans la mention de JADE ni celle du miroir Hugging Face, ni l'un ni l'autre n'ayant servi (comme le `--notice` de test de 1-13).
+- `docs/rapport-lot1/b/` exclu de ruff (code copié tel quel des séances gelées).
+- Classement de 1-12 (`classement.jsonl`, sha256 `527869b5…a4ca62de`) non mis en asset : `nnww publish --check` le refuse (87 `reserved_example` : il contient les fausses du réservé de R). À trancher par Anaël avec le point 7.
+- Journal de `run-autonome.md` non modifié ici (fichier de la branche d'état du run) : décisions remises à l'orchestrateur.
 
 ## Revue
 

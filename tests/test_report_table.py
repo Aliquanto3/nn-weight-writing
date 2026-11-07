@@ -281,6 +281,22 @@ def test_group_decision_marks_baselines_as_annex(root, tmp_path):
     assert "annexe-fields1/train/typed-F-n64-s0" in table.data["not_evaluated"]
 
 
+def test_annex_group_does_not_hide_counted_baseline_with_same_run_id(root, tmp_path):
+    lot = root / "runs" / "1"
+    write_baseline(lot, baseline="F", n=64, seed=0)
+    write_baseline(lot, baseline="F", n=64, seed=0, chemin="annexe-fields1")
+    decisions = write_decisions(
+        tmp_path / "d.toml",
+        '[[group]]\npath = "annexe-fields1"\nstatus = "annex"\ndate = "2026-11-08"\n'
+        'reason = "fields@1"\n',
+    )
+    table = build(root, 1, decisions_path=decisions)
+    rows = {b["chemin"]: b["status"] for b in table.data["baselines"] if b["baseline"] == "F"}
+    assert rows == {"": ["counted"], "annexe-fields1": ["annex"]}
+    removed = [r["path"] for r in table.data["removed"] if r["status"] == "annex"]
+    assert removed == ["annexe-fields1/train/typed-F-n64-s0"]
+
+
 def test_report_follows_dependency_graph():
     """`report/` n'importe ni session, ni providers, ni sandbox, ni baselines, ni torch."""
     package = Path(__file__).resolve().parents[1] / "src" / "nn_weight_writing" / "report"
