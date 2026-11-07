@@ -221,3 +221,9 @@ références de décisions, et il peut rater des formes inhabituelles.
   `.get`.
 - Nit, low, second avis : « 81 lignes du noyau ». Expliqué (80 qwen3.5:0.8b + 1 qwen3.5:2b),
   vérifié sur le fichier écarté.
+
+### Passe 2 (2026-11-07, SHA revu b2ec11e)
+
+- Aucun constat : correctifs de la passe 1 vérifiés (reparer_fin, erreurs 500 hors dénominateur, `.get`, test_figer sur copie).
+- `racine_depot_principal` : worktree donne le dépôt principal ; hors git, repli sur le parent de `scripts/` (CalledProcessError capté) ; `--path-format=absolute` couvre le chemin relatif et le format Windows `C:/…`.
+- ruff check, ruff format --check, pytest ciblé (11 tests) : verts.
