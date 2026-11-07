@@ -104,13 +104,24 @@
     chaque architecture écrite en 1-10 à N = 8 192, et F avec entrées préparées (CAP-7, methodes-et-lots.md).
   invoke_dev_with: >-
     PyTorch dans un groupe de dépendances séparé, jamais importé par les outils de séance.
+- id: "1-12a"
+  title: Collecte des hallucinations de SLM
+  description: >-
+    Script unique hors du paquet nnww (scripts/), lancé une fois sur la tour par Ollama et son GPU : jeu de
+    requêtes juridiques figé avant la collecte, lot pilote de 10 requêtes × 3 modèles qui mesure le rendement
+    (références par réponse, refus), taille de la collecte complète fixée d'après le pilote, puis sortie brute
+    figée avec son sha256 (décision R9 d'Anaël, 2026-11-07 ; constat 1-3, section 4).
+  invoke_dev_with: >-
+    Le paquet nnww n'importe ni n'appelle Ollama (contrainte de SPEC.md) : il ne lira que le fichier figé.
+    Sortie sous data/ (ignoré), sha256 et rendement consignés dans docs/experiences/.
 - id: "1-12"
   title: Pré-étude R et porte des 30 %
   description: >-
     Classer ~300 hallucinations de SLM en cohérentes et incohérentes, chiffrer la part avec intervalle et
     décider si R est un comparatif ou une mesure de plafond (CAP-10).
   invoke_dev_with: >-
-    Part du constat 1-3. Consigner la décision de la porte dans le journal du run.
+    Part du constat 1-3 et de la sortie figée de 1-12a (sha256 vérifié avant lecture). Règle de la porte fixée
+    d'avance dans methodes-et-lots.md (R4). Consigner la décision de la porte dans le journal du run.
 - id: "1-13"
   title: Jeu R et séances sur R
   description: >-

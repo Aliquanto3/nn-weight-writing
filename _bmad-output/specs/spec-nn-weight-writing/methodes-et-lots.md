@@ -25,6 +25,12 @@ Mesures de chaque case : exactitude sur le jeu réservé, robustesse hors distri
 - Le jouet calibre le budget de passes ; ses séances ne comptent pas dans les conclusions.
 - **Porte de coût**, calculée sur le coût **facturé** (AD-11) des premières séances Sonnet de S (plus représentatives que le jouet) : si la séance médiane dépasse 2 $, on passe à 2 tentatives par case pour la suite. Par abonnement, Sonnet est facturé 0 $ et la porte ne joue pas (3 tentatives) ; elle ne joue qu'en repli sur l'API Anthropic.
 - **Porte avant R**, après la pré-étude : si moins de 30 % des hallucinations sont incohérentes, R devient une mesure de plafond et non un comparatif.
+  - Règle fixée le 2026-11-07, avant toute collecte (report R4 du constat 1-3 ; décision de l'orchestrateur, à confirmer par Anaël) :
+  - unité : la référence normalisée et dédupliquée (juridiction, numéro normalisé, date) ; une référence qui existe dans la base sort du compte ;
+  - hallucination incohérente : défaut détectable sans base, selon une grille fixée avant de voir les données (format, calendrier, chronologie, chambre ou formation existante, cohérence de l'ECLI, « autre ») ; hallucination cohérente : bien formée et plausible, vérifiée absente de la base dans sa fenêtre de couverture ;
+  - les « non vérifiables » (cohérentes hors fenêtre de couverture) sont exclues du dénominateur, comptées et publiées à part ;
+  - part p = incohérentes / (incohérentes + cohérentes absentes), intervalle de Wilson à 95 % ; p < 30 % → mesure de plafond, p ≥ 30 % → comparatif, sur l'estimation ponctuelle ; si l'intervalle contient 30 %, la décision suit p et le rapport la dit « serrée » ;
+  - la taille de la collecte est fixée par le lot pilote de 1-12a, avant tout classement ; pas de collecte supplémentaire après avoir vu p.
 - Livrables : `docs/rapport-lot1.md`, release v0.1.0, brouillon de billet LinkedIn en réponse à Nuss, publié par Anaël.
 
 ## Lot 2 — où le réseau compte (75 $ facturés)

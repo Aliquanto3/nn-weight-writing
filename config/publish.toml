@@ -1,0 +1,9 @@
+# Publication des artefacts (AD-18, constat 1-3).
+#
+# r_republish : autorise la publication des artefacts du jeu R (métadonnées de références
+# Judilibre et open data administratif, sans texte ni nom). Passé à true le 2026-11-07 :
+# Anaël a confirmé dans son compte PISTE l'acceptation en production des CGU
+# « CGU_open_data_V8.pdf » (version du 6 janvier 2022), condition 5 de la section 2 de
+# docs/verifications/1-3-judilibre-hallucinations.md. Les conditions 1 à 4 restent à tenir
+# par le jeu R lui-même (1-13) et sont contrôlées par nnww publish (1-14).
+r_republish = true

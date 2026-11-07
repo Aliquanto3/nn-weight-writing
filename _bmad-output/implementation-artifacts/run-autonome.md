@@ -6,8 +6,8 @@ Fichier d'état de l'orchestrateur, à relire en premier après chaque `/clear`.
 
 | Périmètre | Epics | Note |
 |---|---|---|
-| Dans le run | Epics 1 à 1 | Lot 1 : 1-1 à 1-6 demandées (2026-11-05), étendu à 1-7 et à la moitié MiMo de 1-8 sur consigne « tout ce que tu peux cette nuit » |
-| Hors run | Epics 2 à 3 | Lots 2 et 3 ; 1-9 à 1-14 en attente de décisions ou de ressources d'Anaël |
+| Dans le run | Epics 1 à 1 | Lot 1 : 1-1 à 1-6 demandées (2026-11-05), étendu à 1-7 et à la moitié MiMo de 1-8 sur consigne « tout ce que tu peux cette nuit » ; reprise du 2026-11-07 : 1-12a, 1-12, 1-13, 1-14 et v0.1.0 |
+| Hors run | Epics 2 à 3 | Lots 2 et 3 |
 
 Au plus 4 stories en développement à la fois, chacune dans son worktree (`.claude/worktrees/<story>`).
 Plafond global : 5 agents actifs à la fois sous Windows (développement, revue et rebase confondus).
@@ -36,11 +36,11 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 ## Brief
 
 - **Tâche du run** : run autonome sur le lot 1 de `stories.yaml`, 1-1 à 1-6 d'abord ; 1-2 et 1-3 attendent la clé OpenRouter et le compte PISTE d'Anaël ; conforme à ARCHITECTURE-SPINE.md ; topic GitHub passé à `status-dev`.
-- **Intention courante** : run en pause depuis le 2026-11-06 23:12 : 1-1 à 1-11 fusionnées (1-10a comprise). MiMo arrêté sur S (ne tient pas le budget de sortie, décision d'Anaël). Restent 1-12 (Ollama + GPU, collecte, place de la story de collecte), 1-13, puis 1-14 et v0.1.0 (CGU PISTE avant).
-- **Plan des vagues restantes** : 1-12 (après Ollama + GPU et collecte) ; 1-13 ; 1-14 et v0.1.0 (après confirmation des CGU PISTE).
+- **Intention courante** : reprise le 2026-11-07 : 1-1 à 1-11 fusionnées. Ollama et GPU prêts ; R9 tranchée (story 1-12a de collecte avant 1-12) ; CGU PISTE confirmées (`r_republish = true`). Enchaînement 1-12a → 1-12 → 1-13 → 1-14 et v0.1.0.
+- **Plan des vagues restantes** : voir « Sprint 1 ter ». Spécification Swagger de l'API Judilibre (sandbox 1.0.0) pour 1-13 : `C:\Users\Utilisateur\Downloads\JUDILIBRE.json` (sha256 4592c1ec…95674d), jamais commitée. Sortie figée de la collecte : `data/r/collecte/` du dépôt principal (hors worktree).
 - **Artefacts utiles** : constats dans `docs/verifications/` ; specs de story dans `_bmad-output/implementation-artifacts/stories/` ; décisions D1-D12 de 1-5 dans sa spec de story.
 - **Ressources activées (2026-11-06)** : connexion `~/.nnww/claude-config` faite ; `NNWW_CLAUDE_CWD_ROOT='C:\nnww-cwd'` à poser dans chaque commande de séance, jamais de façon permanente ; identifiants PISTE dans `.env` (ignoré), chargés seulement dans la commande (`set -a; . ./.env; set +a`), valeurs jamais affichées. Pas d'`ANTHROPIC_API_KEY` : aucun test réel du repli API.
-- **Attentes Anaël** : Ollama + GPU pour la collecte (avant 1-12) et place de la story de collecte (R9) ; décisions MNIST A-D (1-4, avant 2-1), D13 linalg (1-5) ; version des CGU PISTE (avant 1-14).
+- **Attentes Anaël** : décisions MNIST A-D (1-4, avant 2-1), D13 linalg (1-5) ; règle R4 de la porte des 30 % (fixée par l'orchestrateur le 2026-11-07, à confirmer) ; quotas PISTE non relevés (non bloquant).
 - **Pièges rencontrés** : `setup-uv` sans tag majeur (épingler la version exacte) ; `file_prs.py` lancé trop tôt après `gh pr create` saute la PR (« aucun contrôle ») : attendre ~30 s.
 
 ## Reports au rapport du lot 1 (1-14)
@@ -73,6 +73,15 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 |---|---|---|
 | V4 | 1.10 (moitié MiMo) · 1.10 (moitié Sonnet + Fable) | 1.10 ← 1.9 ; 1.10 ← 1.8 |
 | V5 | 1.11 | 1.11 ← 1.10 |
+
+## Sprint 1 ter — Lot 1, jeu R et livraison (1-12a à 1-14)
+
+| Vague | Stories en parallèle | Après |
+|---|---|---|
+| V6 | 1.12a (mixte) | — |
+| V7 | 1.12 | 1.12 ← 1.12a |
+| V8 | 1.13 ★ | 1.13 ← 1.12 |
+| V9 | 1.14 ★ | 1.14 ← 1.13 ; 1.14 ← 1.10 ; 1.14 ← 1.11 |
 
 ## Journal
 
@@ -278,3 +287,7 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-06 23:12 · 1.10 · CI · verte sur les trois OS (PR #26) · b01f0eb
 - 2026-11-06 23:12 · 1.10 · fusion · #26 fusionnée (moitié MiMo), MERGED vérifié ; 1-10 terminée · dd1b8a7
 - 2026-11-06 23:12 · run · report · run en pause : 1-1 à 1-11 fusionnées ; 1-12 attend Ollama + GPU et la place de la collecte, 1-14 la version des CGU PISTE ; décisions MNIST A-D (avant 2-1) et D13 linalg toujours en attente · dd1b8a7
+- 2026-11-07 07:13 · run · décision · reprise : Ollama et GPU de la tour prêts (RTX 3050, 10 SLM ≤ 4 B du constat 1-3 présents) · 799e16f
+- 2026-11-07 07:13 · 1.12a · décision · R9 (Anaël) : collecte en story 1-12a avant 1-12 ; script unique hors du paquet, lot pilote 10 requêtes × 3 modèles pour mesurer le rendement, sortie figée avec son sha256 · —
+- 2026-11-07 07:13 · 1.3 · décision · condition 5 de r_republish remplie : Anaël a confirmé dans PISTE l'acceptation PROD de CGU_open_data_V8.pdf (version du 6 janvier 2022) ; r_republish = true dans config/publish.toml ; quotas PISTE non relevés, non bloquant · —
+- 2026-11-07 07:13 · 1.12 · décision · règle R4 de la porte des 30 % fixée avant toute collecte (référence normalisée dédupliquée, non vérifiables hors dénominateur, estimation ponctuelle avec Wilson 95 %, taille fixée par le pilote) dans methodes-et-lots.md ; à confirmer par Anaël · —
