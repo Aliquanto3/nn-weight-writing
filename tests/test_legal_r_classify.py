@@ -501,3 +501,37 @@ def test_guard_checks_executed_code_repo(phase_b, monkeypatch):
     elsewhere.mkdir()
     monkeypatch.setattr(script, "REPO", elsewhere)
     assert script.guard_frozen_grid(phase_b["head"]) is not None
+
+
+def test_classer_stops_on_daily_quota(phase_b, monkeypatch):
+    """P8 : quota journalier sous 1 000 -> code 3, rien d'écrit, pas d'entrée au journal."""
+    script = phase_b["script"]
+    low = '[{"window":62204,"type":"throttle","remaining":999},{"window":0,"remaining":19}]'
+    transport = FakeTransport(
+        [("/scan", {}, [ok(EMPTY_SCAN, low)]), ("/search", {}, [ok(EMPTY_SEARCH, low)])]
+    )
+    monkeypatch.setattr(script, "FETCH", transport)
+    assert script.main(["classer", *phase_b["base"], "--grille-figee", phase_b["head"]]) == 3
+    assert not phase_b["out"].exists()
+
+
+def test_no_correction_after_porte_even_if_journal_and_resume_removed(phase_b):
+    """P1 : le manifeste garde la trace de la porte ; un verdict illisible est refusé (code 2)."""
+    script, base, out, tmp = phase_b["script"], phase_b["base"], phase_b["out"], phase_b["tmp"]
+    head = phase_b["head"]
+    assert script.main(["classer", *base, "--grille-figee", head]) == 0
+    sha = script.sha256_file(out / "classement.jsonl")
+    garbled = _verdict(tmp / "g.json", sha, verdict="accepte", found=None, motif="x")
+    cmd = ["classer", *base, "--grille-figee", head, "--tour-correction"]
+    assert script.main([*cmd, str(garbled)]) == 2
+    absent = sum(
+        1 for r in read_classement(out / "classement.jsonl") if r["class"] == "coherent_absent"
+    )
+    porte = ["porte", "--sortie", str(out), "--r-gate", str(tmp / "r_gate.toml")]
+    accepted = _verdict(tmp / "v.json", sha, drawn=min(30, absent))
+    assert script.main([*porte, "--verdict", str(accepted)]) == 0
+    (out / "resume.json").unlink()
+    (out / "journal.jsonl").unlink()
+    assert script.main([*porte, "--verdict", str(accepted)]) == 2
+    failed = _verdict(tmp / "f.json", sha, verdict="echec", motif="après coup")
+    assert script.main([*cmd, str(failed)]) == 2

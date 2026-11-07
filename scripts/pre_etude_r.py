@@ -602,7 +602,10 @@ def append_journal(out: Path, entry: dict) -> None:
 
 def qc_failed(verdict: dict) -> bool:
     """Échec du contrôle : verdict `echec`, ou plus d'une fausse absence trouvée (P7)."""
-    found = (verdict.get("fausses_absences") or {}).get("trouvees", 0)
+    absences = verdict.get("fausses_absences")
+    found = absences.get("trouvees") if isinstance(absences, dict) else None
+    if not isinstance(found, int) or isinstance(found, bool):
+        found = 0  # illisible : refusé par `read_verdict`, jamais un échec inventé ici
     return verdict.get("verdict") == "echec" or found > FALSE_ABSENCES_MAX
 
 
@@ -626,6 +629,8 @@ def correction_round(args, out: Path) -> tuple[dict | None, str | None]:
     if not manifest_path.is_file() or not Path(args.tour_correction).is_file():
         return None, "manifeste ou verdict du tour 0 absent : tour de correction impossible"
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if "resume.json" in manifest.get("outputs", {}):
+        return None, "la porte a déjà été calculée (manifeste) : plus aucun classement (P1)"
     if manifest.get("tour", 0) >= 1 or len(previous) > 1:
         return None, "le tour de correction a déjà eu lieu (un seul, P1)"
     raw = json.loads(Path(args.tour_correction).read_text(encoding="utf-8"))

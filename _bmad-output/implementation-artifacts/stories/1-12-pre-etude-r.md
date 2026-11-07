@@ -526,3 +526,13 @@ Base : `origin/main` (08a62c6) ancêtre de HEAD, pas de rebase. Second avis (Hai
 - Rejeté, low, second avis 11 : la suppression des archives existe (`shutil.rmtree(path.parent)` après `parse_archive`, `scripts/index_ce_opendata.py`).
 - Nit, low, revue : un `api_error` du seul diagnostic `/search`, après un `/scan` qui établit l'absence, rend l'unité `unverifiable` ; conservateur et plafonné par P8. Non corrigé.
 - Complexité, Nit, revue : `compute_gate` testait `r not in ecli_only` (liste de dictionnaires, O(n·m)). Corrigé par un ensemble d'`unit_id`. Aucun autre parcours complet par événement.
+
+### Passe 2 (2026-11-07, SHA revu 26f797a)
+
+Base : `origin/main` (08a62c6) ancêtre de HEAD, pas de rebase. Relu : `git diff 0e93767..26f797a`. Correctifs de la passe 1 vérifiés en exécution (fixture `phase_b`) : journal et tour de correction unique, refus de `porte` en double (même sans `resume.json`, refusé par le journal puis par `outputs.resume.json` du manifeste), quota journalier (code 3, `pre_etude/` non créé), empreintes des faits, E14 (aucun autre champ ne garde le siège : siège inconnu non vérifié avant toute requête, donc sans `cache_key`), `redact()` aux deux écritures, garde sur `REPO` (paquet en installation éditable sous le dépôt, `uv sync` de la CI aussi ; `Path.is_relative_to` portable). P7 : `tirees` = taille du tirage k = 4, soit min(30, `coherent_absent`), conforme à D7 et E9 (« k = 4 » désigne le tirage, pas la taille).
+
+- Nit, low, revue : après une porte, supprimer `resume.json` et `journal.jsonl` permettait encore un `classer --tour-correction` sur un verdict d'échec écrit après coup. Corrigé : refus si le manifeste porte `outputs.resume.json` (test `test_no_correction_after_porte_even_if_journal_and_resume_removed`).
+- Nit, low, revue : `qc_failed` levait `TypeError` (trace au lieu du code 2) sur un verdict `--tour-correction` avec `trouvees` nul ou non entier. Corrigé : valeur illisible lue 0, verdict refusé faute d'échec.
+- Nit, low, revue : quota journalier non testé à travers `classer`. Ajouté (`test_classer_stops_on_daily_quota`).
+- Nit, low, revue : `_BARE_CE` plus étroit ne prend plus un numéro nu après un saut de ligne ni suivi d'un nom sans virgule (« CE, 12 mars 2019, 412345 Société Z ») ; garde « , 250000. » en fin de phrase. Formes rares, compromis accepté avec E3 ; rappel mesuré par le contrôle k = 3. Non corrigé.
+- Complexité : aucun constat (journal relu une fois par commande).
