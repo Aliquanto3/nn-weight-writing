@@ -41,7 +41,7 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - **Artefacts utiles** : constats dans `docs/verifications/` ; specs de story dans `_bmad-output/implementation-artifacts/stories/` ; décisions D1-D12 de 1-5 dans sa spec de story.
 - **Ressources activées (2026-11-06)** : connexion `~/.nnww/claude-config` faite ; `NNWW_CLAUDE_CWD_ROOT='C:\nnww-cwd'` à poser dans chaque commande de séance, jamais de façon permanente ; identifiants PISTE dans `.env` (ignoré), chargés seulement dans la commande (`set -a; . ./.env; set +a`), valeurs jamais affichées. Pas d'`ANTHROPIC_API_KEY` : aucun test réel du repli API.
 - **Attentes Anaël** : décisions MNIST A-D (1-4, avant 2-1), D13 linalg (1-5) ; quotas PISTE non relevés (non bloquant).
-- **Pièges rencontrés** : `setup-uv` sans tag majeur (épingler la version exacte) ; `file_prs.py` lancé trop tôt après `gh pr create` saute la PR (« aucun contrôle ») : attendre ~30 s.
+- **Pièges rencontrés** : `setup-uv` sans tag majeur (épingler la version exacte) ; `file_prs.py` lancé trop tôt après `gh pr create` saute la PR (« aucun contrôle ») : attendre ~30 s ; un script lancé depuis un worktree avec une sortie par défaut relative écrit dans le `data/` du worktree : passer le chemin absolu du dépôt principal (incident de la réserve 1-12a).
 
 ## Reports au rapport du lot 1 (1-14)
 
@@ -343,3 +343,16 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-07 09:09 · 1.13 · décision · S1-S12 et les 6 points de la spec tranchés par l'orchestrateur AVANT la porte (fenêtre de couverture inchangée, MiMo en B seulement, 3 tentatives par case dans les deux issues, appariement aussi sur l'écart année du pourvoi et le type de jour, corpus_date = date d'extraction, vocabulaire et seuil de 80 fausses de la spec) ; R4 amendé pour p_d1 dans methodes-et-lots.md · —
 - 2026-11-07 09:09 · 1.12 · décision · feat/1-12-pre-etude-r jamais rebasée : main y sera fusionnée par merge commit après la porte (SHA de la grille figée conservé) ; 1-13 fusionne 1a672a1 dans sa branche pour importer datasets/legal_r · 1a672a1
 - 2026-11-07 09:09 · 1.13 · dev · lancé, phase A : code, tests, coût Judilibre mesuré, sans données de 1-12 (dev-story Opus, effort high, worktree 1-13) · 7e32690
+- 2026-11-07 11:34 · 1.12a · dev · noyau fini : pilote 2,3 motifs par génération, part distincte 0,70 → estimation 1 280 ≥ 600 → noyau ; collecte 800 générations (1 h 47), 1 448 motifs, 574 distincts (part 0,40) ; 4 erreurs 500 déterministes (nemotron) ; 482 réponses tronquées à 512 ; figée (collecte.jsonl 2fffdf02…f999) · 0d3a6be
+- 2026-11-07 11:34 · 1.12a · décision · Anaël : collecte de la réserve (80 requêtes figées × 10 modèles) avant tout classement, écart à la règle de taille décidé sur le rendement seul, aucune part calculée ; manifeste du noyau gardé · —
+- 2026-11-07 11:34 · 1.12a · dev · relancé, réserve (dev-story Sonnet, worktree 1-12a, ~2 h de GPU) · 0d3a6be
+- 2026-11-07 11:34 · 1.13 · dev · phase A finie : fusion --no-ff de 1a672a1, construction et tirage apparié par jour, legal_r au registre, témoins triviaux S1, 33 tests ; suite complète locale verte ; Judilibre 15 requêtes, projection ~1 700 (9 min) ; filtre type=arret abandonné (récentes en other) · ba67579
+- 2026-11-07 11:34 · 1.13 · second-avis · lancé, phase A · ba67579
+- 2026-11-07 11:39 · 1.13 · second-avis · phase A : 0 high, 2 medium (numéro du CE ni apparié ni testé par plancher, fausses R-C3 antérieures au corpus comptées détectables dans le plafond), 5 low · ba67579
+- 2026-11-07 11:39 · 1.13 · review · lancé, phase A (reviewer Opus) · ba67579
+- 2026-11-07 11:46 · 1.13 · review · phase A, passe 1 : 1 high trouvé en revue (même numéro dans deux jeux) et 2 medium corrigés (fausses non visibles futures exclues, plancher ce_number), 3 low corrigés, 4 rejetés · 28be85e
+- 2026-11-07 11:46 · 1.13 · review · passe 2 lancée (reviewer Sonnet, diff des correctifs) · 28be85e
+- 2026-11-07 11:47 · 1.13 · review · phase A, passe 2 (Sonnet) : rien ; phase B attend la porte de 1-12 · afc1dcc
+- 2026-11-07 11:48 · 1.12a · blocked · réserve lancée à 11:34 sans --sortie : écriture dans le worktree, noyau regénéré depuis zéro (152 lignes) ; arrêt et relance vers data/r/collecte/ du dépôt principal demandés, lignes regénérées gardées comme contrôle de reproductibilité · 0d3a6be
+- 2026-11-07 13:36 · 1.12a · dev · réserve finie : 1 600 générations (960 length, 630 stop, 10 error nemotron), 1 007 motifs distincts au total (574 dans la réserve) ; 800 premières lignes identiques au noyau (2fffdf02…f999 vérifié) ; contrôle de reproductibilité : 81 lignes du noyau regénérées par erreur identiques à l'octet ; collecte.jsonl figée 5aae29d6…9b73, manifest.json 32434a5f…56b8 (vérifiés par l'orchestrateur) · df48e4e
+- 2026-11-07 13:36 · 1.12a · second-avis · lancé sur le script et la doc (la sortie figée ne bouge plus) · df48e4e
