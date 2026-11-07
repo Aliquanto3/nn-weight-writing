@@ -75,6 +75,11 @@ def test_reprise_et_ligne(tmp_path: Path) -> None:
     )
     assert ligne["request_id"] == "cass-001-directe"
     assert ligne["response"] == "x"
+    assert ligne["error"] is None
+    err = col.construire_ligne(
+        "m1", "d", "0.1", reqs[0], {"error": "boucle", "done_reason": "error"}
+    )
+    assert (err["response"], err["error"], err["done_reason"]) == ("", "boucle", "error")
     assert ligne["settings"]["options"] == {"temperature": 0, "seed": 0, "num_predict": 512}
     assert ligne["settings"]["think"] is False
     assert re.fullmatch(r"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\dZ", ligne["timestamp_utc"])
@@ -108,3 +113,27 @@ def test_paquet_nimporte_ni_script_ni_ollama() -> None:
         src = f.read_text(encoding="utf-8")
         assert not re.search(r"^\s*(import|from)\s+(ollama|collecte_hallucinations)\b", src, re.M)
         assert "collecte_hallucinations" not in src
+
+
+def test_generer_consigne_erreur_500(monkeypatch: pytest.MonkeyPatch) -> None:
+    import threading
+    from http.server import BaseHTTPRequestHandler, HTTPServer
+
+    class H(BaseHTTPRequestHandler):
+        def do_POST(self) -> None:
+            self.send_response(500)
+            self.end_headers()
+            self.wfile.write(b'{"error":"token repeat limit reached"}')
+
+        def log_message(self, *a) -> None:
+            pass
+
+    srv = HTTPServer(("127.0.0.1", 0), H)
+    threading.Thread(target=srv.serve_forever, daemon=True).start()
+    monkeypatch.setattr(col, "OLLAMA", f"http://127.0.0.1:{srv.server_port}")
+    monkeypatch.setattr(col.time, "sleep", lambda s: None)
+    try:
+        rep = col.generer("m", "p")
+    finally:
+        srv.shutdown()
+    assert rep == {"error": "token repeat limit reached", "done_reason": "error"}

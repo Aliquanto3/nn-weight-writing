@@ -185,6 +185,7 @@ def construire_ligne(modele: str, digest: str, version: str, requete: dict, rep:
         "prompt": requete["prompt"],
         "response": msg.get("content", ""),
         "done_reason": rep.get("done_reason"),
+        "error": rep.get("error"),
         "eval_count": rep.get("eval_count"),
         "prompt_eval_count": rep.get("prompt_eval_count"),
         "total_duration_ns": rep.get("total_duration"),
@@ -231,6 +232,18 @@ def generer(modele: str, prompt: str) -> dict:
     for essai in range(3):
         try:
             return _http("/api/chat", corps)
+        except urllib.error.HTTPError as e:
+            # Erreur déterministe d'Ollama (ex. « token repeat limit reached ») : consignée comme
+            # une génération sans réponse plutôt que de bloquer la collecte.
+            if e.code == 500 and essai == 2:
+                try:
+                    msg = json.loads(e.read().decode("utf-8")).get("error", "")
+                except ValueError, OSError:
+                    msg = ""
+                return {"error": msg or "HTTP 500", "done_reason": "error"}
+            if essai == 2:
+                raise
+            time.sleep(10)
         except urllib.error.URLError, TimeoutError, ConnectionError:
             if essai == 2:
                 raise
