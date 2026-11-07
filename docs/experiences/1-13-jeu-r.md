@@ -25,7 +25,7 @@ Compte rendu de la phase B (story 1-13), 2026-11-07. Porte **comparatif** ; déc
 | **F** | **66** (60 `c00`) | **107** |
 | p_R | ≈ 0,09 | **0,449** (p_d1 = 0,675) |
 
-`found_at_build` est presque nul par construction : la revérification D4 relit le même client, le même index et le même cache que 1-12, qui a interrogé ces jours quelques heures plus tôt (décision de l'orchestrateur, pas de rafraîchissement des `/scan`). Critères libérés par A1 : écart d'année 41 paires, type de jour 14, formation 13.
+`found_at_build` vaut 0, nul par construction et donc non informatif : la revérification D4 relit le même client, le même index et le même cache que 1-12, qui a interrogé ces jours quelques heures plus tôt (décision de l'orchestrateur, pas de rafraîchissement des `/scan`). Critères libérés par A1 : écart d'année 41 paires, type de jour 14, formation 13.
 
 ### Jeux
 
@@ -68,11 +68,11 @@ Lecture (comparatif, plafond en repère) : B atteint le plafond de la grille (So
 
 **Séances signalées pour 1-14b** : Sonnet B t2 et t3 (`fragment_overlap`, 10 exemples) ; MiMo B t2 (rappel `c00` élevé, hors drapeaux AD-19).
 
-Coût facturé de 1-13 : **0,456 $** (MiMo seul, plafond 2 $) ; équivalent API des séances Sonnet 3,21 $. Registre du lot 1 : 1,730 $ facturés.
+Coût facturé de 1-13 : **0,456 $** (MiMo seul, sous le plafond de 2 $ facturés fixé pour 1-13 par S3 ; `max_session_usd` du protocole reste 5 $ par séance) ; équivalent API des séances Sonnet 3,21 $. Registre du lot 1 : 1,730 $ facturés.
 
 ## Témoins sur R (D9)
 
-80 ≤ F < 120 : aucun jeu d'entraînement de R, donc **ni C, ni F, ni « même réseau » sur R** (D5, D9) ; `[tasks.legal_r]` de `config/train.toml` reste inutilisé. Seule l'option 2 de R3 (entraîner sur S, évaluer sur R) est jouée, ci-dessous.
+80 ≤ F < 120 : aucun jeu d'entraînement de R, donc **aucun témoin C, F ni « même réseau » entraîné sur R** (D5, D9) ; `[tasks.legal_r]` de `config/train.toml` reste inutilisé. Ces témoins sont seulement entraînés sur S et évalués sur R (option 2 de R3), ci-dessous.
 
 ## S → R (D10)
 
