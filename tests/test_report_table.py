@@ -306,3 +306,40 @@ def test_cli_table_output_is_valid_json(root, tmp_path):
     assert main(["table", "--lot", "1", "--root", str(root), "--out", str(out)]) == 0
     data = json.loads((out / "lot1.json").read_text("utf-8"))
     assert data["lot"] == 1 and len(data["inputs"]["fingerprint"]) == 64
+
+
+def test_excluded_baseline_seed_leaves_mean(root, tmp_path):
+    """Revue 1-14 : un témoin écarté forme sa propre ligne, hors de la moyenne des graines."""
+    decisions = write_decisions(
+        tmp_path / "d.toml",
+        '[[session]]\nid = "typed-C-n64-s0"\nstatus = "excluded"\ndate = "2026-11-08"\n'
+        'reason = "graine invalide"\n',
+    )
+    table = build(root, 1, decisions_path=decisions)
+    rows = {tuple(b["status"]): b for b in table.data["baselines"]}
+    assert rows[("counted",)]["seeds"] == [1] and rows[("counted",)]["accuracy_mean"] == 1.0
+    assert rows[("excluded",)]["seeds"] == [0]
+
+
+def test_excluded_retrained_seed_leaves_same_network(root, tmp_path):
+    t1 = next(s for s in build(root, 1).data["same_network"])["session"]
+    decisions = write_decisions(
+        tmp_path / "d.toml",
+        f'[[session]]\nid = "{t1}-retrain-n8192-s0"\nstatus = "excluded"\n'
+        'date = "2026-11-08"\nreason = "graine invalide"\n',
+    )
+    [same] = build(root, 1, decisions_path=decisions).data["same_network"]
+    assert same["retrained_mean"] is None and same["removed_seeds"] == [0]
+
+
+def test_fingerprint_ignores_eval_timestamp(root):
+    """Revue 1-14 : relancer `nnww evaluate` (seul `ts` change) ne change pas le tableau."""
+    first = build(root, 1)
+    heldout = root / "heldout"
+    for run_dir in sorted((root / "runs" / "1").glob("train/*")):
+        path = run_dir / "eval.json"
+        data = json.loads(path.read_text("utf-8"))
+        data["ts"] = "2099-01-01T00:00:00Z"
+        path.write_text(json.dumps(data), "utf-8")
+    assert heldout.is_dir()
+    assert build(root, 1).markdown == first.markdown

@@ -83,7 +83,7 @@ def _cases(data: dict) -> str:
         "Modèle",
         "Config",
         "Gelées (k/n)",
-        "Exactitude réservée, toutes séances (moy. ± é.-t. [étendue])",
+        "Exactitude réservée, avant décisions (tentatives comptées ; moy. ± é.-t. [étendue])",
         "Exactitude réservée après décisions",
         "Gelées seules (moy.)",
         "Par tentative",
@@ -187,7 +187,12 @@ def _same(data: dict) -> str:
             r["n"],
             pct(r["session_accuracy"]),
             mean_sd(r["retrained_mean"], r["retrained_sd"]),
-            _per_seed(r),
+            _per_seed(r)
+            + (
+                " (hors moyenne : " + ", ".join(f"s{x}" for x in r["removed_seeds"]) + ")"
+                if r.get("removed_seeds")
+                else ""
+            ),
             pct(r["gap"]),
         ]
         for r in data["same_network"]

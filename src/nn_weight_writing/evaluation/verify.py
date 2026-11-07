@@ -110,8 +110,9 @@ def evaluate(
 ) -> Path:
     """Vérifie le gel puis écrit `eval.json` (ou `eval-cross-*.json` avec `on`) à côté.
 
-    `heldout_root` absent : vérification seule, `metrics` et `target` vides. `on` exige
-    `heldout_root`.
+    `heldout_root` absent : vérification seule, `metrics` et `target` vides ; un `eval.json`
+    déjà mesuré pour ce même gel est alors gardé tel quel (une vérification relancée après les
+    mesures ne les efface pas). `on` exige `heldout_root`.
     """
     from nn_weight_writing.evaluation import measures
 
@@ -132,6 +133,8 @@ def evaluate(
 
         heldout_dir = measures.resolve_heldout(heldout_root, run_task(run_dir), dataset)
         target, metrics = measures.measure(run_dir, heldout_dir)
+    elif _measured(run_dir / EVAL_FILE, tree):
+        return run_dir / EVAL_FILE
     record = EvalRecord(
         run=run_dir.name,
         kind=kind,
@@ -146,6 +149,20 @@ def evaluate(
     data = json.dumps(asdict(record), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     netio.atomic_write_bytes(out, data.encode("utf-8"))
     return out
+
+
+def _measured(path: Path, tree: str) -> bool:
+    """`eval.json` v2 déjà mesuré (`metrics` et `target` non vides) pour ce `tree_sha256`."""
+    try:
+        data = json.loads(path.read_text("utf-8"))
+    except OSError, ValueError:
+        return False
+    return (
+        isinstance(data, dict)
+        and data.get("tree_sha256") == tree
+        and bool(data.get("metrics"))
+        and bool(data.get("target"))
+    )
 
 
 def _rounded(value):

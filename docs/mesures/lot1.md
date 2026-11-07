@@ -2,13 +2,13 @@
 
 Généré par `nnww table --lot 1` ; ne pas éditer.
 
-Entrées lues : 75 journaux, 144 `run.json`, 288 `eval*.json` ; empreinte des entrées `e56a8522a4664a9f0b6b56f2e39fb0ece2f07e13b24b81fcf5bd96a62a658066`.
+Entrées lues : 75 journaux, 144 `run.json`, 288 `eval*.json` ; empreinte des entrées `5a26779a74f7863eb48008d378aae4694bbdb15da473038ae74f055c5deb660f`.
 
 Exactitude principale : une tentative non gelée ou en erreur compte 0 ; « Gelées seules » porte sur les tentatives gelées évaluées (k/n). Pourcentages à 1 décimale.
 
 ## 1. Cases
 
-| Tâche | Méthode | Taille cible | Modèle | Config | Gelées (k/n) | Exactitude réservée, toutes séances (moy. ± é.-t. [étendue]) | Exactitude réservée après décisions | Gelées seules (moy.) | Par tentative | Vraies | Fausses connues | Tenues à l'écart (HD) | Croisée → legal_s_reserved:eval | Lisibilité | Paramètres (nominal, médiane) | Taille effective (script, zlib ; médianes) | Passes (moy.) | Facturé ($, somme ; médiane) | Équivalent API ($, somme ; médiane) | Durée (min, médiane) | Drapeaux (séances) | Rejouées (n ; facturé) |
+| Tâche | Méthode | Taille cible | Modèle | Config | Gelées (k/n) | Exactitude réservée, avant décisions (tentatives comptées ; moy. ± é.-t. [étendue]) | Exactitude réservée après décisions | Gelées seules (moy.) | Par tentative | Vraies | Fausses connues | Tenues à l'écart (HD) | Croisée → legal_s_reserved:eval | Lisibilité | Paramètres (nominal, médiane) | Taille effective (script, zlib ; médianes) | Passes (moy.) | Facturé ($, somme ; médiane) | Équivalent API ($, somme ; médiane) | Durée (min, médiane) | Drapeaux (séances) | Rejouées (n ; facturé) |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | automaton | A-literal | — | claude-sonnet-5-5 | c98a7354 | 1/1 | 100,0 | 100,0 | 100,0 | t1 100,0 | — | — | — | — | 100,0 | 106 | 0 ; 37 | 1,0 | 0,0000 ; 0,0000 | 0,0550 ; 0,0550 | 0,4 | 0 | 0 ; 0,0000 |
 | automaton | A-literal | — | xiaomi/mimo-v2.6-pro | 9c140854 | 1/1 | 100,0 | 100,0 | 100,0 | t1 100,0 | — | — | — | — | 100,0 | 106 | 0 ; 45 | 1,0 | 0,0174 ; 0,0174 | 0,0174 ; 0,0174 | 2,6 | 0 | 0 ; 0,0000 |

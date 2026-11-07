@@ -352,3 +352,17 @@ def test_cli_reports_every_refusal_and_continues(typed, heldout, tmp_path, capsy
 )
 def test_cli_usage_errors(argv):
     assert main(argv) == 2
+
+
+def test_verification_only_keeps_existing_measures(typed, heldout, tmp_path):
+    """Revue 1-14 : un contrôle de gel relancé sans --heldout-root n'efface pas les mesures."""
+    run_dir = write_session(tmp_path / "runs" / "1")
+    measured = load(evaluate(run_dir, heldout))
+    assert measured["metrics"]
+    assert load(evaluate(run_dir)) == measured
+
+
+def test_cli_dataset_requires_heldout_root(typed, tmp_path, capsys):
+    run_dir = write_session(tmp_path / "runs" / "1")
+    assert main(["evaluate", str(run_dir), "--dataset", "eval"]) == 2
+    assert not (run_dir / "eval.json").exists()

@@ -29,8 +29,8 @@ def _evaluate(args: argparse.Namespace) -> int:
             return 2
         on = (task, dataset)
     heldout_root = Path(args.heldout_root) if args.heldout_root else None
-    if on and heldout_root is None:
-        print("--on demande --heldout-root", file=sys.stderr)
+    if (on or args.dataset) and heldout_root is None:
+        print("--on et --dataset demandent --heldout-root", file=sys.stderr)
         return 2
     if heldout_root is None:
         print(

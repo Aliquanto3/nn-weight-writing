@@ -182,8 +182,17 @@ def _baseline_rows(baselines: list[Baseline], targets: list[str], status_of) -> 
     for b in baselines:
         if b.retrained_from:
             continue
+        # Le statut entre dans la clé : une graine écartée ou en annexe forme sa propre ligne,
+        # hors de la moyenne des graines comptées (comme pour les séances).
         keyed[
-            (b.run.get("task", ""), b.run["baseline"], b.encoder or "", b.run["n"], b.chemin)
+            (
+                b.run.get("task", ""),
+                b.run["baseline"],
+                b.encoder or "",
+                b.run["n"],
+                b.chemin,
+                status_of(b),
+            )
         ].append(b)
     rows = []
     for key in sorted(keyed):
@@ -199,7 +208,6 @@ def _baseline_rows(baselines: list[Baseline], targets: list[str], status_of) -> 
                 ev = b.cross.get(t)
                 if ev and not ev.metrics.get("error"):
                     cross[t].append(_rate(ev.metrics["accuracy"]))
-        statuses = sorted({status_of(b) for b in members})
         rows.append(
             {
                 "task": key[0],
@@ -214,7 +222,7 @@ def _baseline_rows(baselines: list[Baseline], targets: list[str], status_of) -> 
                 "accuracy_sd": _stdev(rates),
                 "groups": {g: _mean(groups[g]) for g in ("real", "fake_known", "held_out")},
                 "cross": {t: _mean(cross[t]) for t in targets},
-                "status": statuses,
+                "status": [key[5]],
             }
         )
     return rows
@@ -332,8 +340,12 @@ def build(
         rates = [
             _rate(b.native.metrics["accuracy"])
             for b in members
-            if b.native and b.native.evaluated and not b.native.metrics.get("error")
+            if baseline_status(b) == "counted"
+            and b.native
+            and b.native.evaluated
+            and not b.native.metrics.get("error")
         ]
+        removed_seeds = [b.run["seed"] for b in members if baseline_status(b) != "counted"]
         source = sessions_by_id.get(origin)
         session_rate = None
         if source and _state(source.native, source.frozen) == "ok":
@@ -348,6 +360,7 @@ def build(
                 "retrained_sd": _stdev(rates),
                 "seeds": [b.run["seed"] for b in members],
                 "per_seed": [_seed_value(b) for b in members],
+                "removed_seeds": removed_seeds,
                 "gap": None
                 if mean is None or session_rate is None
                 else round(mean - session_rate, 6),
@@ -450,6 +463,8 @@ def build(
     ledger_billed = round(sum(r.billed_usd for r in ledger_by_id.values()), 6)
     ledger_equiv = round(sum(r.cost_equiv_usd for r in ledger_by_id.values()), 6)
     cap = _lot_cap(lot)
+    if cap is None:
+        warnings.append(f"lot {lot} : plafond introuvable dans protocol.toml (facturé non comparé)")
     costs = {
         "by_model": [
             {

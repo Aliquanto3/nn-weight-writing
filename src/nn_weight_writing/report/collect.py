@@ -67,6 +67,14 @@ class Inputs:
     def read_json(self, path: Path, label: str) -> object:
         return json.loads(self.read_bytes(path, label).decode("utf-8"))
 
+    def read_eval(self, path: Path, label: str) -> dict:
+        """`eval*.json` : l'empreinte porte sur le JSON canonique sans `ts` (seul champ qui varie
+        d'une évaluation à l'autre, AD-9) ; relancer `nnww evaluate` ne change pas le tableau."""
+        data = json.loads(path.read_bytes().decode("utf-8"))
+        stable = {k: v for k, v in data.items() if k != "ts"} if isinstance(data, dict) else data
+        self.files[label] = hashlib.sha256(canonical(stable)).hexdigest()
+        return data
+
     def fingerprint(self) -> str:
         lines = "".join(f"{p} {d}\n" for p, d in sorted(self.files.items()))
         return hashlib.sha256(lines.encode("utf-8")).hexdigest()
@@ -138,7 +146,7 @@ def _evaluations(
     for path in sorted(run_dir.glob("eval*.json")):
         if path.name != EVAL_FILE and not path.name.startswith(EVAL_CROSS_PREFIX):
             continue
-        data = inputs.read_json(path, f"{rel}/{path.name}")
+        data = inputs.read_eval(path, f"{rel}/{path.name}")
         if data.get("schema_version", 1) < EVAL_SCHEMA_VERSION:
             evaluation = Evaluation({}, {}, data.get("tree_sha256", ""))
         else:
