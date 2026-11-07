@@ -410,3 +410,4 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-07 18:19 · 1.13 · review · plafond de 3 passes atteint : 2 medium et 1 low corrigés par l'orchestrateur (texte seul), chemins du poste laissés (déjà dans la spec de 1-14 sur main) · e1e142a
 - 2026-11-07 18:19 · 1.13 · CI · verte sur les trois OS (PR #31) · e1e142a
 - 2026-11-07 18:19 · 1.13 · fusion · #31 fusionnée, MERGED vérifié · 08b9ff8
+- 2026-11-07 18:20 · 1.14b · dev · lancé (dev-story Opus, worktree 1-14b) : rassemblement, jugements, table --strict, NOTICE, publish, rapport, version 0.1.0, PR ; tag, release et topic laissés à l'orchestrateur après accord d'Anaël (point 5 de la spec) · 08b9ff8
