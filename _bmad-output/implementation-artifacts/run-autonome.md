@@ -40,7 +40,7 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - **Plan des vagues restantes** : voir « Sprint 1 ter ». Spécification Swagger de l'API Judilibre (sandbox 1.0.0) pour 1-13 : `C:\Users\Utilisateur\Downloads\JUDILIBRE.json` (sha256 4592c1ec…95674d), jamais commitée. Sortie figée de la collecte : `data/r/collecte/` du dépôt principal (hors worktree).
 - **Artefacts utiles** : constats dans `docs/verifications/` ; specs de story dans `_bmad-output/implementation-artifacts/stories/` ; décisions D1-D12 de 1-5 dans sa spec de story.
 - **Ressources activées (2026-11-06)** : connexion `~/.nnww/claude-config` faite ; `NNWW_CLAUDE_CWD_ROOT='C:\nnww-cwd'` à poser dans chaque commande de séance, jamais de façon permanente ; identifiants PISTE dans `.env` (ignoré), chargés seulement dans la commande (`set -a; . ./.env; set +a`), valeurs jamais affichées. Pas d'`ANTHROPIC_API_KEY` : aucun test réel du repli API.
-- **Attentes Anaël** : décisions MNIST A-D (1-4, avant 2-1), D13 linalg (1-5) ; règle R4 de la porte des 30 % (fixée par l'orchestrateur le 2026-11-07, à confirmer) ; quotas PISTE non relevés (non bloquant).
+- **Attentes Anaël** : décisions MNIST A-D (1-4, avant 2-1), D13 linalg (1-5) ; quotas PISTE non relevés (non bloquant).
 - **Pièges rencontrés** : `setup-uv` sans tag majeur (épingler la version exacte) ; `file_prs.py` lancé trop tôt après `gh pr create` saute la PR (« aucun contrôle ») : attendre ~30 s.
 
 ## Reports au rapport du lot 1 (1-14)
@@ -291,3 +291,20 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-07 07:13 · 1.12a · décision · R9 (Anaël) : collecte en story 1-12a avant 1-12 ; script unique hors du paquet, lot pilote 10 requêtes × 3 modèles pour mesurer le rendement, sortie figée avec son sha256 · —
 - 2026-11-07 07:13 · 1.3 · décision · condition 5 de r_republish remplie : Anaël a confirmé dans PISTE l'acceptation PROD de CGU_open_data_V8.pdf (version du 6 janvier 2022) ; r_republish = true dans config/publish.toml ; quotas PISTE non relevés, non bloquant · —
 - 2026-11-07 07:13 · 1.12 · décision · règle R4 de la porte des 30 % fixée avant toute collecte (référence normalisée dédupliquée, non vérifiables hors dénominateur, estimation ponctuelle avec Wilson 95 %, taille fixée par le pilote) dans methodes-et-lots.md ; à confirmer par Anaël · —
+- 2026-11-07 07:18 · run · fusion · #28 décisions R9, r_republish, R4 et état, MERGED vérifié · 08a62c6
+- 2026-11-07 07:18 · 1.12a · dev · lancé (dev-story Sonnet, worktree 1-12a) : requêtes figées, pilote 10 × 3, règle de taille, collecte complète, sortie figée · 08a62c6
+- 2026-11-07 07:18 · 1.12 · dev · spec de story lancée avant le code et avant toute lecture des données (general-purpose Opus, worktree 1-12) ; relue par second-avis avant dev-story · 08a62c6
+- 2026-11-07 07:19 · 1.14 · dev · spec de story lancée (general-purpose Opus, worktree 1-14) ; découpage 1-14a outillage (publish, tableau, drapeaux, évaluation croisée) avant 1-13, 1-14b rapport et v0.1.0 après · 08a62c6
+- 2026-11-07 07:29 · 1.12 · décision · règle R4 de la porte des 30 % confirmée par Anaël · —
+- 2026-11-07 07:29 · 1.14 · décision · découpage 1-14a (outillage, avant 1-13) et 1-14b (rapport et v0.1.0, après 1-13) validé par Anaël · —
+- 2026-11-07 07:32 · 1.14 · dev · spec de story écrite : evaluate gagne les mesures (EvalRecord v2), nnww table, décisions-lot1.toml, nnww publish à 9 refus, rassemblement des runs dans C:\Users\Utilisateur\nnww-artefacts ; contrat legal_r pour 1-13 ; 7 points pour Anaël · 8d633a8
+- 2026-11-07 07:32 · 1.14 · second-avis · spec relue avant le code (lancé) · 8d633a8
+- 2026-11-07 07:33 · 1.12 · dev · spec de story écrite : phase A (code, grille de 20 règles, garde-fou sur vraies, commit « grille figée ») puis phase B (classement verrouillé sur le SHA figé) ; Judilibre par /scan du jour cité, CE par open data depuis 2021-09-30 (JADE non téléchargé) ; décision dans config/r_gate.toml · 9e05ec1
+- 2026-11-07 07:33 · 1.12 · second-avis · spec relue avant le code (lancé) · 9e05ec1
+- 2026-11-07 07:40 · 1.12 · décision · porte sur p_d1 (sans les incohérences portant seulement sur l'ECLI, absent du format de R) : Anaël ; p publié à côté · —
+- 2026-11-07 07:40 · 1.14 · second-avis · spec : 3 high (réservé de R dans l'archive de R, contrôles de R limités à son archive, sorties commitées non scannées), 8 medium, 2 low · 8d633a8
+- 2026-11-07 07:40 · 1.14 · décision · Q1-Q12 tranchées par l'orchestrateur (archive de R conforme à R2 avec réservé publié et AD-18 amendé, contrôles sur toute archive et toute sortie commitée ou publiée, recherche normalisée du réservé, .env chargé et jetons du pilote couverts, échec compté 0 dans la moyenne, seuil d'effet de la lisibilité, --heldout-root explicite…), reportées dans la spec par dev-story · 8d633a8
+- 2026-11-07 07:40 · 1.12 · second-avis · spec : 2 high (contrôle qualité après lecture de p, numéro non canonisé), 9 medium, 2 low · 9e05ec1
+- 2026-11-07 07:40 · 1.12 · décision · P1-P12 tranchées par l'orchestrateur (p calculé seulement après le contrôle qualité, variantes de numéro sans ambiguïté canonisées, cours d'appel hors champ, rappel 57/60 par juridiction, absences fausses contrôlées par le reviewer via /search, aucun repli HF en phase B, .env exporté pour redact()…), reportées dans la spec par dev-story · 9e05ec1
+- 2026-11-07 07:40 · 1.12 · dev · lancé, phase A (dev-story Opus, effort high, worktree 1-12) · 9e05ec1
+- 2026-11-07 07:40 · 1.14 · dev · lancé, 1-14a partie 1 : mesures, ablation, table, décisions (dev-story Opus, worktree 1-14) · 8d633a8
