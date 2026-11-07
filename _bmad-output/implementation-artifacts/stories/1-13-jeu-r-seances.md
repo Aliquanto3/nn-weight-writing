@@ -383,3 +383,14 @@ Phase A seule (diff `e85590b..ba67579`), sans rebase (branche qui importe la gri
 - **Nit**, low, reviewer : borne de S8 calculée sur une permutation de 280 exemples pour tous les jeux (lâche pour la séance de 40). **Corrigé** : borne par jeu, même composition.
 - Complexité : 0 constat (pool du jour mis en cache par le client, index du CE rangé par jour une fois, ensembles pour les `raw` et numéros utilisés).
 - Lu sans constat : fuite de classe par `sources.jsonl` (hors du paquet de séance, comme `labels.jsonl`), réservé sous `heldout/`, CAP-11 (un seul `reference_of`), contrat de `publish` (`check_sources`, `check_content` strict testés).
+
+### Passe 2 (2026-11-07, SHA revu 28be85e)
+
+Correctifs de la passe 1 seuls (diff `ba67579..28be85e`), sans rebase.
+
+- Aucun constat Important.
+- **Rejeté** : `number_repeated` déterministe (lignes triées par `unit_id`, la première fausse du numéro est gardée, aucune dépendance à la classe) ; entonnoir compté ; numéros des vraies suivis dans l'ordre trié des fausses.
+- **Rejeté** : `future_not_visible` : strict (`date > corpus_date`), égalité exclue comme non visible ; fausses futures visibles et non futures inchangées ; date impossible comparée sur année et mois.
+- **Rejeté** : plancher `ce_number` : droite ajustée sur les vraies du CE de l'entraînement seul, standardisation sur l'entraînement, évaluation sur le réservé. Vérifié sans erreur : entraînement sans CE, une seule date, réservé sans CE, date impossible, numéro non entier (accuracy 0,5 ou valeur définie).
+- **Rejeté** : borne de S8 par jeu correcte ; test d'import en sous-processus 0,19 s, `-I` et `sys.executable`, portable.
+- Tests ciblés (140) et ruff verts.
