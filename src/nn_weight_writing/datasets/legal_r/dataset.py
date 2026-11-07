@@ -20,7 +20,7 @@ import json
 import re
 from collections import Counter
 from collections.abc import Callable, Iterable, Mapping, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import date, timedelta
 from pathlib import Path
 
@@ -57,6 +57,7 @@ EXCLUSIONS = (
     "not_in_gate",
     "ecli_only",
     "not_d1",
+    "span_context",
     "before_window",
     "after_window_not_future",
     "future_not_visible",
@@ -218,11 +219,33 @@ def recompute_canonical(row: Mapping, citation: Mapping | None) -> str | None:
     if citation is None:
         return None
     key = (row["jurisdiction"], row["number"], (row["year"], row["month"], row["day"]))
-    for extracted in extract_references(citation["raw"]):
+    found = extract_references(citation["raw"])
+    for extracted in found:
         ref, raw = reference_of(fields_from_extracted(extracted))
         if ref.key() == key:
             return raw
+    # Juridiction héritée (extracteur du tour 1 de 1-12, `_inherit`) : l'ancre est hors du
+    # passage enregistré ; seule une référence sans juridiction reçoit celle du classement.
+    for extracted in found:
+        if extracted.jurisdiction is None:
+            inherited = replace(extracted, jurisdiction=row["jurisdiction"])
+            ref, raw = reference_of(fields_from_extracted(inherited))
+            if ref.key() == key:
+                return raw
     return None
+
+
+def _no_reference_in_span(row: Mapping, citation: Mapping) -> bool:
+    """Aucune référence complète ne se relit dans le passage seul, même avec la juridiction
+    héritée : ses champs ont été lus hors du passage enregistré (date avant l'ancre, bloc
+    structuré du tour 1 de 1-12). Une référence complète de clé différente reste un écart du
+    normaliseur (`normalizer_mismatch`)."""
+    for extracted in extract_references(citation["raw"]):
+        if extracted.jurisdiction is None:
+            extracted = replace(extracted, jurisdiction=row["jurisdiction"])
+        if reference_of(fields_from_extracted(extracted))[0].is_complete():
+            return False
+    return True
 
 
 def select_fakes(
@@ -258,7 +281,11 @@ def select_fakes(
         if canonical is None or row["formation"] is None:
             excluded["not_d1"] += 1
             continue
-        recomputed = recompute_canonical(row, citations.get(row["unit_id"]))
+        citation = citations.get(row["unit_id"])
+        recomputed = recompute_canonical(row, citation)
+        if recomputed is None and citation is not None and _no_reference_in_span(row, citation):
+            excluded["span_context"] += 1  # rien n'est recalculable sans le texte de réponse
+            continue
         if recomputed != canonical:
             raise RBuildError("normalizer_mismatch", f"{row['unit_id']} : canonical recalculée")
         if not d1_ok(canonical):

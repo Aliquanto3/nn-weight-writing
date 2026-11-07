@@ -237,6 +237,27 @@ def test_canonical_mismatch_refused():
         select_fakes([row], extraction=[], windows=WINDOWS)  # citation canonique absente
 
 
+def test_inherited_jurisdiction_and_span_context():
+    """Tour 1 de 1-12 : ancre hors du passage (juridiction héritée) ou champs hors du passage."""
+    row = classement_row("r-u00001", "cc", "civ. 1re", 2015, 3, 12, "13-27.123", "coherent_absent")
+    block = (
+        "13-27.123**\n*   **Chambre :** Première chambre civile\n"
+        "*   **Date :** 12 mars 2015\n*   **Numéro de pourvoi :** 13-27.123"
+    )
+    inherited = {**extraction_row(row), "raw": block}
+    assert recompute_canonical(row, inherited) == "Cass. civ. 1re, 12 mars 2015, n° 13-27.123"
+    selection = select_fakes([row], extraction=[inherited], windows=WINDOWS)
+    assert [f.unit_id for f in selection.fakes] == ["r-u00001"]
+    assert selection.excluded["span_context"] == 0
+    bare = {**extraction_row(row), "raw": "13-27.123**\n**Chambre :** 1re chambre"}
+    selection = select_fakes([row], extraction=[bare], windows=WINDOWS)
+    assert selection.fakes == [] and selection.excluded["span_context"] == 1
+    # une référence complète du passage, de clé différente, reste un écart du normaliseur
+    other = {**extraction_row(row), "raw": "Cass. civ. 1re, 12 mars 2015, n° 13-27.124"}
+    with pytest.raises(RBuildError, match="normalizer_mismatch"):
+        select_fakes([row], extraction=[other], windows=WINDOWS)
+
+
 # --- AC6 : appariement ---------------------------------------------------------------------
 
 
