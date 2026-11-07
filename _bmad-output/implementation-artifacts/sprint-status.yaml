@@ -7,7 +7,7 @@ story_location: _bmad-output/implementation-artifacts/stories
 last_updated: 2026-11-06 23:12
 
 development_status:
-  epic-1: in-progress
+  epic-1: done
   1-1-verifier-reconstruction-s-nuss: done
   1-2-verifier-mimo-openrouter: done
   1-3-verifier-judilibre-hallucinations: done
@@ -23,7 +23,7 @@ development_status:
   1-12a-collecte-hallucinations: done
   1-12-pre-etude-r-porte-30: done
   1-13-jeu-r-seances-r: done
-  1-14-mesures-rapport-lot1-v0-1-0: in-progress
+  1-14-mesures-rapport-lot1-v0-1-0: done
   epic-1-retrospective: optional
   epic-2: backlog
   2-1-jeux-images-vision-harnais: backlog

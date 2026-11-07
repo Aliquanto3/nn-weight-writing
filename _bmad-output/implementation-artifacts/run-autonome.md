@@ -422,3 +422,8 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-07 18:42 · 1.14b · second-avis · 1 high (« A fait mieux que C à données comparables » contredit la réserve sur les petits N du même rapport), 2 medium (empreinte des entrées du rapport absente de lot1.md, écart MiMo B R 72,8 contre 72,4 % qui ne tient qu'au jugement de t2), 5 low ; réservé de R absent des fichiers suivis, chiffres et reports vérifiés · 6337931
 - 2026-11-07 18:42 · 1.14b · review · passe 1 lancée (reviewer Opus) avec la liste du second avis · 6337931
 - 2026-11-07 18:45 · 1.14b · review · passe 1 : 3 Important corrigés (A contre C ramené à un avantage nominal sous réserve, empreinte des entrées c768d61d…, MiMo B R au-dessus du plafond par t2 seule), 2 low corrigés, 1 reporté (décision de session par run_id), 2 rejetés ; table --strict rejoué identique octet pour octet ; publish --check sans refus sur 17 fichiers (réservés S et R) ; notes de release et billet alignés · a906e45
+- 2026-11-07 18:49 · 1.14b · CI · verte sur les trois OS (PR #33) · a906e45
+- 2026-11-07 18:49 · 1.14b · fusion · #33 fusionnée, MERGED vérifié · 90b20ef
+- 2026-11-07 18:49 · 1.14b · release · tag annoté v0.1.0 sur 90b20ef, release GitHub avec runs-lot1.tar.gz, r-lot1.tar.gz et SHA256SUMS ; assets retéléchargés, sha256sum -c OK · 90b20ef
+- 2026-11-07 18:49 · run · décision · topic GitHub status-dev → status-test · —
+- 2026-11-07 18:50 · run · fini : lot 1 livré (1-1 à 1-14), v0.1.0 publiée ; worktrees gardés (sorties de 1-12 et données des séances hors dépôt) ; restent à Anaël : publication du classement de 1-12 (point 7), billet, MNIST A-D, D13 linalg · 90b20ef
