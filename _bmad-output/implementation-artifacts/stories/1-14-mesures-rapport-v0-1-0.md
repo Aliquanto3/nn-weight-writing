@@ -1,7 +1,7 @@
 ---
 story: "1-14"
 title: Mesures, rapport du lot 1 et v0.1.0
-status: review (1-14a partie 1) ; partie 2 à faire ; en attente de 1-13 (1-14b)
+status: review (1-14a parties 1 et 2) ; en attente de 1-13 (1-14b)
 branch: feat/1-14-mesures-publication
 ---
 
@@ -370,6 +370,34 @@ Constats pour 1-14b : `heldout/legal_s/eval` et `heldout/legal_s_reserved/eval` 
 - Le test de frontière de `report/` est `test_report_follows_dependency_graph` (`tests/test_report_table.py`) ; `test_report_and_publish_follow_dependency_graph` reste à écrire pour `publish/`.
 - `config.py` et `config/publish.toml` ne sont pas touchés en partie 1 (`PublishConfig`, `r_tasks` : partie 2) ; les ajouts à `cli.py` sont dans des blocs délimités (`# --- evaluate`, `# --- table`) pour le rebase avec 1-13 (Q13).
 - Régénérer `docs/mesures/lot1.{md,json}` sur `C:\Users\Utilisateur\nnww-artefacts\` une fois le rassemblement fait (mêmes octets attendus si les entrées sont les mêmes ; l'empreinte comprend `budget/ledger.csv`).
+
+## Réalisé : 1-14a, partie 2 (`nnww publish`, `--check`, rassemblement)
+
+Livré : `publish/checks.py` (`PublishRefusalCode`, `Violation`, `Rules`, `collect_secrets`, `load_reserved`, `check_member`, `check_paths`, `check_sources`, `check_notice`), `publish/archive.py` (`collect_runs`, `plan`, `write`, `tar_gz`), `nnww publish N` et `nnww publish --check PATH...` (bloc `# --- publish` de `cli.py`), `config.load_publish` et `PublishConfig` (bloc en fin de `config.py`), `r_tasks = ["legal_r"]` dans `config/publish.toml`, `scripts/rassembler_runs.py`. `nnww table` contrôle `lot<N>.md`, `lot<N>.json` et le fichier de décisions après les avoir écrits, et rend 1 sur refus (options `--config`, `--env-file`). Spine : AD-18 amendé (liste blanche, archive de R, refus, `--check`), convention des secrets (R6), flèches `report → config`, `report → evaluation.schema`, `publish → evaluation.schema`. Tests : `tests/test_publish.py` (les trois refus d'`invoke_dev_with`, un test par code, Q4, Q5, Q10, Q11, reproductibilité, `--check`, `table`, frontière `test_report_and_publish_follow_dependency_graph`), `tests/test_rassembler_runs.py`.
+
+Écarts à la spec, assumés :
+
+- Codes ajoutés par Q10 et Q11 : `r_party_name`, `r_raw_too_long` (`R_RAW_MAX_CHARS = 160`), `forbidden_path` (`interne/`, `collecte/`, `cache/`, `collecte.jsonl`, `pilote.jsonl`). `data/r/pre_etude/classement.jsonl` et `resume.json` (D8 de 1-12) restent contrôlables par `--check`.
+- Q2 : champs interdits, noms de parties et longueur portent sur chaque JSON ou JSONL de chaque archive et de `--check`, à toute profondeur (noms de parties et longueur : valeurs des clés `raw`). Exception, hors archive de R seulement : `text` admis dans un bloc de message `{"type": "text", "text": …}`. 56 journaux réels en portent ; sans l'exception, toute l'archive des runs serait refusée. `sources.jsonl` est contrôlé partout où il figure (seule l'archive de R en a).
+- Q4 : recherche du `raw` complet normalisé, sans les guillemets du littéral JSON (Q4 remplace la règle du littéral) ; `raw` indexés par leurs 12 premiers caractères normalisés, une passe par fichier.
+- Q5 : `.env` du répertoire courant et de la racine du dépôt (`--env-file` les remplace) ; une valeur portée par plusieurs variables compte une fois.
+- Q10, attribution : `NOTICE` doit porter la phrase, l'URL de la licence et « extraction du AAAA-MM-JJ » ; chaque `dataset.json` de R doit porter `extraction_date` (premier niveau ou `composition`), date reprise dans `NOTICE`. **Contrat pour 1-13.**
+- `output_exists` vaut pour les trois sorties (`runs-lot<N>.tar.gz`, `r-lot<N>.tar.gz`, `SHA256SUMS`) ; écriture en mode exclusif.
+- `--check` : sans `r_republish = true`, un fichier qui nomme une tâche de `r_tasks` (mot entier) est refusé `r_without_republish` ; `no_heldout` s'applique aussi.
+- `nnww table` écrit puis contrôle : sur refus, les fichiers restent écrits et le code est 1.
+- Rassemblement : option `--only` ajoutée. Conflit réel : `data/legal_s/train` et `data/legal_s_reserved/train` diffèrent entre 1-10s, 1-10m (8 192 exemples) et 1-11 (32 768, ceux que citent les `run.json` des témoins). Rassemblement fait en deux passes : `--from 1-8 1-8s 1-11`, puis `--from 1-10s 1-10m --only runs heldout`. `bundle/` est copié (la spec ne l'exclut pas) ; `publish` l'ignore.
+
+Exécution sur les artefacts réels (2026-11-07, CPU seul, aucune écriture dans les worktrees sources) :
+
+- `C:\Users\Utilisateur\nnww-artefacts\` : 864 fichiers copiés (587 + 277), 153 `eval*.json` exclus, 0 conflit après les deux passes ; relance : 0 copie. `runs/1/` : 75 séances, `train/`, `annexe-fields1/`.
+- `nnww evaluate --lot-dir … --heldout-root …` : 190 dossiers évalués, 29 non gelées ; croisée `legal_s → legal_s_reserved:eval` : 98 dossiers, sans refus.
+- `nnww table --lot 1 --root C:\Users\Utilisateur\nnww-artefacts` : `docs/mesures/lot1.{md,json}` identiques octet pour octet à la partie 1 (empreinte comprise) ; contrôle des trois fichiers sans refus.
+- `nnww publish 1 --dry-run` : aucun refus ; 75 séances, 144 témoins, 963 membres, 153 ignorés (`bundle/`, `courbe-c-f.jsonl`, `reentrainement.jsonl`) ; 4 000 `raw` réservés contrôlés, 1 200 sautés (jouet) ; 2 valeurs de secret contrôlées ; archive de R non construite (aucun jeu `legal_r`). Écriture réelle dans un dossier temporaire : `runs-lot1.tar.gz` de 48,3 Mo, même sha256 sur deux exécutions.
+- Refus attendus, sur une copie temporaire : `raw` réservé doublement échappé et en majuscules dans un journal → `reserved_example` ; `sk-or-` dans un `system_prompt.md` → `key_pattern` ; `r_tasks = ["legal_s"]` et `r_republish = false` → 544 `r_without_republish`. Avec `r_tasks = ["legal_s"]` et `r_republish = true` (S comme R de substitution) : seuls `r_source_mismatch` (pas de `sources.jsonl`) et `r_attribution_missing` (pas de `NOTICE`) tombent, sans faux positif de nom de partie, de longueur ni de champ sur les `raw` de S.
+
+Pour 1-13 : jeux `data/legal_r/<jeu>/` et `heldout/legal_r/<jeu>/` avec `sources.jsonl` (mêmes `id`), `extraction_date` dans `dataset.json`, `raw` de 160 caractères au plus sans motif de partie, aucune clé `text`, `zones`, `text_highlight`. Rassemblement : `uv run python scripts/rassembler_runs.py --to C:\Users\Utilisateur\nnww-artefacts --from .claude/worktrees/1-13` (ajout seul ; un `data/*/train` régénéré donnera un conflit, à traiter par `--only runs heldout`).
+
+Pour 1-14b : créer `NOTICE` (phrase, URL, « extraction du AAAA-MM-JJ » de chaque jeu R), puis `nnww publish 1 --root C:\Users\Utilisateur\nnww-artefacts` ; `nnww publish --check docs/rapport-lot1.md <notes> <billet> --root …` avant la release ; le classement de 1-12 se contrôle par `--check` avant d'être mis en asset.
 
 ## Revue
 

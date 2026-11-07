@@ -266,14 +266,118 @@ def _table(args: argparse.Namespace) -> int:
     except FileNotFoundError as exc:
         print(f"table refusée : {exc}", file=sys.stderr)
         return 2
-    for path in write(result, Path(args.out), args.lot):
+    written = write(result, Path(args.out), args.lot)
+    for path in written:
         print(path)
     for issue in result.issues:
         print(issue, file=sys.stderr)
+    # Q3 : ce que `table` écrit, et le fichier de décisions, passent les contrôles de publish.
+    checked = [*written, decisions] if decisions.is_file() else written
+    status = _check_published(checked, Path(args.root), args.config, args.env_file)
+    if status:
+        return status
     return 1 if args.strict and result.issues else 0
 
 
 # --- fin du bloc table -------------------------------------------------------------------------
+
+
+# --- publish (story 1-14 : AD-18, R2, R6, décisions Q1-Q5, Q10, Q11) ---------------------------
+
+
+def _publish_rules(root: Path, config: str | None, env_file: str | None):
+    """Règles des contrôles : `publish.toml`, secrets de l'environnement et du `.env` (Q5)."""
+    import os
+
+    from nn_weight_writing.config import CONFIG_DIR, load_publish
+    from nn_weight_writing.publish.checks import Rules, collect_secrets, load_reserved
+
+    settings = load_publish(Path(config) if config else None)
+    if env_file:
+        env_files = [Path(env_file)]
+        if not env_files[0].is_file():
+            raise FileNotFoundError(f"{env_file} : fichier .env introuvable")
+    else:
+        candidates = {Path(".env").resolve(), (CONFIG_DIR.parent / ".env").resolve()}
+        env_files = sorted(p for p in candidates if p.is_file())
+    secrets = collect_secrets(os.environ, env_files)
+    print(f"valeurs de secret contrôlées : {secrets.count}")
+    if not secrets.count:
+        print("avertissement : aucune valeur de secret à contrôler", file=sys.stderr)
+    reserved = load_reserved(root / "heldout")
+    if reserved is not None:
+        print(
+            f"raw réservés contrôlés : {reserved.count} ; sautés (moins de 12 caractères) : "
+            f"{reserved.skipped}"
+        )
+    rules = Rules(secrets, reserved, frozenset(settings.r_tasks), settings.r_republish)
+    return rules
+
+
+def _print_refusals(violations) -> int:
+    for violation in violations:
+        print(violation, file=sys.stderr)
+    print(f"publication refusée : {len(violations)} refus, rien n'est écrit", file=sys.stderr)
+    return 1
+
+
+def _check_published(paths, root: Path, config: str | None, env_file: str | None) -> int:
+    from nn_weight_writing.publish.checks import check_paths
+
+    try:
+        rules = _publish_rules(root, config, env_file)
+        violations, count = check_paths(paths, rules, root)
+    except (OSError, ValueError) as exc:
+        print(f"contrôle impossible : {exc}", file=sys.stderr)
+        return 2
+    print(f"fichiers contrôlés : {count}")
+    return _print_refusals(violations) if violations else 0
+
+
+def _publish(args: argparse.Namespace) -> int:
+    from nn_weight_writing.publish import archive
+
+    root = Path(args.root)
+    if args.check:
+        if args.lot is not None:
+            print("publish : N ou --check, l'un des deux seulement", file=sys.stderr)
+            return 2
+        return _check_published([Path(p) for p in args.check], root, args.config, args.env_file)
+    if args.lot is None:
+        print("publish : numéro de lot N ou --check PATH...", file=sys.stderr)
+        return 2
+    out = Path(args.out) if args.out else root / "dist" / f"lot{args.lot}"
+    notice = Path(args.notice) if args.notice else Path(__file__).resolve().parents[2] / "NOTICE"
+    try:
+        rules = _publish_rules(root, args.config, args.env_file)
+        result = archive.plan(root, args.lot, out, rules, notice)
+    except (OSError, ValueError) as exc:
+        print(f"publication impossible : {exc}", file=sys.stderr)
+        return 2
+    print(
+        f"séances : {result.sessions} ; témoins : {result.baselines} ; membres : {len(result.runs)}"
+    )
+    print(f"archive de R : {result.r_status}")
+    print(f"ignorés : {len(result.ignored)}")
+    print("data/ hors r_tasks et heldout/ : hors archives (collecte de 1-12a non publiée, Q11)")
+    if args.dry_run:
+        for name in sorted(result.runs):
+            print(f"inclus : {name}")
+        for name in sorted(result.r or {}):
+            print(f"inclus (R) : {name}")
+        for name in result.ignored:
+            print(f"ignoré : {name}")
+    if result.violations:
+        return _print_refusals(result.violations)
+    if args.dry_run:
+        print("à blanc : aucun refus, rien n'est écrit")
+        return 0
+    for path in archive.write(result, out):
+        print(path)
+    return 0
+
+
+# --- fin du bloc publish -----------------------------------------------------------------------
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -360,8 +464,22 @@ def build_parser() -> argparse.ArgumentParser:
     table.add_argument("--decisions", help="défaut : <out>/decisions-lot<N>.toml")
     table.add_argument("--ledger", help="défaut : budget/ledger.csv")
     table.add_argument("--strict", action="store_true", help="code 1 s'il reste un point ouvert")
+    table.add_argument("--config", help="publish.toml des contrôles (défaut : config/)")
+    table.add_argument("--env-file", help="fichier .env des secrets (défaut : .env du dépôt)")
     table.set_defaults(handler=_table)
     # --- fin table ---
+    # --- publish (story 1-14) ---
+    publish = sub.add_parser("publish", help="archives contrôlées des artefacts d'un lot (AD-18)")
+    publish.add_argument("lot", type=int, nargs="?", help="numéro du lot")
+    publish.add_argument("--check", nargs="+", metavar="PATH", help="contrôle seul de fichiers")
+    publish.add_argument("--root", default=".", help="racine de runs/, heldout/ et data/")
+    publish.add_argument("--out", help="défaut : <root>/dist/lot<N>")
+    publish.add_argument("--config", help="défaut : config/publish.toml")
+    publish.add_argument("--notice", help="défaut : NOTICE à la racine du dépôt")
+    publish.add_argument("--env-file", help="fichier .env des secrets (défaut : .env du dépôt)")
+    publish.add_argument("--dry-run", action="store_true", help="contrôles et listes, sans écrire")
+    publish.set_defaults(handler=_publish)
+    # --- fin publish ---
     return parser
 
 
