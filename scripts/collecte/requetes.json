@@ -1,0 +1,1282 @@
+[
+ {
+  "id": "cass-001-directe",
+  "juridiction": "cassation",
+  "theme": "la responsabilité du fait des choses",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la responsabilité du fait des choses, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-001-naturelle",
+  "juridiction": "cassation",
+  "theme": "la responsabilité du fait des choses",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un locataire dont la machine à laver a inondé le voisin du dessous ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-002-directe",
+  "juridiction": "cassation",
+  "theme": "la résolution judiciaire d'un contrat de vente",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la résolution judiciaire d'un contrat de vente, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-002-naturelle",
+  "juridiction": "cassation",
+  "theme": "la résolution judiciaire d'un contrat de vente",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un acheteur d'une voiture d'occasion présentant un vice caché ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-003-directe",
+  "juridiction": "cassation",
+  "theme": "le licenciement pour faute grave",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur le licenciement pour faute grave, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-003-naturelle",
+  "juridiction": "cassation",
+  "theme": "le licenciement pour faute grave",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un salarié licencié après un retard répété et une altercation ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-004-directe",
+  "juridiction": "cassation",
+  "theme": "la prise d'acte de la rupture du contrat de travail",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la prise d'acte de la rupture du contrat de travail, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-004-naturelle",
+  "juridiction": "cassation",
+  "theme": "la prise d'acte de la rupture du contrat de travail",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un salarié qui quitte son poste après des heures supplémentaires impayées ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-005-directe",
+  "juridiction": "cassation",
+  "theme": "le harcèlement moral au travail",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur le harcèlement moral au travail, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-005-naturelle",
+  "juridiction": "cassation",
+  "theme": "le harcèlement moral au travail",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une employée visée par des remarques répétées de son supérieur ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-006-directe",
+  "juridiction": "cassation",
+  "theme": "le divorce pour altération définitive du lien conjugal",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur le divorce pour altération définitive du lien conjugal, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-006-naturelle",
+  "juridiction": "cassation",
+  "theme": "le divorce pour altération définitive du lien conjugal",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un couple séparé depuis plus d'un an sans accord ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-007-directe",
+  "juridiction": "cassation",
+  "theme": "la prestation compensatoire",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la prestation compensatoire, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-007-naturelle",
+  "juridiction": "cassation",
+  "theme": "la prestation compensatoire",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une épouse ayant cessé de travailler pendant vingt ans pour élever les enfants ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-008-directe",
+  "juridiction": "cassation",
+  "theme": "la garde alternée et la résidence des enfants",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la garde alternée et la résidence des enfants, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-008-naturelle",
+  "juridiction": "cassation",
+  "theme": "la garde alternée et la résidence des enfants",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : des parents séparés vivant à deux heures de route l'un de l'autre ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-009-directe",
+  "juridiction": "cassation",
+  "theme": "la rupture brutale de relations commerciales établies",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la rupture brutale de relations commerciales établies, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-009-naturelle",
+  "juridiction": "cassation",
+  "theme": "la rupture brutale de relations commerciales établies",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un fournisseur qui perd son principal client sans préavis ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-010-directe",
+  "juridiction": "cassation",
+  "theme": "la responsabilité du dirigeant pour insuffisance d'actif",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la responsabilité du dirigeant pour insuffisance d'actif, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-010-naturelle",
+  "juridiction": "cassation",
+  "theme": "la responsabilité du dirigeant pour insuffisance d'actif",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : le gérant d'une société liquidée avec un passif important ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-011-directe",
+  "juridiction": "cassation",
+  "theme": "le cautionnement disproportionné",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur le cautionnement disproportionné, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-011-naturelle",
+  "juridiction": "cassation",
+  "theme": "le cautionnement disproportionné",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une caution engagée pour un prêt professionnel sans rapport avec ses revenus ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-012-directe",
+  "juridiction": "cassation",
+  "theme": "la vente immobilière et la clause suspensive de prêt",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la vente immobilière et la clause suspensive de prêt, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-012-naturelle",
+  "juridiction": "cassation",
+  "theme": "la vente immobilière et la clause suspensive de prêt",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : des acquéreurs dont le prêt est refusé par la banque ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-013-directe",
+  "juridiction": "cassation",
+  "theme": "le bail commercial et le déplafonnement du loyer",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur le bail commercial et le déplafonnement du loyer, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-013-naturelle",
+  "juridiction": "cassation",
+  "theme": "le bail commercial et le déplafonnement du loyer",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un commerçant dont le propriétaire réclame une hausse de loyer au renouvellement ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-014-directe",
+  "juridiction": "cassation",
+  "theme": "la copropriété et l'annulation d'une assemblée générale",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la copropriété et l'annulation d'une assemblée générale, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-014-naturelle",
+  "juridiction": "cassation",
+  "theme": "la copropriété et l'annulation d'une assemblée générale",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un copropriétaire contestant une décision de travaux votée à la majorité ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-015-directe",
+  "juridiction": "cassation",
+  "theme": "l'abus de confiance",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur l'abus de confiance, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-015-naturelle",
+  "juridiction": "cassation",
+  "theme": "l'abus de confiance",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un salarié qui détourne des fonds confiés par son employeur ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-016-directe",
+  "juridiction": "cassation",
+  "theme": "l'escroquerie",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur l'escroquerie, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-016-naturelle",
+  "juridiction": "cassation",
+  "theme": "l'escroquerie",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une personne qui obtient un virement par de fausses factures ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-017-directe",
+  "juridiction": "cassation",
+  "theme": "la légitime défense",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la légitime défense, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-017-naturelle",
+  "juridiction": "cassation",
+  "theme": "la légitime défense",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un habitant qui blesse un cambrioleur nocturne ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-018-directe",
+  "juridiction": "cassation",
+  "theme": "la garde à vue et l'assistance de l'avocat",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la garde à vue et l'assistance de l'avocat, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-018-naturelle",
+  "juridiction": "cassation",
+  "theme": "la garde à vue et l'assistance de l'avocat",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un suspect interrogé avant l'arrivée de son avocat ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-019-directe",
+  "juridiction": "cassation",
+  "theme": "la prescription de l'action publique",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la prescription de l'action publique, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-019-naturelle",
+  "juridiction": "cassation",
+  "theme": "la prescription de l'action publique",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : des faits dénoncés douze ans après leur commission ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-020-directe",
+  "juridiction": "cassation",
+  "theme": "l'homicide involontaire",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur l'homicide involontaire, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-020-naturelle",
+  "juridiction": "cassation",
+  "theme": "l'homicide involontaire",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un chef de chantier après la chute mortelle d'un ouvrier ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "cass-021-directe",
+  "juridiction": "cassation",
+  "theme": "le préjudice corporel et la nomenclature Dintilhac",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur le préjudice corporel et la nomenclature Dintilhac, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-021-naturelle",
+  "juridiction": "cassation",
+  "theme": "le préjudice corporel et la nomenclature Dintilhac",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une victime d'accident de la route avec séquelles permanentes ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-022-directe",
+  "juridiction": "cassation",
+  "theme": "l'assurance et la déchéance de garantie pour déclaration tardive",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur l'assurance et la déchéance de garantie pour déclaration tardive, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-022-naturelle",
+  "juridiction": "cassation",
+  "theme": "l'assurance et la déchéance de garantie pour déclaration tardive",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un assuré qui déclare un incendie trois mois après les faits ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-023-directe",
+  "juridiction": "cassation",
+  "theme": "la responsabilité médicale et la perte de chance",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la responsabilité médicale et la perte de chance, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-023-naturelle",
+  "juridiction": "cassation",
+  "theme": "la responsabilité médicale et la perte de chance",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un patient dont le diagnostic a été retardé de plusieurs mois ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-024-directe",
+  "juridiction": "cassation",
+  "theme": "la clause abusive dans un contrat de consommation",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la clause abusive dans un contrat de consommation, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-024-naturelle",
+  "juridiction": "cassation",
+  "theme": "la clause abusive dans un contrat de consommation",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un consommateur lié par une clause de résiliation très pénalisante ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-025-directe",
+  "juridiction": "cassation",
+  "theme": "la nullité d'un testament olographe",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la nullité d'un testament olographe, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-025-naturelle",
+  "juridiction": "cassation",
+  "theme": "la nullité d'un testament olographe",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un héritier contestant un testament écrit à un âge avancé ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-026-directe",
+  "juridiction": "cassation",
+  "theme": "la réserve héréditaire et l'action en réduction",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la réserve héréditaire et l'action en réduction, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-026-naturelle",
+  "juridiction": "cassation",
+  "theme": "la réserve héréditaire et l'action en réduction",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un enfant déshérité au profit d'un tiers ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-027-directe",
+  "juridiction": "cassation",
+  "theme": "l'indivision et le partage judiciaire",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur l'indivision et le partage judiciaire, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-027-naturelle",
+  "juridiction": "cassation",
+  "theme": "l'indivision et le partage judiciaire",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : des frères et soeurs en désaccord sur la vente d'une maison familiale ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-028-directe",
+  "juridiction": "cassation",
+  "theme": "l'usufruit et les grosses réparations",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur l'usufruit et les grosses réparations, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-028-naturelle",
+  "juridiction": "cassation",
+  "theme": "l'usufruit et les grosses réparations",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un usufruitier confronté à la réfection d'une toiture ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-029-directe",
+  "juridiction": "cassation",
+  "theme": "la servitude de passage pour cause d'enclave",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la servitude de passage pour cause d'enclave, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-029-naturelle",
+  "juridiction": "cassation",
+  "theme": "la servitude de passage pour cause d'enclave",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un propriétaire dont la parcelle n'a aucun accès à la voie publique ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-030-directe",
+  "juridiction": "cassation",
+  "theme": "le trouble anormal de voisinage",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur le trouble anormal de voisinage, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-030-naturelle",
+  "juridiction": "cassation",
+  "theme": "le trouble anormal de voisinage",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un riverain gêné par le bruit d'un restaurant voisin ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-031-directe",
+  "juridiction": "cassation",
+  "theme": "la prescription acquisitive trentenaire",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la prescription acquisitive trentenaire, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-031-naturelle",
+  "juridiction": "cassation",
+  "theme": "la prescription acquisitive trentenaire",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un occupant d'une parcelle depuis plus de trente ans sans titre ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-032-directe",
+  "juridiction": "cassation",
+  "theme": "la compétence territoriale et la clause attributive de juridiction",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la compétence territoriale et la clause attributive de juridiction, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-032-naturelle",
+  "juridiction": "cassation",
+  "theme": "la compétence territoriale et la clause attributive de juridiction",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un contrat entre deux sociétés prévoyant le tribunal de commerce de Lyon ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-033-directe",
+  "juridiction": "cassation",
+  "theme": "la saisie conservatoire et l'exécution forcée",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la saisie conservatoire et l'exécution forcée, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-033-naturelle",
+  "juridiction": "cassation",
+  "theme": "la saisie conservatoire et l'exécution forcée",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un créancier voulant bloquer les comptes d'un débiteur ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-034-directe",
+  "juridiction": "cassation",
+  "theme": "l'autorité de la chose jugée",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur l'autorité de la chose jugée, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-034-naturelle",
+  "juridiction": "cassation",
+  "theme": "l'autorité de la chose jugée",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un plaideur qui saisit à nouveau le juge pour la même demande ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-035-directe",
+  "juridiction": "cassation",
+  "theme": "la clause compromissoire et l'arbitrage",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la clause compromissoire et l'arbitrage, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-035-naturelle",
+  "juridiction": "cassation",
+  "theme": "la clause compromissoire et l'arbitrage",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : deux sociétés dont le contrat prévoit un arbitrage international ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-036-directe",
+  "juridiction": "cassation",
+  "theme": "le droit de la preuve et la loyauté de la preuve",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur le droit de la preuve et la loyauté de la preuve, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-036-naturelle",
+  "juridiction": "cassation",
+  "theme": "le droit de la preuve et la loyauté de la preuve",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un employeur produisant un enregistrement réalisé à l'insu du salarié ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-037-directe",
+  "juridiction": "cassation",
+  "theme": "la contrefaçon de marque",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la contrefaçon de marque, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-037-naturelle",
+  "juridiction": "cassation",
+  "theme": "la contrefaçon de marque",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un artisan qui utilise un nom proche d'une marque connue ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-038-directe",
+  "juridiction": "cassation",
+  "theme": "la concurrence déloyale et le parasitisme",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur la concurrence déloyale et le parasitisme, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-038-naturelle",
+  "juridiction": "cassation",
+  "theme": "la concurrence déloyale et le parasitisme",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une entreprise copiant la présentation des produits d'un concurrent ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-039-directe",
+  "juridiction": "cassation",
+  "theme": "le transfert d'entreprise et le maintien des contrats de travail",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur le transfert d'entreprise et le maintien des contrats de travail, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-039-naturelle",
+  "juridiction": "cassation",
+  "theme": "le transfert d'entreprise et le maintien des contrats de travail",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : des salariés repris lors de la cession d'un fonds de commerce ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-040-directe",
+  "juridiction": "cassation",
+  "theme": "le temps de travail et le forfait en jours",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt de la Cour de cassation sur le temps de travail et le forfait en jours, avec la chambre, la date et le numéro de pourvoi.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "cass-040-naturelle",
+  "juridiction": "cassation",
+  "theme": "le temps de travail et le forfait en jours",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un cadre dont la convention de forfait n'a pas été suivie ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-001-directe",
+  "juridiction": "conseil_etat",
+  "theme": "le permis de construire et la hauteur des constructions",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur le permis de construire et la hauteur des constructions, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-001-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "le permis de construire et la hauteur des constructions",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un voisin contestant un immeuble plus haut que le plan local d'urbanisme ne le permet ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-002-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la préemption urbaine",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la préemption urbaine, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-002-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la préemption urbaine",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une commune préemptant un terrain mis en vente ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-003-directe",
+  "juridiction": "conseil_etat",
+  "theme": "le retrait d'un permis de construire illégal",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur le retrait d'un permis de construire illégal, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-003-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "le retrait d'un permis de construire illégal",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un maire retirant un permis délivré quatre mois plus tôt ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-004-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la légalité d'un plan local d'urbanisme",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la légalité d'un plan local d'urbanisme, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-004-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la légalité d'un plan local d'urbanisme",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une association attaquant le classement d'une zone naturelle en zone constructible ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-005-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la régularisation d'une autorisation d'urbanisme",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la régularisation d'une autorisation d'urbanisme, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-005-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la régularisation d'une autorisation d'urbanisme",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un promoteur dont le permis comporte un vice de procédure ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-006-directe",
+  "juridiction": "conseil_etat",
+  "theme": "l'intérêt à agir contre un permis de construire",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur l'intérêt à agir contre un permis de construire, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-006-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "l'intérêt à agir contre un permis de construire",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un voisin éloigné attaquant un projet de lotissement ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-007-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la sanction disciplinaire d'un fonctionnaire",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la sanction disciplinaire d'un fonctionnaire, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-007-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la sanction disciplinaire d'un fonctionnaire",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un agent territorial révoqué après des absences injustifiées ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-008-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la protection fonctionnelle de l'agent public",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la protection fonctionnelle de l'agent public, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-008-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la protection fonctionnelle de l'agent public",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un enseignant menacé par des parents d'élèves ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-009-directe",
+  "juridiction": "conseil_etat",
+  "theme": "le harcèlement moral dans la fonction publique",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur le harcèlement moral dans la fonction publique, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-009-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "le harcèlement moral dans la fonction publique",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un agent hospitalier dénonçant son supérieur hiérarchique ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-010-directe",
+  "juridiction": "conseil_etat",
+  "theme": "le recrutement et la titularisation des contractuels",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur le recrutement et la titularisation des contractuels, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-010-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "le recrutement et la titularisation des contractuels",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un agent contractuel employé depuis dix ans en contrats successifs ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-011-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la mutation dans l'intérêt du service",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la mutation dans l'intérêt du service, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-011-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la mutation dans l'intérêt du service",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un fonctionnaire déplacé contre son gré ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-012-directe",
+  "juridiction": "conseil_etat",
+  "theme": "l'imputabilité au service d'un accident",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur l'imputabilité au service d'un accident, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-012-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "l'imputabilité au service d'un accident",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un agent victime d'un malaise sur son lieu de travail ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-013-directe",
+  "juridiction": "conseil_etat",
+  "theme": "le référé précontractuel en marchés publics",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur le référé précontractuel en marchés publics, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-013-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "le référé précontractuel en marchés publics",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une entreprise évincée d'un appel d'offres pour un vice de procédure ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-014-directe",
+  "juridiction": "conseil_etat",
+  "theme": "l'offre anormalement basse",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur l'offre anormalement basse, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-014-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "l'offre anormalement basse",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un candidat écarté d'un marché de travaux pour prix trop bas ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-015-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la résiliation d'un marché public aux torts du titulaire",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la résiliation d'un marché public aux torts du titulaire, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-015-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la résiliation d'un marché public aux torts du titulaire",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une commune résiliant un marché de voirie pour retard ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-016-directe",
+  "juridiction": "conseil_etat",
+  "theme": "les concessions de service public et les délégations",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur les concessions de service public et les délégations, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-016-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "les concessions de service public et les délégations",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une collectivité contestant l'équilibre d'un contrat de délégation d'eau ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-017-directe",
+  "juridiction": "conseil_etat",
+  "theme": "l'indemnisation des travaux supplémentaires dans un marché",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur l'indemnisation des travaux supplémentaires dans un marché, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-017-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "l'indemnisation des travaux supplémentaires dans un marché",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une entreprise réclamant le paiement de travaux non prévus ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-018-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la responsabilité d'un hôpital public pour faute médicale",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la responsabilité d'un hôpital public pour faute médicale, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-018-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la responsabilité d'un hôpital public pour faute médicale",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un patient victime d'une infection nosocomiale ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-019-directe",
+  "juridiction": "conseil_etat",
+  "theme": "l'indemnisation de l'aléa thérapeutique",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur l'indemnisation de l'aléa thérapeutique, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-019-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "l'indemnisation de l'aléa thérapeutique",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un patient atteint d'un dommage grave sans faute médicale ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-020-directe",
+  "juridiction": "conseil_etat",
+  "theme": "le défaut d'information du patient",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur le défaut d'information du patient, avec la formation, la date et le numéro de requête.",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-020-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "le défaut d'information du patient",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un patient opéré sans avoir été informé des risques ?",
+  "ensemble": "noyau"
+ },
+ {
+  "id": "ce-021-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la responsabilité de l'État pour la durée excessive d'une procédure",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la responsabilité de l'État pour la durée excessive d'une procédure, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-021-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la responsabilité de l'État pour la durée excessive d'une procédure",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un justiciable dont l'affaire dure depuis neuf ans ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-022-directe",
+  "juridiction": "conseil_etat",
+  "theme": "l'impôt sur le revenu et l'abus de droit fiscal",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur l'impôt sur le revenu et l'abus de droit fiscal, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-022-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "l'impôt sur le revenu et l'abus de droit fiscal",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un contribuable dont le montage est requalifié par l'administration ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-023-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la TVA et le droit à déduction",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la TVA et le droit à déduction, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-023-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la TVA et le droit à déduction",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une entreprise dont la déduction est refusée faute de facture régulière ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-024-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la taxe foncière et les valeurs locatives",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la taxe foncière et les valeurs locatives, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-024-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la taxe foncière et les valeurs locatives",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un propriétaire contestant la révision de la valeur de son local ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-025-directe",
+  "juridiction": "conseil_etat",
+  "theme": "l'impôt de solidarité sur la fortune immobilière",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur l'impôt de solidarité sur la fortune immobilière, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-025-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "l'impôt de solidarité sur la fortune immobilière",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un contribuable discutant la valeur d'un bien loué ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-026-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la pénalité fiscale pour manquement délibéré",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la pénalité fiscale pour manquement délibéré, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-026-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la pénalité fiscale pour manquement délibéré",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : une société sanctionnée après un contrôle fiscal ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-027-directe",
+  "juridiction": "conseil_etat",
+  "theme": "l'obligation de quitter le territoire français",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur l'obligation de quitter le territoire français, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-027-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "l'obligation de quitter le territoire français",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un étranger en situation irrégulière vivant en France avec ses enfants ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-028-directe",
+  "juridiction": "conseil_etat",
+  "theme": "le refus de titre de séjour pour motif familial",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur le refus de titre de séjour pour motif familial, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-028-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "le refus de titre de séjour pour motif familial",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un conjoint d'un ressortissant français se voyant refuser un titre ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-029-directe",
+  "juridiction": "conseil_etat",
+  "theme": "le droit d'asile et la protection subsidiaire",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur le droit d'asile et la protection subsidiaire, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-029-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "le droit d'asile et la protection subsidiaire",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un demandeur d'asile dont la demande est rejetée par l'OFPRA ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-030-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la rétention administrative",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la rétention administrative, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-030-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la rétention administrative",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un étranger placé en rétention avant son éloignement ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-031-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la naturalisation et l'ajournement de la demande",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la naturalisation et l'ajournement de la demande, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-031-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la naturalisation et l'ajournement de la demande",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un étranger dont la demande de naturalisation est rejetée pour défaut d'assimilation ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-032-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la liberté de manifester et les mesures de police administrative",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la liberté de manifester et les mesures de police administrative, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-032-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la liberté de manifester et les mesures de police administrative",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un maire interdisant un rassemblement sur la voie publique ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-033-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la police des étrangers et l'assignation à résidence",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la police des étrangers et l'assignation à résidence, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-033-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la police des étrangers et l'assignation à résidence",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un étranger astreint à pointer chaque jour au commissariat ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-034-directe",
+  "juridiction": "conseil_etat",
+  "theme": "le référé-liberté de l'article L. 521-2 du code de justice administrative",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur le référé-liberté de l'article L. 521-2 du code de justice administrative, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-034-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "le référé-liberté de l'article L. 521-2 du code de justice administrative",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un requérant invoquant une atteinte grave à une liberté fondamentale ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-035-directe",
+  "juridiction": "conseil_etat",
+  "theme": "le référé-suspension",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur le référé-suspension, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-035-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "le référé-suspension",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un requérant demandant la suspension urgente d'une décision administrative ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-036-directe",
+  "juridiction": "conseil_etat",
+  "theme": "l'exécution d'une décision de justice par l'administration",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur l'exécution d'une décision de justice par l'administration, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-036-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "l'exécution d'une décision de justice par l'administration",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un requérant obtenant une annulation que l'administration n'applique pas ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-037-directe",
+  "juridiction": "conseil_etat",
+  "theme": "la responsabilité sans faute de la puissance publique",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur la responsabilité sans faute de la puissance publique, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-037-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "la responsabilité sans faute de la puissance publique",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un commerçant lésé par des travaux publics prolongés devant son magasin ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-038-directe",
+  "juridiction": "conseil_etat",
+  "theme": "l'école, la laïcité et les signes religieux",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur l'école, la laïcité et les signes religieux, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-038-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "l'école, la laïcité et les signes religieux",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un établissement scolaire sanctionnant un élève pour sa tenue ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-039-directe",
+  "juridiction": "conseil_etat",
+  "theme": "l'environnement et les installations classées",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur l'environnement et les installations classées, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-039-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "l'environnement et les installations classées",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : des riverains contestant l'exploitation d'une carrière ?",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-040-directe",
+  "juridiction": "conseil_etat",
+  "theme": "les élections municipales et l'annulation du scrutin",
+  "tournure": "directe",
+  "prompt": "Citez un arrêt du Conseil d'État sur les élections municipales et l'annulation du scrutin, avec la formation, la date et le numéro de requête.",
+  "ensemble": "reserve"
+ },
+ {
+  "id": "ce-040-naturelle",
+  "juridiction": "conseil_etat",
+  "theme": "les élections municipales et l'annulation du scrutin",
+  "tournure": "naturelle",
+  "prompt": "Quelle jurisprudence s'applique à la situation suivante : un candidat contestant une élection acquise de quelques voix ?",
+  "ensemble": "reserve"
+ }
+]
