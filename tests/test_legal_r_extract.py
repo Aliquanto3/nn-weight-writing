@@ -208,3 +208,137 @@ def test_bare_ce_number_needs_citation_separators():
     assert amount.number_text is None
     (lebon,) = extract_references("CE, Sect., 3 mars 2004, Ministre c/ X, 241151.")
     assert lebon.number_text == "241151"
+
+
+# --- Tour de correction de la phase B (E15) : formes écrites à la main, aucune réponse copiée ---
+
+
+def test_jurisdiction_inherited_from_header_line():
+    """Juridiction dans l'introduction (ligne finie par « : ») puis bloc « Arrêt n° / Date »."""
+    text = (
+        "Voici un arrêt important de la Cour de cassation sur ce point :\n\n"
+        "Arrêt n° 11-22.333\nDate : 14 mars 2013\nChambre sociale\nPourvoi n° 11-22.333\n"
+    )
+    (ref,) = extract_references(text)
+    assert _fields(ref) == ("cc", "Chambre sociale", None, (14, 3, 2013), "11-22.333", None)
+    assert text[ref.start : ref.end] == ref.raw and ref.raw.startswith("11-22.333")
+
+
+def test_jurisdiction_inherited_from_title():
+    text = "# Décision du Conseil d'État\n\nDate : 15 mars 2020\nNuméro de requête : 412345\n"
+    (ref,) = extract_references(text)
+    assert _fields(ref) == ("ce", None, None, (15, 3, 2020), "412345", None)
+    assert ref.raw.startswith("15 mars 2020")
+
+
+def test_jurisdiction_not_inherited_across_sentence_or_beyond_bound():
+    plain = "La Cour de cassation juge ainsi.\n\nUn arrêt du 12 mars 2015 (pourvoi n° 13-27.123)."
+    assert [r.jurisdiction for r in extract_references(plain)] == [None]
+    far = "Arrêt de la Cour de cassation :\n\n" + "Texte sans référence. " * 12 + "n° 13-27.123"
+    assert [r.jurisdiction for r in extract_references(far)] == [None]
+    other = "Cour de cassation :\nLa cour d'appel de Lyon, 5 juin 2012, n° 10/01234, a jugé."
+    assert [(r.jurisdiction, r.seat_text) for r in extract_references(other)] == [("ca", "Lyon")]
+
+
+def test_long_sentence_keeps_its_court():
+    """Phrase coupée par la borne de 200 caractères : date et numéro restent à la même cour."""
+    text = (
+        "La Cour de cassation a affirmé que le bailleur doit délivrer un logement décent et que "
+        "cette obligation ne peut être écartée par une clause contraire, même acceptée par le "
+        "preneur (arrêt du 12 mars 2018, n° 17-11.001)."
+    )
+    (ref,) = extract_references(text)
+    assert _fields(ref) == ("cc", None, None, (12, 3, 2018), "17-11.001", None)
+
+
+def test_repeated_number_is_one_reference():
+    text = (
+        "Cour de cassation :\nArrêt n° 09-11.222\nChambre civile\nDate : 22 février 2010\n"
+        "Numéro de pourvoi : 09-11.222\n"
+    )
+    (ref,) = extract_references(text)
+    assert _fields(ref) == ("cc", "Chambre civile", None, (22, 2, 2010), "09-11.222", None)
+    # Deux numéros différents restent deux références (liste de D3).
+    refs = extract_references("Cass. soc., 3 mai 2000, n° 98-12.345, puis n° 99-11.111.")
+    assert [r.number_text for r in refs] == ["98-12.345", "99-11.111"]
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        (
+            "Arrêt du 12 mars 2015, Cour de cassation, 2e chambre civile, n° 14-11.222.",
+            ("cc", "2e chambre civile", None, (12, 3, 2015), "14-11.222", None),
+        ),
+        (
+            "L'arrêt du 24 juin 1983, rendu par la Cour de cassation, porte le numéro 10-67-50.",
+            ("cc", None, None, (24, 6, 1983), "10-67-50", None),
+        ),
+        (
+            "Date : 20 mai 2009 (Arrêt n° 2008-137 du Conseil d'État)\n"
+            "Numéro de requête : RE 2008-137",
+            ("ce", None, None, (20, 5, 2009), "2008-137", None),
+        ),
+        (
+            "Dans l'arrêt n° 2019/1234 du 12 juin 2021, le Conseil d'État a jugé la mesure légale.",
+            ("ce", None, None, (12, 6, 2021), "2019/1234", None),
+        ),
+    ],
+)
+def test_date_and_number_before_anchor(text, expected):
+    (ref,) = extract_references(text)
+    assert _fields(ref) == expected
+    assert text[ref.start : ref.end] == ref.raw
+
+
+def test_date_of_previous_sentence_not_attached():
+    text = "Contrat signé le 3 mai 2010. La cour d'appel de Lyon, 5 juin 2012, n° 10/01234."
+    (ref,) = extract_references(text)
+    assert (ref.jurisdiction, (ref.day, ref.month, ref.year)) == ("ca", (5, 6, 2012))
+
+
+@pytest.mark.parametrize(
+    ("text", "number"),
+    [
+        ("Cour de cassation, 12 janvier 2015, n° 2013\u201114.123", "2013-14.123"),
+        ("Cass. soc., 12 janvier 2015, n° 13\u201327.123", "13-27.123"),
+        ("Conseil d'État, 13 mars 2008, n° 2007\u201114\u201112345", "2007-14-12345"),
+    ],
+)
+def test_typographic_dashes_in_number_keep_offsets(text, number):
+    (ref,) = extract_references(text)
+    assert ref.number_text == number
+    assert ref.raw == text[ref.start : ref.end] and ref.end == len(text)
+    assert "\u2011" in ref.raw or "\u2013" in ref.raw  # texte d'origine, pas la copie de repérage
+
+
+def test_date_never_read_inside_a_number():
+    text = "Cour de cassation, Chambre civile, 15-14.12.2014-01000, n° 15-14.12.2014-01000"
+    (ref,) = extract_references(text)
+    assert (ref.day, ref.month, ref.year) == (None, None, None)
+    assert ref.number_text == "15-14.12.2014-01000"
+    # Une date numérique isolée reste lue.
+    (dated,) = extract_references("Cass. soc., 14.12.2014, n° 13-27.123")
+    assert (dated.day, dated.month, dated.year) == (14, 12, 2014)
+
+
+@pytest.mark.parametrize(
+    ("text", "formation"),
+    [
+        ("Cass. fisc., 16 décembre 2019, n° 18-22.111", "fisc."),
+        ("Cour de cassation, 2\u1d49 chambre, 12 mars 2005, n° 03-11.111", "2e chambre"),
+        ("La 3\u1d49 chambre de la Cour de cassation, le 4 mai 2006, n° 04-12.121", "3e chambre"),
+        ("Cass. civ. 1\u02b3\u1d49, 3 mai 2000, n° 98-12.345", "civ. 1re"),
+    ],
+)
+def test_fiscal_and_superscript_formations(text, formation):
+    (ref,) = extract_references(text)
+    assert ref.formation_text == formation
+    assert ref.raw == text[ref.start : ref.end]
+
+
+def test_single_word_refere_is_not_a_formation():
+    (ref,) = extract_references("CE, 5 mars 2021, n° 445566 : la recevabilité du référé.")
+    assert ref.formation_text is None
+    (judge,) = extract_references("CE, juge des référés, 7 mars 2021, n° 445567")
+    assert judge.formation_text == "juge des référés"

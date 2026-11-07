@@ -246,3 +246,38 @@ def test_to_reference_is_d1():
         )
     )
     assert bad_month.is_complete() and bad_month.to_reference() is None
+
+
+# --- Tour de correction de la phase B (E15) ---
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("fisc.", "ch. fiscale"),
+        ("Cass. fisc.", "ch. fiscale"),
+        ("ch. fisc.", "ch. fiscale"),
+        ("2\u1d49 chambre", "2e ch."),
+        ("1\u02b3\u1d49 chambre civile", "civ. 1re"),
+        ("1\u1d49\u02b3 chambre civile", "civ. 1re"),
+        ("3\u1d49 civ.", "civ. 3e"),
+    ],
+)
+def test_cc_fiscal_abbreviation_and_superscripts(text, expected):
+    assert canonical_cc_chamber(text) == expected
+
+
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ("référé", None),
+        ("la recevabilité du référé", None),
+        ("Bureau des référés", "juge des référés"),
+        ("ordonnance de référé", "juge des référés"),
+        ("ord. réf.", "juge des référés"),
+        ("juge des référés", "juge des référés"),
+        ("3\u1d49 chambre", "3e ch."),
+    ],
+)
+def test_ce_refere_needs_judge_or_order(text, expected):
+    assert canonical_ce_formation(text) == expected

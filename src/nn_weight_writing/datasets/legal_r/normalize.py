@@ -14,7 +14,7 @@ from nn_weight_writing.datasets.legal_r.r_facts import fold, load_seat_tables
 from nn_weight_writing.tasks.legal.facts import load_facts
 from nn_weight_writing.tasks.legal.reference import Reference
 
-NORMALIZER_ID = "legal_r.normalize@1"
+NORMALIZER_ID = "legal_r.normalize@2"  # @2 : tour de correction de la phase B (E15)
 ALLOWED_FIELDS = frozenset(
     {
         "jurisdiction",
@@ -165,7 +165,7 @@ _CC_KINDS = (
     ("crim", re.compile(r"\bcrim\b|\bcriminelle\b")),
     ("mixte", re.compile(r"\bmixte\b|\bmix\b")),
     ("plen", re.compile(r"\bplen\b|\bpleniere\b|\bap\b")),
-    ("fiscale", re.compile(r"\bfiscale\b")),
+    ("fiscale", re.compile(r"\bfiscale\b|\bfisc\b")),  # « Cass. fisc. »
 )
 _UNPARSED_CC = re.compile(r"\brequetes\b|\breunies\b|\breun\b")
 _CC_FORMS = {"civ": "civ.", "com": "com.", "soc": "soc.", "crim": "crim."}
@@ -201,7 +201,11 @@ def _cc_kind(folded: str) -> str | None:
 
 def _ce_form(folded: str) -> str | None:
     """Forme du Conseil d'État si le texte en désigne une sans ambiguïté, sinon None."""
-    if re.search(r"\bjuge\w* des referes\b|\breferes?\b|\bord\w* ref\w*\b", folded):
+    # Jamais du seul mot « référé » : juge ou bureau des référés, ordonnance de référé.
+    if re.search(
+        r"\bjuge\w* des referes\b|\bdes referes\b|\bordonnance\w* de refere\b|\bord\w* ref\w*\b",
+        folded,
+    ):
         return "juge des référés"
     if re.search(r"\bass(?:emblee)?\b", folded):
         return "Ass."

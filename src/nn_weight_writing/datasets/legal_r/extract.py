@@ -69,8 +69,11 @@ _DATE_TEXT = re.compile(
     rf"\b(?P<d>\d{{1,2}}|1er|premier)\s*(?:er)?\s+(?P<m>{_MONTH_RE})\.?\s+(?P<y>\d{{4}})\b",
     re.IGNORECASE,
 )
-_DATE_NUM = re.compile(r"\b(?P<d>\d{1,2})[/.](?P<m>\d{1,2})[/.](?P<y>\d{4})\b")
-_DATE_ISO = re.compile(r"\b(?P<y>\d{4})-(?P<m>\d{2})-(?P<d>\d{2})\b")
+# Une date numérique prise dans une suite de chiffres n'en est pas une (« 15-14.12.2014-01000 »).
+_DATE_NUM = re.compile(
+    r"(?<!\d[-./])\b(?P<d>\d{1,2})[/.](?P<m>\d{1,2})[/.](?P<y>\d{4})\b(?![-./]\d)"
+)
+_DATE_ISO = re.compile(r"(?<!\d[-./])\b(?P<y>\d{4})-(?P<m>\d{2})-(?P<d>\d{2})\b(?![-./]\d)")
 
 _MARKER = re.compile(
     r"(?:\bn[°º]s?|\bnos?\b\.?|\bnum[ée]ros?\b|\bpourvois?\b|\breq\.|\brequ[êe]tes?\b)"
@@ -110,7 +113,7 @@ _FORMATIONS = re.compile(
             + r")?",  # noqa: E501
             r"chambre\s+sociale(?:\s+" + _ORD_AFTER + r")?",
             r"chambre\s+criminelle(?:\s+" + _ORD_AFTER + r")?",
-            r"\b(?:comm?|soc|crim)\.(?:\s*" + _ORD_AFTER + r"\b)?",
+            r"\b(?:comm?|soc|crim|fisc)\.(?:\s*" + _ORD_AFTER + r"\b)?",
             r"chambre\s+mixte|\bch\.\s*mix(?:te|\.)",
             r"assembl[ée]e\s+pl[ée]ni[èe]re|\bass\.\s*pl[ée]n\.?|\bAP\b|\bpl[ée]n\.",
             r"chambre\s+fiscale|chambre\s+des\s+requ[êe]tes|chambres\s+r[ée]unies|\bch\.\s*r[ée]un\.",
@@ -118,7 +121,8 @@ _FORMATIONS = re.compile(
             r"(?<!sous-)\bsection\s+du\s+contentieux|(?<!sous-)\b[Ss]ect\.|(?<![-\w])Section\b",
             rf"{_ORD}\s*(?:chambres?|ch\.|sous-sections?|sous-sect\.|ss-sect\.|SSR|SSJS)",
             rf"(?:chambre|sous-section)\s+{_ORD_AFTER}\b",
-            r"juge\s+des\s+r[ée]f[ée]r[ée]s|\br[ée]f[ée]r[ée]\b|\bord\.\s*r[ée]f\.",
+            # Jamais le seul mot « référé », du texte libre (« la recevabilité du référé »).
+            r"juge\s+des\s+r[ée]f[ée]r[ée]s|ordonnance\s+de\s+r[ée]f[ée]r[ée]\b|\bord\.\s*r[ée]f\.",
         ]
     ),
     re.IGNORECASE,
@@ -127,6 +131,7 @@ _ABBREVIATIONS = {
     "cass",
     "civ",
     "crim",
+    "fisc",
     "soc",
     "com",
     "comm",
@@ -199,9 +204,17 @@ class ExtractedRef:
     end: int
 
 
+# Tirets typographiques (P2) et lettres en exposant (« 2ᵉ », « 1ʳᵉ », « nᵒ ») : un caractère pour
+# un caractère, pour que `start` et `end` restent les offsets du texte d'origine.
+_DASHES = "‐‑‒–—−"
+_SAME_LENGTH = str.maketrans(
+    {**dict.fromkeys(_DASHES, "-"), "ᵉ": "e", "ʳ": "r", "ᵐ": "m", "ᵈ": "d", "ᵒ": "o"}
+)
+
+
 def _clean(text: str) -> str:
-    """Espaces insécables, apostrophes et marques de mise en forme : même longueur."""
-    out = text
+    """Espaces insécables, apostrophes, tirets, exposants et mise en forme : même longueur."""
+    out = text.translate(_SAME_LENGTH)
     for ch in "    ":
         out = out.replace(ch, " ")
     out = out.replace("’", "'").replace("ʼ", "'")
@@ -289,11 +302,14 @@ def _numbers(text: str, segments_ce: list[tuple[int, int]]) -> list[_Token]:
     return tokens
 
 
-def _dates(text: str) -> list[_Token]:
+def _dates(text: str, numbers: list[_Token]) -> list[_Token]:
+    """Dates, cherchées après les numéros : une date prise dans un numéro est écartée."""
     tokens: list[_Token] = []
     for pattern in (_DATE_TEXT, _DATE_NUM, _DATE_ISO):
         for match in pattern.finditer(text):
             if any(t.start <= match.start() < t.end for t in tokens):
+                continue
+            if any(n.start < match.end() and match.start() < n.end for n in numbers):
                 continue
             tokens.append(_Token("date", match.start(), match.end(), _date_value(match)))
     return tokens
@@ -327,6 +343,91 @@ def _formation_prefix(text: str, start: int, floor: int) -> int:
     return best
 
 
+# Liaison entre une date ou un numéro écrits avant une ancre et ce qui suit (tour de correction) :
+# ponctuation, quelques mots de liaison et un marqueur de numéro, sans chiffre ni point final.
+_CONNECTIVE = re.compile(
+    r"[\s,;:()\-]*(?:(?:(?:arr[êe]ts?|d[ée]cisions?|rendue?s?|prononc[ée]e?s?|par|du|de|des|la|"
+    r"le|les|en|date|dans)\b|l')[\s,;:()\-]*)*"
+    r"(?:(?:\bn[°º]s?|\bnos?\b\.?|\bnum[ée]ros?\b|\bpourvois?\b|\breq\.|\brequ[êe]tes?\b)"
+    r"[^\d\n]{0,25})?",
+    re.IGNORECASE,
+)
+MAX_CONNECTIVE = 40
+
+
+def _connects(gap: str) -> bool:
+    return (
+        len(gap) <= MAX_CONNECTIVE
+        and not re.search(r"\n\s*\n", gap)
+        and _CONNECTIVE.fullmatch(gap) is not None
+    )
+
+
+def _token_prefix(text: str, start: int, floor: int, tokens: list[_Token]) -> int:
+    """Début d'une date et d'un numéro écrits juste avant l'ancre (« Arrêt du 12 mars 2015, Cour
+    de cassation », « Date : … (Arrêt n° … du Conseil d'État) ») ; au plus un de chaque."""
+    used: set[str] = set()
+    cur = start
+    for _ in range(2):
+        before = [t for t in tokens if floor <= t.start and t.end <= cur and t.kind not in used]
+        if not before:
+            break
+        tok = max(before, key=lambda t: t.end)
+        if not _connects(text[tok.end : cur]):
+            break
+        used.add(tok.kind)
+        cur = tok.start
+    return cur
+
+
+def _is_header(text: str, a_start: int, a_end: int) -> tuple[bool, int]:
+    """Ancre d'en-tête : sa ligne finit par « : », est un titre (`#`) ou est en gras seule."""
+    line_start = text.rfind("\n", 0, a_start) + 1
+    line_end = text.find("\n", a_end)
+    line_end = len(text) if line_end < 0 else line_end
+    line = text[line_start:line_end].strip()
+    bare = line.strip("*_ ")
+    header = (
+        bare.endswith(":")
+        or line.startswith("#")
+        or (line.startswith("**") and line.endswith("**") and "**" not in line[2:-2])
+    )
+    return header, line_end
+
+
+def _inherit(text: str, segments: list[dict], ends: list[int]) -> None:
+    """Juridiction héritée par une référence ouverte sans juridiction (numéro ou date nus).
+
+    Elle prend la juridiction de la dernière ancre qui la précède, sans autre ancre entre les
+    deux, dans l'un de deux cas bornés :
+    - en-tête : la ligne de l'ancre finit par « : » ou est un titre, et la référence commence
+      au plus `MAX_SPAN` caractères après la fin de cette ligne (bloc « Arrêt n° / Date ») ;
+    - même phrase : aucune fin de phrase entre l'ancre et la référence, à moins de
+      2 × `MAX_SPAN` caractères de l'ancre (phrase longue coupée par la borne de D3).
+    Une référence qui hérite ne transmet rien : pas d'héritage en chaîne.
+    """
+    anchored = [s for s in segments if s["j"] is not None]
+    for seg in segments:
+        if seg["j"] is not None:
+            continue
+        previous = [s for s in anchored if s["anchor"][1] <= seg["start"]]
+        if not previous:
+            continue
+        source = max(previous, key=lambda s: s["anchor"][0])
+        a_start, a_end = source["anchor"]
+        header, line_end = _is_header(text, a_start, a_end)
+        in_header = header and 0 <= seg["start"] - line_end <= MAX_SPAN
+        same_sentence = seg["start"] - a_end <= 2 * MAX_SPAN and not any(
+            a_end < e <= seg["start"] for e in ends
+        )
+        if in_header or same_sentence:
+            seg["j"], seg["seat"] = source["j"], source["seat"]
+
+
+def _compact(number: str) -> str:
+    return re.sub(r"\s", "", number)
+
+
 def extract_references(text: str) -> list[ExtractedRef]:
     if not text:
         return []
@@ -334,6 +435,9 @@ def extract_references(text: str) -> list[ExtractedRef]:
     ends = _sentence_ends(clean)
     anchors = _anchors(clean)
     primary_starts = [a[0] for a in anchors]
+    # Numéros d'abord (marqueur ou motif nu), puis les dates hors des numéros.
+    pre_numbers = _numbers(clean, [])
+    pre_tokens = [*pre_numbers, *_dates(clean, pre_numbers)]
 
     def segment_end(start: int) -> int:
         limit = start + MAX_SPAN
@@ -351,47 +455,88 @@ def extract_references(text: str) -> list[ExtractedRef]:
         start = a_start
         if jurisdiction in {"cc", "ce"}:
             start = _formation_prefix(clean, a_start, floor)
+        prefixed = _token_prefix(clean, start, floor, pre_tokens)
         segments.append(
-            {"start": start, "body": a_end, "end": segment_end(a_start), "j": jurisdiction}
+            {
+                "start": prefixed,
+                # Avant l'ancre, seule une formation entre, sauf date ou numéro rattachés.
+                "body": prefixed if prefixed < start else a_end,
+                "end": segment_end(a_start),
+                "j": jurisdiction,
+                "seat": seat,
+                "anchor": (a_start, a_end),
+            }
         )
-        segments[-1]["seat"] = seat
         floor = segments[-1]["end"]
 
-    def inside(pos: int) -> bool:
-        return any(s["start"] <= pos < s["end"] for s in segments)
+    def containing(pos: int) -> dict | None:
+        return next((s for s in segments if s["start"] <= pos < s["end"]), None)
 
     # Ancres secondaires : chambre abrégée, ECLI, numéro sans juridiction.
-    secondary: list[tuple[int, str]] = []
+    secondary: list[tuple[int, str | None, _Token | None]] = []
     for match in _CHAMBER_ANCHOR.finditer(clean):
-        secondary.append((match.start(), "cc"))
+        secondary.append((match.start(), "cc", None))
     ecli_tokens = [
         _Token("ecli", m.start(), m.end(), m.group(0).upper()) for m in _ECLI.finditer(clean)
     ]
     for tok in ecli_tokens:
-        secondary.append((tok.start, _ecli_jurisdiction(tok.value) or "other"))
+        secondary.append((tok.start, _ecli_jurisdiction(tok.value) or "other", None))
     ce_spans = [(s["start"], s["end"]) for s in segments if s["j"] == "ce"]
-    number_tokens = _numbers(clean, ce_spans)
-    for tok in number_tokens:
-        secondary.append((tok.start, None))
-    for pos, jurisdiction in sorted(secondary, key=lambda x: x[0]):
-        if inside(pos):
+    for tok in _numbers(clean, ce_spans):
+        secondary.append((tok.start, None, tok))
+    date_tokens = _dates(clean, pre_numbers)
+    for pos, jurisdiction, tok in sorted(secondary, key=lambda x: x[0]):
+        if containing(pos) is not None:
             continue
+        start = pos
+        if tok is not None:
+            # Une date écrite juste avant le numéro lui appartient : la référence qui la
+            # contient s'étend jusqu'au numéro, sinon la nouvelle référence part de la date.
+            before = [d for d in date_tokens if d.end <= pos and _connects(clean[d.end : pos])]
+            if before:
+                date = max(before, key=lambda d: d.end)
+                holder = containing(date.start)
+                if holder is not None:
+                    holder["end"] = max(holder["end"], tok.end)
+                    continue
+                start = date.start
         segments.append(
-            {"start": pos, "body": pos, "end": segment_end(pos), "j": jurisdiction, "seat": None}
+            {
+                "start": start,
+                "body": start,
+                "end": max(segment_end(pos), tok.end if tok else pos),
+                "j": jurisdiction,
+                "seat": None,
+                "anchor": (pos, pos),
+            }
         )
     segments.sort(key=lambda s: s["start"])
+    _inherit(text, segments, ends)
     ce_spans = [(s["start"], s["end"]) for s in segments if s["j"] == "ce"]
     number_tokens = _numbers(clean, ce_spans)
-    date_tokens = _dates(clean)
+    date_tokens = _dates(clean, number_tokens)
     formation_tokens = [
         _Token("formation", m.start(), m.end(), m.group(0).strip())
         for m in _FORMATIONS.finditer(clean)
     ]
     out: list[ExtractedRef] = []
     for seg in segments:
-        out.extend(
-            _parse_segment(text, seg, number_tokens, date_tokens, ecli_tokens, formation_tokens)
-        )
+        for ref in _parse_segment(
+            text, seg, number_tokens, date_tokens, ecli_tokens, formation_tokens
+        ):
+            # Le rappel seul d'un numéro déjà cité n'ouvre pas de nouvelle référence.
+            last = out[-1] if out else None
+            if (
+                last is not None
+                and ref.number_text
+                and ref.day is None
+                and ref.ecli is None
+                and last.number_text
+                and _compact(last.number_text) == _compact(ref.number_text)
+                and ref.jurisdiction in {None, last.jurisdiction}
+            ):
+                continue
+            out.append(ref)
     return out
 
 
@@ -424,6 +569,13 @@ def _parse_segment(text, seg, numbers, dates, eclis, formations) -> list[Extract
         slot = {"date": "date", "number": "number", "ecli": "ecli", "formation": "formation"}[
             tok.kind
         ]
+        if (
+            slot == "number"
+            and "number" in current
+            and _compact(current["number"]) == _compact(tok.value)
+        ):
+            current["last"] = tok.end  # rappel du même numéro : même référence
+            continue
         if slot in current:
             # Une formation de plus n'ouvre une référence que si la courante a date ou numéro.
             if slot == "formation" and "date" not in current and "number" not in current:
