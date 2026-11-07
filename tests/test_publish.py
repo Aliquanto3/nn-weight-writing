@@ -734,6 +734,14 @@ def test_publish_refuses_unreadable_json_line_but_checks_the_others(root, env, c
     assert "refus r_raw_too_long : " in err
 
 
+def test_publish_accepts_blank_lines_and_unicode_separators_in_jsonl(root, env):
+    # `json.dumps(ensure_ascii=False)` laisse U+2028 et U+0085 bruts : pas des fins de ligne JSONL.
+    line = json.dumps({"id": "x1", "note": "a\u2028b\x85c"}, ensure_ascii=False)
+    notes = session(root) / "frozen" / "notes.jsonl"
+    notes.write_text(line + "\n\n   \n", "utf-8")
+    assert publish(root, env) == 0
+
+
 def test_publish_accepts_utf8_bom(root, env):
     notes = session(root) / "frozen" / "notes.json"
     notes.write_bytes(b"\xef\xbb\xbf" + json.dumps({"ok": 1}).encode())

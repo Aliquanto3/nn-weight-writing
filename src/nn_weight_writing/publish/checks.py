@@ -224,7 +224,7 @@ def json_documents(path: str, text: str) -> tuple[list | None, list[int]]:
     if suffix != ".jsonl":
         return None, []
     documents, bad = [], []
-    for number, line in enumerate(text.splitlines(), start=1):
+    for number, line in enumerate(text.split("\n"), start=1):
         if not line.strip():
             continue
         try:
@@ -273,7 +273,7 @@ def load_reserved(heldout_root: Path) -> Reserved | None:
     for path in files:
         task, dataset = path.parent.parent.name, path.parent.name
         reserved.datasets.append(f"{task}/{dataset}")
-        for line in path.read_text("utf-8").splitlines():
+        for line in path.read_text("utf-8").split("\n"):
             if not line.strip():
                 continue
             row = json.loads(line)
@@ -382,7 +382,7 @@ def check_sources(path: str, data: bytes | None, example_ids: list[str] | None) 
         return [bad("sources.jsonl absent")]
     found: list[Violation] = []
     ids: list[str] = []
-    for line, text in enumerate((decode_text(data) or "").splitlines(), start=1):
+    for line, text in enumerate((decode_text(data) or "").split("\n"), start=1):
         if not text.strip():
             continue
         try:
@@ -577,7 +577,7 @@ def example_ids(data: bytes) -> list[str | None]:
     """`id` de chaque ligne d'`examples.jsonl` ; une ligne illisible ou non objet compte comme
     un `id` absent (None), donc comme une différence avec `sources.jsonl`."""
     ids = []
-    for line in (decode_text(data) or "").splitlines():
+    for line in (decode_text(data) or "").split("\n"):
         if not line.strip():
             continue
         try:

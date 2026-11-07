@@ -438,3 +438,14 @@ Base : `origin/main` (08a62c6) déjà ancêtre de HEAD, pas de rebase. Relu : `a
 - Second avis 13 (low) : conflit possible avec 1-12 sur `ARCHITECTURE-SPINE.md`, laissé à l'orchestrateur.
 - Correctifs de la passe 1 relus (`_measured`, statut dans la clé des témoins, `removed_seeds`, empreinte sans `ts`, plafond absent) : sans constat.
 - Complexité : 0 constat (recherche du réservé en une passe indexée par fichier, décodage JSON imbriqué borné à 4 niveaux).
+
+### Passe 3 (2026-11-07, SHA revu 2b2cdcb)
+
+Relu : `4e55042..2b2cdcb`, sondes exécutées.
+
+- **Important**, medium, reviewer : JSONL coupé par `str.splitlines()`, qui sépare aussi sur U+2028, U+0085, U+001C : une ligne valide écrite par `json.dumps(ensure_ascii=False)` était refusée `uncheckable` (et comptée comme `id` absent dans `example_ids`/`check_sources`). Corrigé (`split("\n")` aux quatre lectures JSONL de `checks.py`), test `test_publish_accepts_blank_lines_and_unicode_separators_in_jsonl`. Lignes vides et saut final : acceptés (vérifié).
+- Rejeté : décodage imbriqué, 4 niveaux mesurés (le 5e n'est pas lu, borne documentée ; le texte brut reste fouillé pour le réservé) ; prose non lue (seules les chaînes commençant par `{` ou `[` et JSON valides sont décodées) ; coût : 963 membres de 20 Ko en 0,01 s.
+- Rejeté : `.npz` piégé (tableau objet) refusé `uncheckable` sans `allow_pickle` ; tableau de chaînes refusé ; sain admis (sondé).
+- Rejeté : `table` : temporaire dans `--out`, nettoyé par `TemporaryDirectory` sur refus comme sur exception, test `test_table_refused_leaves_nothing_in_out` ; normalisation appliquée aux deux côtés (index et corpus) ; tri par `repr` sans effet sur l'archive (contrôle seulement).
+- Liens : `is_linked` / `is_symlink`+`is_junction` avant lecture ; test de lien sauté sous Windows sans droit, joué en CI Linux.
+- Complexité : 0 constat.
