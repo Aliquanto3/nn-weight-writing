@@ -429,7 +429,7 @@ nn-weight-writing/
 | CAP-7 témoins C et F | `baselines/` | AD-3, AD-4, AD-13, AD-17 |
 | CAP-8 jouet | `tasks/toy/`, `datasets/` | AD-4, AD-6, AD-16 |
 | CAP-9 S et S-réservé | `datasets/`, `tasks/legal/` | AD-2, AD-4, AD-16 |
-| CAP-10 pré-étude R | `docs/` ; classement d'après `datasets/` | AD-16 ; décision de porte dans `protocol.toml` |
+| CAP-10 pré-étude R | `docs/` ; classement d'après `datasets/legal_r/` | AD-16 ; décision de porte dans `config/r_gate.toml` (pas `protocol.toml`, empreinté par séance ; story 1-12, P12) |
 | CAP-11 jeu R | `datasets/` (normaliseur commun), `tasks/legal/` | AD-2, AD-4, AD-16, AD-18 |
 | CAP-12 mesures | `evaluation/`, `report/` | AD-7, AD-8, AD-9, AD-17 |
 | CAP-13 publication | `publish/`, `report/` | AD-7, AD-11, AD-18, AD-19 |

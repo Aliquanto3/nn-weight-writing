@@ -13,7 +13,7 @@ from nn_weight_writing.tasks.legal.facts import Facts, load_facts
 from nn_weight_writing.tasks.legal.reference import Reference
 
 _CE_NUMBERED = re.compile(r"(\d+)(re|e) (ch|sous-sect)\.")
-_MAX_DAY = {2: 29, 4: 30, 6: 30, 9: 30, 11: 30}
+MAX_DAY = {2: 29, 4: 30, 6: 30, 9: 30, 11: 30}
 
 
 def easter(year: int) -> date:
@@ -103,7 +103,7 @@ def violations(ref: Reference, facts: Facts | None = None) -> frozenset[str]:
     kinds = number_jurisdictions(ref.number, facts)
 
     # Date
-    if ref.day > _MAX_DAY.get(ref.month, 31):
+    if ref.day > MAX_DAY.get(ref.month, 31):
         found.add("t02")
     if triplet > (facts.corpus_date.year, facts.corpus_date.month, facts.corpus_date.day):
         found.add("t06")

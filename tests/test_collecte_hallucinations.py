@@ -197,9 +197,12 @@ def test_generer_consigne_erreur_500(monkeypatch: pytest.MonkeyPatch) -> None:
 
     class H(BaseHTTPRequestHandler):
         def do_POST(self) -> None:
+            corps = b'{"error":"token repeat limit reached"}'
             self.send_response(500)
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(corps)))
             self.end_headers()
-            self.wfile.write(b'{"error":"token repeat limit reached"}')
+            self.wfile.write(corps)
 
         def log_message(self, *a) -> None:
             pass

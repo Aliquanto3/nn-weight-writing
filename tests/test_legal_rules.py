@@ -152,3 +152,10 @@ def test_unverified_fact_is_refused(tmp_path):
     with pytest.raises(ValueError, match="dates"):
         load_facts(path)
     assert load_facts(FACTS_PATH).corpus_date == date(2026, 11, 1)
+
+
+def test_max_day_public_and_unchanged():
+    """Story 1-12 : `MAX_DAY` exposé (ancien `_MAX_DAY`), valeurs inchangées."""
+    from nn_weight_writing.datasets.legal_rules import MAX_DAY
+
+    assert MAX_DAY == {2: 29, 4: 30, 6: 30, 9: 30, 11: 30}
