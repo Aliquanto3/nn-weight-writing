@@ -6,9 +6,11 @@ d'un secret ni un `raw` réservé : seulement le nom de la variable, ou la tâch
 
 from __future__ import annotations
 
+import io
 import json
 import re
 import unicodedata
+import zipfile
 from collections.abc import Iterable, Iterator, Mapping
 from dataclasses import dataclass, field
 from enum import StrEnum
@@ -30,6 +32,9 @@ class PublishRefusalCode(StrEnum):
     R_RAW_TOO_LONG = "r_raw_too_long"
     # Décision Q11 : `interne/`, `collecte/`, `cache/` et collecte brute de 1-12a.
     FORBIDDEN_PATH = "forbidden_path"
+    # Revue, passe 2 : membre que les contrôles ne peuvent pas lire (ligne JSON illisible,
+    # binaire inconnu, archive compressée, tableau non numérique) : refusé plutôt que sauté.
+    UNCHECKABLE = "uncheckable"
 
 
 @dataclass(frozen=True)
@@ -148,15 +153,29 @@ def check_path(path: str) -> list[Violation]:
 # --- recherche normalisée du réservé (AD-19, Q4) ------------------------------------------------
 
 RESERVED_MIN_CHARS = 12
-TEXT_SUFFIXES = frozenset({".jsonl", ".json", ".md", ".py", ".txt", ".toml", ".csv"})
+# Seuls binaires admis : poids gelés `.npz`, ouverts et contrôlés membre par membre. Tout autre
+# membre doit être du texte (UTF-8, ou UTF-16 avec BOM) ; sinon refus `uncheckable`.
+BINARY_SUFFIXES = frozenset({".npz"})
+_ZERO_WIDTH = re.compile("[\u00ad\u200b\u200c\u200d\u2060\ufeff]")
 _ESCAPE = re.compile(r"\\(u[0-9a-fA-F]{4}|U[0-9a-fA-F]{8}|x[0-9a-fA-F]{2}|[nrtbf\"'\\/])")
 _SIMPLE = {"n": "\n", "r": "\r", "t": "\t", "b": "\b", "f": "\f"}
 _SPACES = re.compile(r"\s+")
 
 
 def normalize(text: str) -> str:
-    """NFC, casse repliée, blancs réduits à une espace."""
-    return _SPACES.sub(" ", unicodedata.normalize("NFC", text).casefold())
+    """NFC, caractères de largeur nulle retirés, casse repliée, blancs réduits à une espace."""
+    text = _ZERO_WIDTH.sub("", unicodedata.normalize("NFC", text))
+    return _SPACES.sub(" ", text.casefold())
+
+
+def decode_text(data: bytes) -> str | None:
+    """Texte d'un membre : UTF-16 si BOM UTF-16, sinon UTF-8 (BOM toléré) ; None si binaire."""
+    try:
+        if data[:2] in (b"\xff\xfe", b"\xfe\xff"):
+            return data.decode("utf-16")
+        return data.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return None
 
 
 def _unescape_one(match: re.Match) -> str:
@@ -193,17 +212,26 @@ def _strings(value: object, depth: int = 0) -> Iterator[str]:
             yield from _strings(item, depth)
 
 
-def json_documents(path: str, text: str) -> list | None:
-    """Documents d'un `.json` (un seul) ou d'un `.jsonl` (un par ligne) ; None si illisible."""
-    suffix = PurePosixPath(path).suffix
-    try:
-        if suffix == ".json":
-            return [json.loads(text)]
-        if suffix == ".jsonl":
-            return [json.loads(line) for line in text.splitlines() if line.strip()]
-    except ValueError:
-        return None
-    return None
+def json_documents(path: str, text: str) -> tuple[list | None, list[int]]:
+    """Documents d'un `.json` (un seul) ou d'un `.jsonl` (un par ligne lisible) et numéros des
+    lignes illisibles ; (None, []) pour un autre suffixe."""
+    suffix = PurePosixPath(path).suffix.lower()
+    if suffix == ".json":
+        try:
+            return [json.loads(text)], []
+        except ValueError:
+            return [], [1]
+    if suffix != ".jsonl":
+        return None, []
+    documents, bad = [], []
+    for number, line in enumerate(text.splitlines(), start=1):
+        if not line.strip():
+            continue
+        try:
+            documents.append(json.loads(line))
+        except ValueError:
+            bad.append(number)
+    return documents, bad
 
 
 def text_pieces(text: str, documents: list | None) -> list[str]:
@@ -292,14 +320,23 @@ PARTY_PATTERNS = (
 )
 
 
-def _walk(value: object) -> Iterator[dict]:
+def _walk(value: object, depth: int = 0) -> Iterator[dict]:
+    """Objets d'un document à toute profondeur ; une chaîne qui est elle-même un objet ou une
+    liste JSON (résultat d'outil dans un bloc `text`, double encodage) est décodée et parcourue,
+    sur 4 niveaux au plus. La prose n'est pas du JSON : elle n'est pas lue ici."""
     if isinstance(value, dict):
         yield value
         for item in value.values():
-            yield from _walk(item)
+            yield from _walk(item, depth)
     elif isinstance(value, list):
         for item in value:
-            yield from _walk(item)
+            yield from _walk(item, depth)
+    elif isinstance(value, str) and depth < 4 and value.strip()[:1] in ("{", "["):
+        try:
+            inner = json.loads(value)
+        except ValueError:
+            return
+        yield from _walk(inner, depth + 1)
 
 
 def check_content(path: str, documents: list, *, strict: bool) -> list[Violation]:
@@ -345,29 +382,34 @@ def check_sources(path: str, data: bytes | None, example_ids: list[str] | None) 
         return [bad("sources.jsonl absent")]
     found: list[Violation] = []
     ids: list[str] = []
-    for line, text in enumerate(data.decode("utf-8", "replace").splitlines(), start=1):
+    for line, text in enumerate((decode_text(data) or "").splitlines(), start=1):
         if not text.strip():
             continue
         try:
             row = json.loads(text)
         except ValueError:
+            row = None
+        if not isinstance(row, dict):
             found.append(bad(f"ligne {line} illisible"))
             continue
         ident, cls, source = row.get("id"), row.get("class"), row.get("source")
         ids.append(ident)
         if cls not in ("real", "fake"):
-            found.append(bad(f"id {ident} : classe {cls!r} hors real, fake"))
+            found.append(bad(f"id {ident} : classe hors real, fake"))
         public = source in PUBLIC_SOURCES
         slm = isinstance(source, str) and _SLM_SOURCE.fullmatch(source) is not None
         if not public and not slm:
-            found.append(bad(f"id {ident} : source {source!r} inconnue"))
+            # La valeur n'est jamais imprimée : elle pourrait porter un secret (Q5).
+            found.append(bad(f"id {ident} : source inconnue"))
         elif cls == "real" and slm:
             found.append(bad(f"id {ident} : vraie attribuée à un SLM"))
         elif cls == "fake" and public:
             found.append(bad(f"id {ident} : fausse attribuée à une base publique ({source})"))
-    if example_ids is not None and sorted(ids) != sorted(example_ids):
-        missing = len(set(example_ids) - set(ids))
-        extra = len(set(ids) - set(example_ids))
+    # `repr` : un `id` absent (None) ou d'un autre type reste comparable et hachable.
+    mine, theirs = sorted(map(repr, ids)), sorted(map(repr, example_ids or []))
+    if example_ids is not None and mine != theirs:
+        missing = len(set(theirs) - set(mine))
+        extra = len(set(mine) - set(theirs))
         found.append(bad(f"id différents d'examples.jsonl ({missing} absents, {extra} en trop)"))
     return found
 
@@ -430,18 +472,65 @@ class Rules:
 def check_member(
     path: str, data: bytes, rules: Rules, *, reserved: bool = True, strict: bool = False
 ) -> list[Violation]:
-    """Chemin, motifs de clé, secrets, réservé (si `reserved`) et contenu de R d'un membre."""
-    found = check_path(path) + check_secrets(path, data, rules.secrets)
-    if PurePosixPath(path).suffix.lower() not in TEXT_SUFFIXES:
-        return found
-    text = data.decode("utf-8", "replace")
-    documents = json_documents(path, text)
+    """Chemin, motifs de clé, secrets, réservé (si `reserved`) et contenu de R d'un membre.
+
+    Tout membre est contrôlé quel que soit son suffixe : un `.npz` tableau par tableau, tout
+    autre comme du texte ; un membre qui n'est ni l'un ni l'autre est refusé (`uncheckable`)."""
+    found = check_path(path)
+    if PurePosixPath(path).suffix.lower() in BINARY_SUFFIXES:
+        return found + _check_npz(path, data, rules)
+    text = decode_text(data)
+    if text is None:
+        found += check_secrets(path, data, rules.secrets)
+        detail = "ni texte UTF-8 ou UTF-16, ni binaire admis (.npz)"
+        return [*found, Violation(path, PublishRefusalCode.UNCHECKABLE, detail)]
+    found += _unique(
+        check_secrets(path, data, rules.secrets)
+        + check_secrets(path, text.encode("utf-8"), rules.secrets)
+    )
+    documents, bad = json_documents(path, text)
+    if bad:
+        shown = ", ".join(map(str, bad[:5])) + (" …" if len(bad) > 5 else "")
+        detail = f"JSON illisible (ligne {shown})"
+        found.append(Violation(path, PublishRefusalCode.UNCHECKABLE, detail))
     if reserved and rules.reserved is not None:
-        for ref in find_reserved(text_pieces(text, documents), rules.reserved):
+        pieces = text_pieces(text, documents)
+        if bad:  # lignes illisibles : le texte brut est fouillé aussi
+            pieces += text_pieces(text, None)
+        for ref in find_reserved(pieces, rules.reserved):
             found.append(Violation(path, PublishRefusalCode.RESERVED_EXAMPLE, f"exemple {ref}"))
     if documents is not None:
         found += check_content(path, documents, strict=strict)
     return found
+
+
+def _unique(violations: list[Violation]) -> list[Violation]:
+    return list(dict.fromkeys(violations))
+
+
+def _check_npz(path: str, data: bytes, rules: Rules) -> list[Violation]:
+    """Motifs et secrets sur les octets et sur chaque tableau décompressé ; seuls des tableaux
+    `.npy` numériques sont admis (un tableau de chaînes porterait du texte non contrôlé)."""
+    import numpy as np
+
+    def refuse(detail: str) -> Violation:
+        return Violation(path, PublishRefusalCode.UNCHECKABLE, detail)
+
+    found = check_secrets(path, data, rules.secrets)
+    try:
+        with zipfile.ZipFile(io.BytesIO(data)) as archive:
+            for name in archive.namelist():
+                if not name.endswith(".npy"):
+                    found.append(refuse(f"membre {name} hors .npy"))
+                    continue
+                raw = archive.read(name)
+                found += check_secrets(path, raw, rules.secrets)
+                array = np.load(io.BytesIO(raw), allow_pickle=False)
+                if array.dtype.kind not in "biufc":
+                    found.append(refuse(f"tableau {name} non numérique ({array.dtype.kind})"))
+    except (zipfile.BadZipFile, ValueError, OSError) as exc:
+        found.append(refuse(f".npz illisible ({type(exc).__name__})"))
+    return _unique(found)
 
 
 def mentions_r_task(text: str, r_tasks: frozenset[str]) -> list[str]:
@@ -468,22 +557,50 @@ def check_paths(paths: Iterable[Path], rules: Rules, base: Path) -> tuple[list[V
         found.append(Violation("heldout/", PublishRefusalCode.NO_HELDOUT, "aucun jeu réservé"))
     for path in files:
         label = _label(path, base)
+        if path.is_symlink() or path.is_junction():
+            found.append(link_violation(label))
+            continue
         data = path.read_bytes()
         found += check_member(label, data, rules)
         if not rules.r_republish:
-            for task in mentions_r_task(data.decode("utf-8", "replace"), rules.r_tasks):
+            for task in mentions_r_task(decode_text(data) or "", rules.r_tasks):
                 detail = f"nomme la tâche de R {task} sans r_republish = true"
                 found.append(Violation(label, PublishRefusalCode.R_WITHOUT_REPUBLISH, detail))
         if path.name == "sources.jsonl":
             examples = path.parent / "examples.jsonl"
-            ids = _ids(examples.read_bytes()) if examples.is_file() else None
+            ids = example_ids(examples.read_bytes()) if examples.is_file() else None
             found += check_sources(label, data, ids)
     return found, len(files)
 
 
-def _ids(data: bytes) -> list[str]:
-    lines = data.decode("utf-8", "replace").splitlines()
-    return [json.loads(line).get("id") for line in lines if line.strip()]
+def example_ids(data: bytes) -> list[str | None]:
+    """`id` de chaque ligne d'`examples.jsonl` ; une ligne illisible ou non objet compte comme
+    un `id` absent (None), donc comme une différence avec `sources.jsonl`."""
+    ids = []
+    for line in (decode_text(data) or "").splitlines():
+        if not line.strip():
+            continue
+        try:
+            row = json.loads(line)
+        except ValueError:
+            row = None
+        ids.append(row.get("id") if isinstance(row, dict) else None)
+    return ids
+
+
+def is_linked(path: Path, base: Path) -> bool:
+    """Le fichier, ou un de ses dossiers sous `base`, est un lien symbolique."""
+    path, base = Path(path), Path(base)
+    for candidate in (path, *path.parents):
+        if candidate == base:
+            return False
+        if candidate.is_symlink() or candidate.is_junction():
+            return True
+    return False
+
+
+def link_violation(label: str) -> Violation:
+    return Violation(label, PublishRefusalCode.FORBIDDEN_PATH, "lien symbolique (non suivi)")
 
 
 def _label(path: Path, base: Path) -> str:

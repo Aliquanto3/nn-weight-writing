@@ -266,16 +266,26 @@ def _table(args: argparse.Namespace) -> int:
     except FileNotFoundError as exc:
         print(f"table refusée : {exc}", file=sys.stderr)
         return 2
-    written = write(result, Path(args.out), args.lot)
-    for path in written:
-        print(path)
     for issue in result.issues:
         print(issue, file=sys.stderr)
     # Q3 : ce que `table` écrit, et le fichier de décisions, passent les contrôles de publish.
-    checked = [*written, decisions] if decisions.is_file() else written
-    status = _check_published(checked, Path(args.root), args.config, args.env_file)
-    if status:
-        return status
+    # Écriture dans un dossier temporaire, contrôle, puis remplacement seulement sans refus :
+    # un tableau refusé ne reste jamais dans `docs/` (fichiers commités).
+    import os
+    import tempfile
+
+    out = Path(args.out)
+    out.mkdir(parents=True, exist_ok=True)
+    with tempfile.TemporaryDirectory(dir=out, prefix=".table-") as tmp:
+        staged = write(result, Path(tmp), args.lot)
+        checked = [*staged, decisions] if decisions.is_file() else list(staged)
+        status = _check_published(checked, Path(args.root), args.config, args.env_file)
+        if status:
+            print("tableau non écrit", file=sys.stderr)
+            return status
+        for path in staged:
+            os.replace(path, out / path.name)
+            print(out / path.name)
     return 1 if args.strict and result.issues else 0
 
 

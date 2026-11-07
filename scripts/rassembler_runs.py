@@ -29,7 +29,7 @@ PROVENANCE = "provenance.jsonl"
 
 
 def excluded(rel: Path) -> bool:
-    parts = rel.parts
+    parts = tuple(p.lower() for p in rel.parts)  # Windows : casse indifférente
     if parts[:2] == ("data", "r"):
         return True
     name = parts[-1]

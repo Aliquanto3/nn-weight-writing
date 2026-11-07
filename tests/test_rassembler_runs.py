@@ -136,3 +136,9 @@ def test_gather_only_option_skips_data(sources, tmp_path):
 
 def test_gather_missing_source_is_usage_error(tmp_path):
     assert run([tmp_path / "absent"], tmp_path / "dest") == 2
+
+
+def test_exclusion_ignores_case():
+    assert gather.excluded(Path("Data/R/collecte.jsonl"))
+    assert gather.excluded(Path("runs/1/s/EVAL.json"))
+    assert not gather.excluded(Path("data/legal_r/x.jsonl"))

@@ -33,7 +33,10 @@ from nn_weight_writing.publish.checks import (
     check_member,
     check_notice,
     check_sources,
+    example_ids,
     extraction_date,
+    is_linked,
+    link_violation,
 )
 
 SYSTEM_PROMPT_FILE = "system_prompt.md"
@@ -62,16 +65,23 @@ class Plan:
 
 
 def _session_task(journal: Path) -> str:
+    """`task` du premier événement `open` ; journal illisible : lu ligne à ligne."""
     try:
         for record in read_records(journal):
-            return record.get("task", "") if record.get("type") == "open" else ""
+            if record.get("type") == "open":
+                return record.get("task") or ""
+        return ""
     except JournalError, ValueError, KeyError:
         pass
-    try:
-        with open(journal, encoding="utf-8") as handle:
-            return json.loads(handle.readline()).get("task", "")
-    except ValueError, AttributeError:
-        return ""
+    with open(journal, encoding="utf-8", errors="replace") as handle:
+        for line in handle:
+            try:
+                record = json.loads(line)
+            except ValueError:
+                continue
+            if isinstance(record, dict) and record.get("type") == "open":
+                task = record.get("task")
+                return task if isinstance(task, str) else ""
     return ""
 
 
@@ -114,6 +124,10 @@ def collect_runs(root: Path, lot: int, r_tasks: frozenset[str]) -> tuple[Plan, s
     def add(files: list[Path], is_r: bool) -> None:
         for path in files:
             name = prefix + path.relative_to(lot_dir).as_posix()
+            if is_linked(path, lot_dir):  # un lien pourrait viser `.env` ou le réservé
+                plan.violations.append(link_violation(name))
+                plan.runs[name] = b""
+                continue
             data = path.read_bytes()
             plan.runs[name] = data
             if is_r or (path.name.startswith("eval") and _eval_tasks(data) & r_tasks):
@@ -178,13 +192,14 @@ def plan(
         result.r, dates = {}, []
         for label, directory in datasets:
             for name in R_FILES:
-                if (directory / name).is_file():
+                if is_linked(directory / name, Path(root)):
+                    found.append(link_violation(f"{label}/{name}"))
+                elif (directory / name).is_file():
                     result.r[f"{label}/{name}"] = (directory / name).read_bytes()
             examples = result.r.get(f"{label}/examples.jsonl")
             ids = None
             if examples is not None:
-                lines = examples.decode("utf-8", "replace").splitlines()
-                ids = [json.loads(line).get("id") for line in lines if line.strip()]
+                ids = example_ids(examples)
             found += check_sources(
                 f"{label}/sources.jsonl", result.r.get(f"{label}/sources.jsonl"), ids
             )

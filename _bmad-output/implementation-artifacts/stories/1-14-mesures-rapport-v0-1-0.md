@@ -384,7 +384,8 @@ Livré : `publish/checks.py` (`PublishRefusalCode`, `Violation`, `Rules`, `colle
 - Q10, attribution : `NOTICE` doit porter la phrase, l'URL de la licence et « extraction du AAAA-MM-JJ » ; chaque `dataset.json` de R doit porter `extraction_date` (premier niveau ou `composition`), date reprise dans `NOTICE`. **Contrat pour 1-13.**
 - `output_exists` vaut pour les trois sorties (`runs-lot<N>.tar.gz`, `r-lot<N>.tar.gz`, `SHA256SUMS`) ; écriture en mode exclusif.
 - `--check` : sans `r_republish = true`, un fichier qui nomme une tâche de `r_tasks` (mot entier) est refusé `r_without_republish` ; `no_heldout` s'applique aussi.
-- `nnww table` écrit puis contrôle : sur refus, les fichiers restent écrits et le code est 1.
+- `nnww table` écrit dans un dossier temporaire sous `--out`, contrôle, puis remplace `lot<N>.{md,json}` seulement sans refus (revue, passe 2) ; sur refus, rien n'est remplacé et le code est 1.
+- Revue, passe 2 : code `uncheckable` ajouté (ligne JSON illisible, membre ni texte UTF-8 ou UTF-16 ni `.npz`, `.npz` à tableau non numérique ou à membre hors `.npy`) ; tout membre est contrôlé quel que soit son suffixe ; une chaîne JSON (résultat d'outil dans un bloc `text`, double encodage) est décodée et soumise aux contrôles de champs et de `raw` ; liens symboliques refusés (`forbidden_path`).
 - Rassemblement : option `--only` ajoutée. Conflit réel : `data/legal_s/train` et `data/legal_s_reserved/train` diffèrent entre 1-10s, 1-10m (8 192 exemples) et 1-11 (32 768, ceux que citent les `run.json` des témoins). Rassemblement fait en deux passes : `--from 1-8 1-8s 1-11`, puis `--from 1-10s 1-10m --only runs heldout`. `bundle/` est copié (la spec ne l'exclut pas) ; `publish` l'ignore.
 
 Exécution sur les artefacts réels (2026-11-07, CPU seul, aucune écriture dans les worktrees sources) :
@@ -417,3 +418,23 @@ Base : branche à jour sur `origin/main` (08a62c6), pas de rebase. Revue limité
 - Lecture propre, sans constat : réservé lu seulement après `verify_frozen` et contrôle des empreintes de `dataset.json` ; rien n'est écrit hors de `eval*.json` ; Q7 (non gelée ou en erreur = 0, gelée non évaluée = moyenne indéfinie) et Q12 (dernière séance gelée de la tentative, facturé comparé au plafond, équivalent API à part) conformes ; coûts facturé et équivalent dans des colonnes séparées.
 - Complexité : 0 constat (ablation en une passe partielle par unité, collecte en une lecture par fichier).
 - Régénération de `docs/mesures/lot1.{md,json}` sur une copie de lecture des worktrees (75 journaux, 144 `run.json`, sans `bundle/` ni `eval*.json`), 190 dossiers évalués, croisée sans refus : toutes les mesures identiques à la version du développeur ; seuls changent l'empreinte, l'en-tête renommé et `removed_seeds`.
+
+### Passe 2 (2026-11-07, SHA revu 4e55042)
+
+Base : `origin/main` (08a62c6) déjà ancêtre de HEAD, pas de rebase. Relu : `a54766b..4e55042` (correctifs de la passe 1 et partie 2).
+
+- **Important**, medium (high selon le second avis, ramené à medium : un agent de séance ne lit que les exemples normalisés), second avis 1 : un JSON porté par un bloc `text` (résultat d'outil) échappait aux contrôles de champs et de `raw`. Corrigé : `_walk` décode les chaînes qui sont un objet ou une liste JSON (4 niveaux), sur tous les membres ; la prose n'est pas lue. Vérifié sur `nnww-artefacts` : aucun faux positif (dry-run sans refus ; avec `r_tasks = ["legal_s"]`, seuls les `r_source_mismatch` et `r_attribution_missing` attendus). Test `test_publish_checks_json_inside_text_blocks`.
+- **Important**, medium, second avis 4 : double encodage. Corrigé par le même décodage (même test).
+- **Important**, medium, second avis 2 : une ligne illisible sautait tous les contrôles de contenu du fichier. Corrigé : lecture ligne à ligne, BOM toléré, ligne illisible refusée `uncheckable`, autres lignes contrôlées, texte brut fouillé pour le réservé. Tests `test_publish_refuses_unreadable_json_line_but_checks_the_others`, `test_publish_accepts_utf8_bom`. Les 75 journaux réels sont lisibles ligne à ligne.
+- **Important**, medium, second avis 3 : suffixes hors liste non contrôlés. Corrigé : tout membre décodable est du texte contrôlé ; seul binaire admis `.npz` (le seul binaire de `runs/1/`, 174 fichiers), ouvert, chaque tableau décompressé passé aux motifs et secrets, tableau non numérique refusé ; autre binaire ou compressé refusé `uncheckable`. Tests `test_publish_checks_any_text_suffix`, `test_publish_refuses_unknown_binary_and_text_arrays`.
+- **Important**, medium, second avis 5 : `r_source_mismatch` imprimait `source` et `class`. Corrigé : valeurs jamais imprimées. Test `test_r_source_mismatch_never_prints_source_value`.
+- **Important**, medium, second avis 6 : `table` laissait un fichier refusé dans `docs/`. Corrigé (écriture temporaire, contrôle, `os.replace`). Test `test_table_refused_leaves_nothing_in_out` ; régénération sur `nnww-artefacts` : `lot1.{md,json}` inchangés.
+- **Important**, medium, second avis 7 : UTF-16 et largeur nulle. Corrigé : décodage selon BOM, U+00AD, U+200B-U+200D, U+2060, U+FEFF retirés par `normalize`. Test `test_publish_finds_reserved_in_utf16_and_with_zero_width`.
+- **Nit**, low, second avis 8 : liens symboliques (et jonctions) refusés `forbidden_path`, non lus. Test `test_publish_refuses_symlink` (sauté sous Windows sans droit de lien, joué en CI Linux).
+- **Nit**, low, second avis 9 : tâche lue au premier `open`. Corrigé, test `test_session_task_is_read_from_first_open_event`.
+- **Nit**, low, second avis 10 : ligne non objet d'`examples.jsonl` : `AttributeError`, puis `TypeError` au tri (trouvé en corrigeant). Corrigé (`example_ids`, comparaison par `repr`), test `test_r_examples_non_object_line_is_a_mismatch`.
+- Rejeté, second avis 11 (low) : le nombre de `raw` sautés et la raison (« moins de 12 caractères ») sont déjà imprimés.
+- **Nit**, low, second avis 12 : exclusion du rassemblement insensible à la casse. Corrigé, test `test_exclusion_ignores_case`.
+- Second avis 13 (low) : conflit possible avec 1-12 sur `ARCHITECTURE-SPINE.md`, laissé à l'orchestrateur.
+- Correctifs de la passe 1 relus (`_measured`, statut dans la clé des témoins, `removed_seeds`, empreinte sans `ts`, plafond absent) : sans constat.
+- Complexité : 0 constat (recherche du réservé en une passe indexée par fichier, décodage JSON imbriqué borné à 4 niveaux).

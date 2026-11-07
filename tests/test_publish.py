@@ -711,4 +711,109 @@ def test_refusal_codes_are_the_spec_ones():
         "r_party_name",
         "r_raw_too_long",
         "forbidden_path",
+        "uncheckable",
     }
+
+
+# --- revue, passe 2 : membres illisibles, suffixes, encodages, liens ------------------------------
+
+
+def test_publish_checks_json_inside_text_blocks(root, env, capsys):
+    tool_result = json.dumps({"id": "x1", "raw": "a" * 161, "zones": {}})
+    set_detail(session(root), json.dumps({"content": [{"type": "text", "text": tool_result}]}))
+    assert publish(root, env) == 1
+    assert sorted(codes(capsys)) == ["r_forbidden_field", "r_raw_too_long"]
+
+
+def test_publish_refuses_unreadable_json_line_but_checks_the_others(root, env, capsys):
+    notes = session(root) / "frozen" / "notes.jsonl"
+    notes.write_text("pas du json\n" + json.dumps({"id": "x1", "raw": "a" * 161}) + "\n", "utf-8")
+    assert publish(root, env) == 1
+    err = capsys.readouterr().err
+    assert "refus uncheckable : " in err and "JSON illisible (ligne 1)" in err
+    assert "refus r_raw_too_long : " in err
+
+
+def test_publish_accepts_utf8_bom(root, env):
+    notes = session(root) / "frozen" / "notes.json"
+    notes.write_bytes(b"\xef\xbb\xbf" + json.dumps({"ok": 1}).encode())
+    assert publish(root, env) == 0
+
+
+@pytest.mark.parametrize("name", ["notes.log", "notes.yaml", "NOTES", "page.html"])
+def test_publish_checks_any_text_suffix(root, env, capsys, name):
+    (session(root) / "frozen" / name).write_text(f"cité : {RAW}\n", "utf-8")
+    assert publish(root, env) == 1
+    assert codes(capsys) == ["reserved_example"]
+
+
+def test_publish_refuses_unknown_binary_and_text_arrays(root, env, capsys):
+    import gzip
+
+    import numpy as np
+
+    frozen = session(root) / "frozen"
+    (frozen / "notes.gz").write_bytes(gzip.compress(RAW.encode()))
+    buffer = io.BytesIO()
+    np.savez_compressed(buffer, w=np.zeros(2), names=np.array([RAW]))
+    (frozen / "extra.npz").write_bytes(buffer.getvalue())
+    assert publish(root, env) == 1
+    err = capsys.readouterr().err
+    assert "notes.gz : ni texte" in err and "tableau names.npy non numérique" in err
+
+
+def test_publish_finds_reserved_in_utf16_and_with_zero_width(root, env, capsys):
+    (session(root) / "frozen" / "a.txt").write_bytes(RAW.encode("utf-16"))
+    (session(root) / "frozen" / "b.md").write_text(RAW[:5] + "​" + RAW[5:], "utf-8")
+    assert publish(root, env) == 1
+    assert codes(capsys) == ["reserved_example", "reserved_example"]
+
+
+def test_publish_refuses_symlink(root, env, capsys, tmp_path):
+    target = tmp_path / "secret.txt"
+    target.write_text("x", "utf-8")
+    try:
+        (session(root) / "frozen" / "lien.txt").symlink_to(target)
+    except OSError:
+        pytest.skip("liens symboliques indisponibles")
+    assert publish(root, env) == 1
+    assert "lien symbolique" in capsys.readouterr().err
+
+
+def test_session_task_is_read_from_first_open_event(tmp_path):
+    from nn_weight_writing.publish.archive import _session_task
+
+    journal = tmp_path / "journal.jsonl"
+    lines = [{"type": "note"}, {"type": "open", "task": "legal_r"}]
+    journal.write_text("".join(json.dumps(x) + "\n" for x in lines), "utf-8")
+    assert _session_task(journal) == "legal_r"
+
+
+def test_r_source_mismatch_never_prints_source_value(root, env, capsys):
+    write_r(root, rows=[("r-e1", "Cass. soc., 3 février 2021, n° 1", "real", SECRET)])
+    assert publish(root, env) == 1
+    err = capsys.readouterr().err
+    assert "source inconnue" in err and SECRET not in err
+
+
+def test_r_examples_non_object_line_is_a_mismatch(root, env, capsys):
+    write_r(root)
+    examples = root / "data" / "legal_r" / "session" / "examples.jsonl"
+    examples.write_text(examples.read_text("utf-8") + "[1, 2]\n", "utf-8")
+    assert publish(root, env) == 1
+    assert "id différents d'examples.jsonl" in capsys.readouterr().err
+
+
+def test_table_refused_leaves_nothing_in_out(root, env, tmp_path, capsys, monkeypatch):
+    from artefacts import typed_spec
+
+    from nn_weight_writing.tasks.registry import TASKS
+
+    monkeypatch.setitem(TASKS, "typed", typed_spec())
+    out = tmp_path / "mesures"
+    out.mkdir()
+    (out / "decisions-lot1.toml").write_text(f'# note : "{RAW}"\n', "utf-8")
+    argv = ["table", "--lot", "1", "--root", str(root), "--out", str(out)]
+    argv += ["--config", str(env / "publish.toml"), "--env-file", str(env / ".env")]
+    assert main(argv) == 1
+    assert sorted(p.name for p in out.iterdir()) == ["decisions-lot1.toml"]
