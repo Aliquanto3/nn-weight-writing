@@ -93,6 +93,8 @@ PRE = DATA / "pre_etude"
 CACHE = DATA / "cache" / "judilibre"
 CE_INDEX = DATA / "ce_index" / "index.jsonl"
 R_GATE = ROOT / "config" / "r_gate.toml"
+# Dépôt du contrôle de la grille figée : celui du code exécuté (remplacé par les tests seulement).
+REPO = ROOT
 SPEC = ROOT / "_bmad-output" / "implementation-artifacts" / "stories" / "1-12-pre-etude-r.md"
 # Ordre fixe des modèles de 1-12a (scripts/collecte_hallucinations.py, MODELES).
 MODELES = (
@@ -127,6 +129,8 @@ RECALL_SEED = [0, 5]
 API_ERROR_MAX = 0.01
 QC_SIZES = {1: 60, 2: 20, 3: (30, 10), 4: 30}
 VERDICTS = {"accepte", "echec"}
+FALSE_ABSENCES_MAX = 1  # P7 : plus d'une trouvée -> tour de correction sur le vérificateur
+JOURNAL = "journal.jsonl"  # journal en ajout seul des exécutions de `classer` et `porte`
 
 
 # --- Outils communs ------------------------------------------------------------------------
@@ -542,8 +546,18 @@ def cmd_mesurer_base(args) -> int:
 # --- classer (phase B) ---------------------------------------------------------------------
 
 
-def guard_frozen_grid(expected: str, repo: Path = ROOT) -> str | None:
-    """Message d'erreur si HEAD diffère de `expected` ou si l'arbre n'est pas propre."""
+def guard_frozen_grid(expected: str, repo: Path | None = None) -> str | None:
+    """Message d'erreur si HEAD diffère de `expected` ou si l'arbre n'est pas propre.
+
+    Le dépôt contrôlé est celui du code exécuté (`REPO`), et le paquet importé doit en venir :
+    un paquet installé d'ailleurs ferait tourner un autre code que la grille figée.
+    """
+    import nn_weight_writing
+
+    package = Path(nn_weight_writing.__file__).resolve()
+    if not package.is_relative_to(ROOT.resolve()):
+        return f"paquet importé hors du dépôt du script ({package.parent})"
+    repo = REPO if repo is None else repo
     head = git("rev-parse", "HEAD", cwd=repo)
     if not head or not expected or not head.startswith(expected.lower()) or len(expected) < 7:
         return f"HEAD {head[:12]} différent de --grille-figee {expected}"
@@ -572,8 +586,75 @@ def collect_units(generations, facts, r_facts) -> tuple[list[Unit], int]:
     return build_units(citations, MODELES), extracted
 
 
+def read_journal(out: Path) -> list[dict]:
+    path = Path(out) / JOURNAL
+    if not path.is_file():
+        return []
+    return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line]
+
+
+def append_journal(out: Path, entry: dict) -> None:
+    path = Path(out) / JOURNAL
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("a", encoding="utf-8", newline="\n") as handle:
+        handle.write(redact(json.dumps(entry, ensure_ascii=False, sort_keys=True)) + "\n")
+
+
+def qc_failed(verdict: dict) -> bool:
+    """Échec du contrôle : verdict `echec`, ou plus d'une fausse absence trouvée (P7)."""
+    found = (verdict.get("fausses_absences") or {}).get("trouvees", 0)
+    return verdict.get("verdict") == "echec" or found > FALSE_ABSENCES_MAX
+
+
+def correction_round(args, out: Path) -> tuple[dict | None, str | None]:
+    """Tour de `classer` : 0 au premier passage ; sinon le tour de correction unique de P1.
+
+    Un classement déjà écrit (ou journalisé) n'est remplacé qu'une fois, sur le verdict en échec
+    du tour 0 qui cite son sha256 et donne un `motif`. Jamais après `porte`.
+    """
+    journal = read_journal(out)
+    if any(e.get("command") == "porte" for e in journal) or (out / "resume.json").exists():
+        return None, "la porte a déjà été calculée : plus aucun classement (P1)"
+    previous = [e for e in journal if e.get("command") == "classer"]
+    manifest_path = out / "manifest.json"
+    if not previous and not manifest_path.exists() and not (out / "classement.jsonl").exists():
+        if args.tour_correction is not None:
+            return None, "--tour-correction sans classement antérieur"
+        return {"tour": 0}, None
+    if args.tour_correction is None:
+        return None, "classement déjà écrit : seul le tour de correction est permis (P1)"
+    if not manifest_path.is_file() or not Path(args.tour_correction).is_file():
+        return None, "manifeste ou verdict du tour 0 absent : tour de correction impossible"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    if manifest.get("tour", 0) >= 1 or len(previous) > 1:
+        return None, "le tour de correction a déjà eu lieu (un seul, P1)"
+    raw = json.loads(Path(args.tour_correction).read_text(encoding="utf-8"))
+    if raw.get("classement_sha256") != manifest["outputs"]["classement.jsonl"]:
+        return None, "verdict du tour 0 d'un autre classement (sha256 différent)"
+    if raw.get("tour") != 0 or not qc_failed(raw):
+        return None, "le tour de correction exige le verdict en échec du tour 0"
+    motif = str(raw.get("motif") or "").strip()
+    if not motif:
+        return None, "verdict du tour 0 sans `motif` de correction"
+    return {
+        "tour": 1,
+        "correction": {
+            "motif": motif,
+            "verdict_sha256": sha256_file(args.tour_correction),
+            "previous_grid_commit": manifest.get("grid_commit"),
+            "previous_classement_sha256": manifest["outputs"]["classement.jsonl"],
+            "previous_written_at": manifest.get("written_at"),
+        },
+    }, None
+
+
 def cmd_classer(args) -> int:
-    problem = guard_frozen_grid(args.grille_figee, args.depot)
+    problem = guard_frozen_grid(args.grille_figee)
+    if problem:
+        print(f"refus : {problem}", file=sys.stderr)
+        return 2
+    out = args.sortie
+    round_info, problem = correction_round(args, out)
     if problem:
         print(f"refus : {problem}", file=sys.stderr)
         return 2
@@ -627,15 +708,24 @@ def cmd_classer(args) -> int:
         "r_facts_sha256": r_facts_sha256(),
         "facts_sha256": facts_sha256(),
     }
-    out = args.sortie
-    write_classement(out / "classement.jsonl", units, versions)
-    write_extraction(out / "interne" / "extraction.jsonl", units)
+    if round_info["tour"] == 1:
+        # Classement du tour 0 gardé à part : p avant correction reste calculable (D7).
+        for name, keep in (
+            ("classement.jsonl", out / "tour0"),
+            ("manifest.json", out / "tour0"),
+            ("interne/extraction.jsonl", out / "interne" / "tour0"),
+        ):
+            if (out / name).is_file():
+                keep.mkdir(parents=True, exist_ok=True)
+                (out / name).replace(keep / Path(name).name)
+    write_classement(out / "classement.jsonl", units, versions, redact=redact)
+    write_extraction(out / "interne" / "extraction.jsonl", units, redact=redact)
     manifest = {
         "written_at": now_utc(),
-        "grid_commit": git("rev-parse", "HEAD", cwd=args.depot),
-        "spec_commit": git(
-            "log", "-1", "--format=%H", "--", str(SPEC.relative_to(ROOT)), cwd=args.depot
-        ),
+        **round_info,
+        "rafraichir": bool(args.rafraichir),
+        "grid_commit": git("rev-parse", "HEAD", cwd=REPO),
+        "spec_commit": git("log", "-1", "--format=%H", "--", str(SPEC.relative_to(ROOT)), cwd=REPO),
         "inputs": {
             "collecte_manifest_sha256": args.manifeste_sha256.lower(),
             "collecte.jsonl": sha256_file(Path(args.collecte) / "collecte.jsonl"),
@@ -660,6 +750,18 @@ def cmd_classer(args) -> int:
         },
     }
     write_json(out / "manifest.json", manifest)
+    append_journal(
+        out,
+        {
+            "command": "classer",
+            "at": manifest["written_at"],
+            "tour": manifest["tour"],
+            "grid_commit": manifest["grid_commit"],
+            "classement_sha256": manifest["outputs"]["classement.jsonl"],
+            "rafraichir": manifest["rafraichir"],
+            "motif": (manifest.get("correction") or {}).get("motif"),
+        },
+    )
     print(
         f"classement écrit : {len(generations)} générations, {extracted} références extraites, "
         f"{len(units)} unités ; sha256 {manifest['outputs']['classement.jsonl']}. "
@@ -734,8 +836,18 @@ def read_verdict(path: Path, classement_sha: str) -> tuple[dict | None, str | No
         return None, "verdict d'un autre classement (sha256 différent)"
     if verdict.get("verdict") not in VERDICTS or verdict.get("tour") not in (0, 1):
         return None, "verdict illisible (`verdict` accepte|echec, `tour` 0|1)"
-    if verdict["verdict"] == "echec" and verdict["tour"] == 0:
-        return None, "contrôle en échec au tour 0 : tour de correction d'abord (P1)"
+    absences = verdict.get("fausses_absences")
+    drawn = absences.get("tirees") if isinstance(absences, dict) else None
+    found = absences.get("trouvees") if isinstance(absences, dict) else None
+    if not all(isinstance(v, int) and not isinstance(v, bool) for v in (drawn, found)) or not (
+        0 <= found <= drawn
+    ):
+        return None, "verdict sans `fausses_absences` lisibles (`tirees`, `trouvees`, P7)"
+    if qc_failed(verdict) and verdict["tour"] == 0:
+        return None, (
+            "contrôle en échec au tour 0 (ou plus d'une fausse absence, P7) : "
+            "tour de correction d'abord (P1)"
+        )
     return verdict, None
 
 
@@ -771,7 +883,8 @@ def compute_gate(rows: list[dict], windows: dict[str, CoverageWindow], verdict: 
     ecli_only = [
         r for r in denominator if r["class"] == "incoherent" and set(r["rules"]) <= ECLI_RULES
     ]
-    d1 = [r for r in denominator if r not in ecli_only]
+    ecli_ids = {r["unit_id"] for r in ecli_only}
+    d1 = [r for r in denominator if r["unit_id"] not in ecli_ids]
     in_window = []
     for r in denominator:
         day = _unit_date(r)
@@ -819,7 +932,7 @@ def compute_gate(rows: list[dict], windows: dict[str, CoverageWindow], verdict: 
             reserves.append("sensibilité : p_corr (fausses absences) de l'autre côté de 30 %")
     if dominant:
         reserves.append(f"famille dominante : {dominant}")
-    if verdict["verdict"] == "echec":
+    if qc_failed(verdict):
         reserves.append("réserve forte : contrôle de qualité en échec après le tour de correction")
     partial = [r for r in rows if r["class"] == "partial"]
     out_of_scope = Counter(
@@ -912,18 +1025,36 @@ def cmd_porte(args) -> int:
         print(f"refus : {problem}", file=sys.stderr)
         return 2
     resume_path = args.sortie / "resume.json"
-    if resume_path.exists():
+    journal = read_journal(args.sortie)
+    if resume_path.exists() or any(e.get("command") == "porte" for e in journal):
         print("refus : la porte a déjà été calculée (une seule fois, P1)", file=sys.stderr)
         return 2
     manifest_path = args.sortie / "manifest.json"
+    if not manifest_path.is_file():
+        print("refus : manifeste de `classer` absent", file=sys.stderr)
+        return 2
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-    if manifest["outputs"]["classement.jsonl"] != sha:
+    if manifest["outputs"].get("classement.jsonl") != sha or "resume.json" in manifest["outputs"]:
         print("refus : classement différent de celui écrit par `classer`", file=sys.stderr)
         return 2
+    if verdict["tour"] != manifest.get("tour", 0):
+        print("refus : tour du verdict différent du tour du classement", file=sys.stderr)
+        return 2
+    # Fenêtres et faits relus du disque : ceux du classement, sinon refus.
+    inputs = manifest.get("inputs", {})
+    if (inputs.get("r_facts.toml"), inputs.get("facts.toml")) != (r_facts_sha256(), facts_sha256()):
+        print("refus : r_facts.toml ou facts.toml changé depuis `classer`", file=sys.stderr)
+        return 2
     rows = read_classement(classement)
+    drawn_expected = min(QC_SIZES[4], sum(1 for r in rows if r["class"] == "coherent_absent"))
+    if verdict["fausses_absences"]["tirees"] != drawn_expected:
+        print("refus : `tirees` différent de la taille du tirage k = 4 (D7)", file=sys.stderr)
+        return 2
     result = compute_gate(rows, windows_from(load_r_facts()), verdict)
+    append_journal(args.sortie, {"command": "porte", "at": now_utc(), "classement_sha256": sha})
     result["classement_sha256"] = sha
     result["verdict"] = {k: verdict[k] for k in ("date", "verdict", "tour")}
+    result["porte_commit"] = git("rev-parse", "HEAD", cwd=REPO)
     result["grid_commit"] = manifest["grid_commit"]
     result["spec_commit"] = manifest["spec_commit"]
     result["computed_at"] = now_utc()
@@ -963,7 +1094,12 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--manifeste-sha256", required=True)
     p.add_argument("--grille-figee", required=True)
     p.add_argument("--requetes", type=Path, default=None)
-    p.add_argument("--depot", type=Path, default=ROOT, help=argparse.SUPPRESS)
+    p.add_argument(
+        "--tour-correction",
+        type=Path,
+        default=None,
+        help="verdict en échec du tour 0 (avec `motif`) : tour de correction unique (P1)",
+    )
     p = sub.add_parser("echantillons", help="phase B : tirages du contrôle de qualité")
     p.add_argument("--classement", type=Path, default=PRE / "classement.jsonl")
     p.add_argument("--collecte", type=Path, required=True)

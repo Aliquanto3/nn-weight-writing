@@ -16,7 +16,7 @@ from nn_weight_writing.datasets.legal_r.extract import ExtractedRef
 from nn_weight_writing.datasets.legal_r.grid import incoherences, nuss_types
 from nn_weight_writing.datasets.legal_r.normalize import NormalizedRef
 from nn_weight_writing.datasets.legal_r.r_facts import RFacts
-from nn_weight_writing.tasks.legal.facts import Facts
+from nn_weight_writing.tasks.legal.facts import Facts, load_facts
 from nn_weight_writing.tasks.legal.reference import format_reference
 
 CLASSEMENT_SCHEMA = 1
@@ -148,7 +148,8 @@ def classify_unit(
     ]
     unit.rules = rules_per_citation[0]
     unit.class_conflict = len({bool(r) for r in rules_per_citation}) > 1
-    if ref.jurisdiction not in scope:
+    # Juridiction inconnue (None) : référence incomplète, donc `partial` (D6, ordre 1 puis 2).
+    if ref.jurisdiction is not None and ref.jurisdiction not in scope:
         unit.klass = "out_of_scope"
         return unit
     if not ref.is_complete():
@@ -180,20 +181,32 @@ def _canonical(ref: NormalizedRef) -> str | None:
     return format_reference(reference) if reference is not None else None
 
 
+def _published_formation(ref: NormalizedRef) -> tuple[str | None, str | None]:
+    """Formation et citation canonique publiées.
+
+    Un siège de cour d'appel hors des 36 garde le nom cité pour la grille (D3, R-O3), mais ce nom
+    peut être celui d'une partie (« CA Renault SA ») : il n'est pas publié (D3, D6 : aucun nom).
+    """
+    if ref.jurisdiction == "ca" and ref.formation not in load_facts().all_seats:
+        return None, None
+    return ref.formation, _canonical(ref)
+
+
 def classement_row(unit: Unit, versions: dict) -> dict:
     ref = unit.ref
     verification = unit.verification or Verification("unverifiable")
+    formation, canonical = _published_formation(ref)
     row = {
         "schema": CLASSEMENT_SCHEMA,
         "unit_id": unit.unit_id,
         "jurisdiction": ref.jurisdiction,
-        "formation": ref.formation,
+        "formation": formation,
         "year": ref.year,
         "month": ref.month,
         "day": ref.day,
         "number": ref.number,
         "ecli": ref.ecli,
-        "canonical": _canonical(ref),
+        "canonical": canonical,
         "class": unit.klass,
         "rules": sorted(unit.rules),
         "nuss_types": list(nuss_types(unit.rules)),
@@ -213,16 +226,28 @@ def classement_row(unit: Unit, versions: dict) -> dict:
     return row
 
 
-def write_classement(path: Path, units: Sequence[Unit], versions: dict) -> None:
-    """Une ligne par unité, triée par `unit_id` ; ni texte de réponse, ni passage, ni nom."""
+def _same(text: str) -> str:
+    return text
+
+
+def write_classement(
+    path: Path, units: Sequence[Unit], versions: dict, *, redact: Callable[[str], str] = _same
+) -> None:
+    """Une ligne par unité, triée par `unit_id` ; ni texte de réponse, ni passage, ni nom.
+
+    `redact` : masque des secrets appliqué à chaque ligne écrite (P9 ; le script passe celui du
+    journal)."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="\n") as handle:
         for unit in sorted(units, key=lambda u: u.unit_id):
-            handle.write(json.dumps(classement_row(unit, versions), ensure_ascii=False) + "\n")
+            line = json.dumps(classement_row(unit, versions), ensure_ascii=False)
+            handle.write(redact(line) + "\n")
 
 
-def write_extraction(path: Path, units: Sequence[Unit]) -> None:
+def write_extraction(
+    path: Path, units: Sequence[Unit], *, redact: Callable[[str], str] = _same
+) -> None:
     """Passages cités (`raw`, `start`, `end`) : `interne/`, jamais publié (D8)."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -237,7 +262,7 @@ def write_extraction(path: Path, units: Sequence[Unit]) -> None:
                     "end": c.end,
                     "raw": c.raw,
                 }
-                handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+                handle.write(redact(json.dumps(row, ensure_ascii=False)) + "\n")
 
 
 def read_classement(path: Path) -> list[dict]:

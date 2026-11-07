@@ -79,7 +79,10 @@ _MARKER = re.compile(
 )
 _TOKEN = re.compile(r"\d+(?:(?:\s*[-./]\s*|\s)\d+)*")
 _BARE = re.compile(r"(?<![\d./-])(?:\d{2}-\d{2}\.\d{3}|\d{2}/\d{5})(?![\d./-]?\d)")
-_BARE_CE = re.compile(r"(?<![\d./-])\d{6}(?![\d./-]?\d)")
+# Numéro nu du CE (citation à la Lebon, E3) : seulement entre séparateurs de citation, après une
+# virgule, un point-virgule ou une parenthèse et avant une ponctuation ou la fin, jamais un
+# montant ou un effectif (« portant sur 250000 euros »).
+_BARE_CE = re.compile(r"(?:(?<=[,;(])|(?<=[,;(]\s))\d{6}(?=\s*(?:[,;.)\]](?!\d)|$))", re.MULTILINE)
 # Numéros et dates d'un texte normatif (loi, décret…) : masqués avant l'extraction.
 _LAW = re.compile(
     r"\b(?:loi|décret|decret|arrêté|arrete|directive|règlement|reglement|circulaire|"

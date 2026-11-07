@@ -28,16 +28,22 @@ KEPT_TAGS = (
 
 
 def parse_archive(path: Path) -> Iterator[dict]:
-    """Une décision par XML de l'archive : `KEPT_TAGS` seulement (texte nettoyé des espaces)."""
+    """Une décision par XML de l'archive : `KEPT_TAGS` seulement (texte nettoyé des espaces).
+
+    Les balises sont lues sans leur espace de noms. `ValueError` si l'archive contient des XML
+    mais qu'aucun ne donne de décision (schéma changé : jamais un index vide en silence).
+    """
+    xml_files = decisions = 0
     with zipfile.ZipFile(path) as archive:
         for name in sorted(archive.namelist()):
             if not name.lower().endswith(".xml"):
                 continue
+            xml_files += 1
             record: dict[str, str] = {}
             try:
                 with archive.open(name) as handle:
                     for _event, element in ET.iterparse(handle, events=("end",)):
-                        tag = element.tag
+                        tag = element.tag.rsplit("}", 1)[-1] if isinstance(element.tag, str) else ""
                         if tag in KEPT_TAGS and tag not in record:
                             record[tag] = " ".join((element.text or "").split())
                         element.clear()
@@ -45,7 +51,10 @@ def parse_archive(path: Path) -> Iterator[dict]:
                 # XML mal formé (préfixe non déclaré, vu en 2024) : balises gardées seules.
                 record = _tolerant(archive.read(name))
             if record.get("Numero_Dossier"):
+                decisions += 1
                 yield record
+    if xml_files and not decisions:
+        raise ValueError(f"{Path(path).name} : {xml_files} XML, aucune décision lue (schéma ?)")
 
 
 def _tolerant(data: bytes) -> dict[str, str]:

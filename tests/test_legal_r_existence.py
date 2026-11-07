@@ -3,8 +3,10 @@
 from __future__ import annotations
 
 import json
+import zipfile
 from datetime import date
 
+import pytest
 from legal_r_support import (
     EMPTY_SCAN,
     EMPTY_SEARCH,
@@ -24,6 +26,7 @@ from nn_weight_writing.datasets.legal_r.existence import (
     coverage_windows,
 )
 from nn_weight_writing.datasets.legal_r.extract import extract_references
+from nn_weight_writing.datasets.legal_r.judilibre import JudilibreError
 from nn_weight_writing.datasets.legal_r.normalize import RefFields, fields_from_extracted, normalize
 from nn_weight_writing.datasets.legal_r.r_facts import RFacts
 from nn_weight_writing.tasks.legal.facts import load_facts
@@ -207,3 +210,34 @@ def test_ce_archive_text_dropped(tmp_path):
     index.save(tmp_path / "index.jsonl")
     written = (tmp_path / "index.jsonl").read_text(encoding="utf-8")
     assert "TEXTE-INTEGRAL-CE-SECRET" not in written and "Dupont" not in written
+
+
+def test_daily_quota_stops_verification(tmp_path):
+    """D5, P8 : compteur journalier sous 1 000 -> arrêt net, jamais un `api_error` de plus."""
+    clock = FakeClock()
+    low_daily = '[{"window":62204,"type":"throttle","remaining":999},{"window":0,"remaining":19}]'
+    transport = FakeTransport([("/scan", {}, [ok(EMPTY_SCAN, low_daily)])], clock)
+    client = make_client(transport, clock)
+    with pytest.raises(JudilibreError) as raised:
+        _check(_ref("Cass. soc., 12 mars 2015, n° 13-27.123"), client)
+    assert raised.value.quota and raised.value.fatal
+    assert len(transport.calls) == 1
+
+
+def test_ce_archive_default_namespace_and_empty(tmp_path):
+    xml = (
+        '<?xml version="1.0" encoding="UTF-8"?><Document xmlns="urn:x-ce">'
+        "<Donnees_Techniques><Numero_Dossier>428409</Numero_Dossier>"
+        "<Date_Lecture>2020-07-10</Date_Lecture></Donnees_Techniques>"
+        "<Texte_Integral>TEXTE</Texte_Integral></Document>"
+    )
+    archive = tmp_path / "ns.zip"
+    with zipfile.ZipFile(archive, "w") as handle:
+        handle.writestr("DCE_428409_20200710.xml", xml)
+    (record,) = parse_archive(archive)
+    assert record == {"Numero_Dossier": "428409", "Date_Lecture": "2020-07-10"}
+    empty = tmp_path / "vide.zip"
+    with zipfile.ZipFile(empty, "w") as handle:
+        handle.writestr("DCE_x.xml", "<Document><Autre>1</Autre></Document>")
+    with pytest.raises(ValueError, match="aucune décision"):
+        list(parse_archive(empty))

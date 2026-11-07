@@ -46,12 +46,25 @@ Fetch = Callable[[str, Mapping[str, str]], tuple[int, Mapping[str, str], bytes]]
 
 
 class JudilibreError(RuntimeError):
-    """Erreur du client ; `suspicious` : HTTP 423 (arrêt immédiat, à signaler)."""
+    """Erreur du client ; `suspicious` : HTTP 423 (arrêt immédiat, à signaler) ; `quota` :
+    compteur journalier sous 1 000 (arrêt). `fatal` : l'une ou l'autre, jamais un `api_error`."""
 
-    def __init__(self, message: str, *, status: int | None = None, suspicious: bool = False):
+    def __init__(
+        self,
+        message: str,
+        *,
+        status: int | None = None,
+        suspicious: bool = False,
+        quota: bool = False,
+    ):
         super().__init__(message)
         self.status = status
         self.suspicious = suspicious
+        self.quota = quota
+
+    @property
+    def fatal(self) -> bool:
+        return self.suspicious or self.quota
 
 
 def key_from_env() -> str:
@@ -193,7 +206,9 @@ class JudilibreClient:
             if status != 200:
                 raise JudilibreError(f"HTTP {status} sur {path}", status=status)
             if self.rate.daily_low():
-                raise JudilibreError("quota journalier sous 1 000 requêtes : arrêt", status=status)
+                raise JudilibreError(
+                    "quota journalier sous 1 000 requêtes : arrêt", status=status, quota=True
+                )
             if self.rate.short_low():
                 self._sleep(1.0)
             try:

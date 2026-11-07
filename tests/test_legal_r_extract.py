@@ -197,3 +197,14 @@ def test_rank_never_taken_from_date(text, formation):
     (ref,) = extract_references(text)
     assert ref.formation_text == formation
     assert (ref.day, ref.month, ref.year) in {(12, 3, 2015), (1, 3, 2015)}
+
+
+def test_bare_ce_number_needs_citation_separators():
+    """E3 : le numéro nu du CE suit une virgule ; un montant ou un effectif n'en est pas un."""
+    (amount,) = extract_references(
+        "Le Conseil d'État (CE, 12 mars 2019) a jugé, dans une affaire portant sur "
+        "250000 euros, que la décision était légale."
+    )
+    assert amount.number_text is None
+    (lebon,) = extract_references("CE, Sect., 3 mars 2004, Ministre c/ X, 241151.")
+    assert lebon.number_text == "241151"

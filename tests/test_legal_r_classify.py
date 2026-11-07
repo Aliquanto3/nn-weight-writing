@@ -28,6 +28,7 @@ from nn_weight_writing.datasets.legal_r.classify import (
     Unit,
     build_units,
     citation_from,
+    classement_row,
     classify_unit,
     read_classement,
     write_classement,
@@ -276,9 +277,8 @@ def phase_b(tmp_path, monkeypatch):
         str(tmp_path / "cache"),
         "--sortie",
         str(out),
-        "--depot",
-        str(repo),
     ]
+    monkeypatch.setattr(script, "REPO", repo)  # dépôt git jetable : HEAD et arbre contrôlés
     return {
         "script": script,
         "transport": transport,
@@ -384,3 +384,120 @@ def test_classer_stops_on_api_errors(phase_b, monkeypatch):
     monkeypatch.setattr(script, "FETCH", failing)
     assert script.main(["classer", *phase_b["base"], "--grille-figee", phase_b["head"]]) == 3
     assert not (phase_b["out"] / "classement.jsonl").exists()
+
+
+def test_unknown_jurisdiction_is_partial():
+    """D6 : sans juridiction, la référence est incomplète (`partial`), pas hors périmètre."""
+    unit = classify("Voir le pourvoi n° 13-27.123 du 12 mars 2015.")
+    assert unit.ref.jurisdiction is None
+    assert unit.klass == "partial"
+
+
+def test_unknown_seat_not_published():
+    """D3, D6 : un siège hors des 36 (« CA Renault SA ») n'est jamais publié."""
+    invented = classify("CA Renault SA, 12 mars 2015, n° 13/04567")
+    assert invented.ref.formation == "Renault Sa" and invented.rules >= {"R-O3"}
+    row = classement_row(invented, {})
+    assert (row["formation"], row["canonical"]) == (None, None)
+    assert "Renault" not in json.dumps(row)
+    lyon = classement_row(classify("CA Lyon, 12 mars 2015, n° 13/04567"), {})
+    assert lyon["formation"] == "Lyon" and lyon["canonical"].startswith("CA Lyon")
+
+
+def _verdict(path, sha, verdict="accepte", tour=0, drawn=1, found=0, **extra):
+    data = {
+        "date": "2026-11-08",
+        "classement_sha256": sha,
+        "verdict": verdict,
+        "tour": tour,
+        "fausses_absences": {"tirees": drawn, "trouvees": found},
+        **extra,
+    }
+    path.write_text(json.dumps(data), encoding="utf-8")
+    return path
+
+
+def test_porte_false_absences_force_correction(phase_b):
+    """P7 : plus d'une fausse absence -> pas de porte au tour 0, même « accepte »."""
+    script, base, out, tmp = phase_b["script"], phase_b["base"], phase_b["out"], phase_b["tmp"]
+    assert script.main(["classer", *base, "--grille-figee", phase_b["head"]]) == 0
+    sha = script.sha256_file(out / "classement.jsonl")
+    porte = ["porte", "--sortie", str(out), "--r-gate", str(tmp / "r_gate.toml")]
+    for bad in (
+        _verdict(tmp / "v.json", sha, drawn=1, found=2),  # trouvées > tirées
+        _verdict(tmp / "v.json", sha, drawn=3, found=2),  # tirées != taille du tirage k = 4
+        _verdict(tmp / "v.json", sha, drawn=1, found=None),
+    ):
+        assert script.main([*porte, "--verdict", str(bad)]) == 2
+    assert not (out / "resume.json").exists()
+
+
+def test_classer_single_correction_round(phase_b, capsys):
+    """P1 : un second `classer` n'est admis qu'une fois, sur le verdict en échec du tour 0."""
+    script, base, out, tmp = phase_b["script"], phase_b["base"], phase_b["out"], phase_b["tmp"]
+    head = phase_b["head"]
+    assert script.main(["classer", *base, "--grille-figee", head]) == 0
+    sha0 = script.sha256_file(out / "classement.jsonl")
+    assert script.main(["classer", *base, "--grille-figee", head]) == 2  # sans tour de correction
+    accepted = _verdict(tmp / "v0.json", sha0, motif="extracteur")
+    assert (
+        script.main(["classer", *base, "--grille-figee", head, "--tour-correction", str(accepted)])
+        == 2
+    )
+    no_motif = _verdict(tmp / "v0.json", sha0, verdict="echec")
+    assert (
+        script.main(["classer", *base, "--grille-figee", head, "--tour-correction", str(no_motif)])
+        == 2
+    )
+    failed = _verdict(tmp / "v0.json", sha0, verdict="echec", motif="rappel de l'extraction")
+    assert (
+        script.main(["classer", *base, "--grille-figee", head, "--tour-correction", str(failed)])
+        == 0
+    )
+    manifest = json.loads((out / "manifest.json").read_text(encoding="utf-8"))
+    assert manifest["tour"] == 1 and manifest["correction"]["previous_classement_sha256"] == sha0
+    assert manifest["correction"]["motif"] == "rappel de l'extraction"
+    assert script.sha256_file(out / "tour0" / "classement.jsonl") == sha0
+    assert (out / "interne" / "tour0" / "extraction.jsonl").is_file()
+    assert (
+        script.main(["classer", *base, "--grille-figee", head, "--tour-correction", str(failed)])
+        == 2
+    )
+    journal = script.read_journal(out)
+    assert [(e["command"], e["tour"]) for e in journal] == [("classer", 0), ("classer", 1)]
+    # Porte : le verdict doit être celui du tour 1.
+    sha1 = script.sha256_file(out / "classement.jsonl")
+    porte = ["porte", "--sortie", str(out), "--r-gate", str(tmp / "r_gate.toml")]
+    assert script.main([*porte, "--verdict", str(_verdict(tmp / "v1.json", sha1, tour=0))]) == 2
+    assert script.main([*porte, "--verdict", str(_verdict(tmp / "v1.json", sha1, tour=1))]) == 0
+    # Une seule porte, même si resume.json disparaît ; plus aucun classement ensuite.
+    (out / "resume.json").unlink()
+    assert script.main([*porte, "--verdict", str(tmp / "v1.json")]) == 2
+    assert (
+        script.main(["classer", *base, "--grille-figee", head, "--tour-correction", str(failed)])
+        == 2
+    )
+
+
+def test_porte_refuses_changed_r_facts(phase_b):
+    """`porte` relit les fenêtres : r_facts.toml doit être celui du classement."""
+    script, base, out, tmp = phase_b["script"], phase_b["base"], phase_b["out"], phase_b["tmp"]
+    assert script.main(["classer", *base, "--grille-figee", phase_b["head"]]) == 0
+    manifest_path = out / "manifest.json"
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    manifest["inputs"]["r_facts.toml"] = "0" * 64
+    manifest_path.write_text(json.dumps(manifest), encoding="utf-8")
+    sha = script.sha256_file(out / "classement.jsonl")
+    porte = ["porte", "--sortie", str(out), "--r-gate", str(tmp / "r_gate.toml")]
+    assert script.main([*porte, "--verdict", str(_verdict(tmp / "v.json", sha))]) == 2
+    assert not (out / "resume.json").exists()
+
+
+def test_guard_checks_executed_code_repo(phase_b, monkeypatch):
+    """Le contrôle de la grille figée porte sur le dépôt du code exécuté (`REPO`)."""
+    script = phase_b["script"]
+    assert script.guard_frozen_grid(phase_b["head"]) is None
+    elsewhere = phase_b["tmp"] / "ailleurs"  # dossier hors dépôt : aucun HEAD
+    elsewhere.mkdir()
+    monkeypatch.setattr(script, "REPO", elsewhere)
+    assert script.guard_frozen_grid(phase_b["head"]) is not None

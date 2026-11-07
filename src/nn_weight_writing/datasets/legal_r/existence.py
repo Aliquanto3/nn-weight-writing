@@ -214,7 +214,7 @@ def check_existence(
         try:
             results = client.scan_day(ref.jurisdiction, day.isoformat(), location)
         except JudilibreError as error:
-            if error.suspicious:
+            if error.fatal:  # 423 ou quota journalier : arrêt net (D5, P8)
                 raise
             return Verification("unverifiable", reason="api_error", source="judilibre")
         same_day = _judilibre_candidates(results, ref.jurisdiction)
@@ -242,7 +242,7 @@ def check_existence(
         try:
             found = client.search_number(ref.number, ref.jurisdiction)
         except JudilibreError as error:
-            if error.suspicious:
+            if error.fatal:  # 423 ou quota journalier : arrêt net (D5, P8)
                 raise
             return Verification("unverifiable", reason="api_error", source="judilibre")
         other_date = any(
