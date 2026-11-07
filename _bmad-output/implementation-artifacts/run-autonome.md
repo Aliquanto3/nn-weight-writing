@@ -308,3 +308,32 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-07 07:40 · 1.12 · décision · P1-P12 tranchées par l'orchestrateur (p calculé seulement après le contrôle qualité, variantes de numéro sans ambiguïté canonisées, cours d'appel hors champ, rappel 57/60 par juridiction, absences fausses contrôlées par le reviewer via /search, aucun repli HF en phase B, .env exporté pour redact()…), reportées dans la spec par dev-story · 9e05ec1
 - 2026-11-07 07:40 · 1.12 · dev · lancé, phase A (dev-story Opus, effort high, worktree 1-12) · 9e05ec1
 - 2026-11-07 07:40 · 1.14 · dev · lancé, 1-14a partie 1 : mesures, ablation, table, décisions (dev-story Opus, worktree 1-14) · 8d633a8
+- 2026-11-07 08:00 · 1.14a · dev · partie 1 finie : EvalRecord v2, mesures et ablation, nnww table, decisions-lot1.toml ; 190 dossiers évalués, 7 valeurs de référence retrouvées ; 1,2651 $ facturés, 34,55 $ équivalent API ; 2 fragment_overlap à juger · a54766b
+- 2026-11-07 08:00 · 1.14a · second-avis · lancé, partie 1 · a54766b
+- 2026-11-07 08:04 · 1.14a · second-avis · partie 1 : 0 high, 4 medium (evaluate sans --heldout-root efface les mesures, témoins en annexe gardés dans les moyennes, colonne « toutes séances » fausse, identifiants réservés publiés), 5 low · a54766b
+- 2026-11-07 08:04 · 1.14a · décision · identifiants d'exemples réservés gardés dans les drapeaux publiés (opaques, AD-19) ; Q8 au sens strict · —
+- 2026-11-07 08:04 · 1.14a · review · lancé, partie 1 (reviewer Opus) · a54766b
+- 2026-11-07 08:11 · 1.14a · review · partie 1, passe 1 : 2 medium corrigés (mesures gardées par evaluate sans --heldout-root, témoins écartés hors moyennes), 4 low corrigés, 3 rejetés · 586de71
+- 2026-11-07 08:11 · 1.14a · PR · #29 brouillon ouverte pour la CI trois OS · 586de71
+- 2026-11-07 08:11 · 1.14a · décision · passe 2 de la partie 1 fusionnée avec la revue de la partie 2 (une passe de moins) · —
+- 2026-11-07 08:11 · 1.14a · dev · lancé, partie 2 : publish, --check, rassemblement, spine AD-18 (dev-story Opus, worktree 1-14) · 586de71
+- 2026-11-07 08:20 · 1.12 · dev · phase A finie : 21 règles, aucune désactivée (faux positifs sur 46 012 vraies : cc 0,026 %, CE 0,117 %) ; rappel cc 60/60, CE 60/60 ; index CE 40 134 décisions (119,6 Mo) ; ~125 requêtes Judilibre sans 429 ; collecte non lue ; grille figée · 0e93767
+- 2026-11-07 08:20 · 1.12 · second-avis · lancé, phase A · 0e93767
+- 2026-11-07 08:25 · 1.12 · second-avis · phase A : 0 high, 7 medium (verdict P7 non appliqué, classer relançable, garde --depot, quota journalier non arrêtant, fenêtres relues sans empreinte, nom de partie capté comme siège de CA, numéro CE nu fictif), 4 low · 0e93767
+- 2026-11-07 08:25 · 1.12 · review · lancé, phase A (reviewer Opus) ; nouvelle grille figée attendue · 0e93767
+- 2026-11-07 08:31 · 1.14a · dev · partie 2 finie : nnww publish (12 refus) et --check, rassemblement dans nnww-artefacts (864 fichiers, conflit data/legal_s/train 1-10 contre 1-11 contourné par --only), tableau identique octet pour octet, publish à blanc sans refus sur les journaux réels, AD-18 amendé ; CI verte trois OS · 4e55042
+- 2026-11-07 08:31 · 1.14a · second-avis · lancé, partie 2 et correctifs de la partie 1 · 4e55042
+- 2026-11-07 08:34 · 1.14a · second-avis · partie 2 : 1 high (blocs text admis dans les journaux des séances de R, risque jugé faible par l'orchestrateur : pas d'accès Judilibre en séance), 6 medium (ligne illisible qui saute les contrôles, suffixes non contrôlés, double encodage, valeur de source imprimée, table écrit avant contrôle, UTF-16 et largeur nulle), 6 low · 4e55042
+- 2026-11-07 08:34 · 1.14a · review · passe 2 lancée (reviewer Opus), partie 2 et correctifs de la partie 1 · 4e55042
+- 2026-11-07 08:39 · 1.12 · review · phase A, passe 1 : 7 medium corrigés (P7 appliqué, journal en ajout seul et tour de correction unique, --depot retiré, quota qui arrête, empreintes des faits contrôlées, siège de CA hors liste publié à null, numéro nu CE après ponctuation), 4 low corrigés, 1 rejeté ; grille refigée · 26f797a
+- 2026-11-07 08:39 · 1.12 · PR · #30 brouillon ouverte pour la CI trois OS · 26f797a
+- 2026-11-07 08:39 · 1.12 · review · passe 2 lancée (reviewer Opus) · 26f797a
+- 2026-11-07 08:43 · 1.14a · review · passe 2 : 6 medium corrigés (blocs text et double encodage décodés, JSONL ligne à ligne avec refus uncheckable, tout suffixe contrôlé et .npz seul binaire, valeur de source masquée, table écrit après contrôle, UTF-16 et largeur nulle), 4 low corrigés, 1 rejeté ; publish à blanc sans refus ; CI verte trois OS · 2b2cdcb
+- 2026-11-07 08:43 · 1.14a · review · passe 3 (dernière) lancée (reviewer Sonnet, diff des correctifs seul) · 2b2cdcb
+- 2026-11-07 08:45 · 1.12 · review · phase A, passe 2 : 0 Important, 3 low corrigés (tour de correction refusé après porte même sans journal, verdict illisible, test du quota par classer), 1 low noté (numéro nu CE après saut de ligne) ; grille figée · 1a672a1
+- 2026-11-07 08:45 · 1.12 · attente · phase B attend la sortie figée de 1-12a (639 générations écrites à 08:45) · 1a672a1
+- 2026-11-07 08:48 · 1.14a · review · passe 3 (Sonnet) : 1 medium corrigé (splitlines coupait sur U+2028 et refusait des lignes JSONL valides), 0 low · 5f1ce6c
+- 2026-11-07 08:48 · 1.14a · CI · verte sur les trois OS (PR #29) · 5f1ce6c
+- 2026-11-07 08:48 · 1.14a · fusion · #29 fusionnée, MERGED vérifié ; 1-14b après 1-13 · 94e22fe
+- 2026-11-07 08:48 · 1.13 · dev · spec de story lancée (general-purpose Opus, worktree 1-13) sur les contrats de 1-12 (branche feat/1-12-pre-etude-r) et de 1-14a (main) · 94e22fe
+- 2026-11-07 08:49 · 1.12 · décision · pas de rebase de feat/1-12-pre-etude-r avant la phase B (classer exige HEAD = grille figée 1a672a1) ; rebase sur main et conflit du spine (AD-18 de 1-14a) résolus après la porte · 1a672a1
