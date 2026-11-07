@@ -45,7 +45,7 @@ Lot 1 (priorité), dans l'ordre d'exécution :
   - **success:** Score de B sur chaque jeu où A est mesuré, code de B publié.
 - **CAP-7** — témoins C et F
   - **intent:** On mesure l'entraînement standard en courbe d'efficacité en données (C) et avec entrées préparées (F, champs de date extraits).
-  - **success:** Pour chaque jeu, une courbe C sur une architecture de référence fixe, N = 64, 256, 1 024, 8 192 et au-delà, plusieurs graines ; chaque architecture écrite en A réentraînée depuis des poids aléatoires à N = 8 192 ; un point F au moins à chaque N.
+  - **success:** Pour chaque jeu, une courbe C sur une architecture de référence fixe, N = 64, 256, 1 024, 8 192 et au-delà, plusieurs graines ; chaque architecture écrite en A réentraînée depuis des poids aléatoires à N = 8 192 ; un point F au moins à chaque N. Sur R (amendement de 1-13, R3 du constat 1-3) : C et F jusqu'au N disponible (taille de l'entraînement de R), réentraînement « même réseau » à ce N, et entraînement sur S évalué sur R.
 - **CAP-8** — jouet à solution connue
   - **intent:** Des tâches dont la solution exacte est connue valident le harnais de bout en bout et calibrent le budget de passes.
   - **success:** Une solution écrite à la main atteint 100 % par le harnais ; des séances A et B tournent sur Sonnet et MiMo, 1 tentative par case ; le budget de passes recalibré est consigné puis figé.
@@ -57,7 +57,7 @@ Lot 1 (priorité), dans l'ordre d'exécution :
   - **success:** Part chiffrée avec intervalle, classement publié, décision « comparatif » ou « mesure de plafond » consignée selon la porte des 30 %.
 - **CAP-11** — jeu R
   - **intent:** On compare les méthodes sur de vraies références (Judilibre) contre de vraies hallucinations de SLM, sans circularité avec les 15 types.
-  - **success:** Chaque fausse référence est vérifiée absente de Judilibre ; un test montre que vraies et fausses passent par le même normaliseur.
+  - **success:** Chaque fausse référence est soit vérifiée absente de la base de sa juridiction (Judilibre, open data du Conseil d'État) par égalité de champs, dans la fenêtre de couverture de cette base, soit impossible (date invalide ou postérieure à sa génération) ; un test montre que vraies et fausses passent par le même normaliseur (amendement de 1-13, R7 du constat 1-3).
 - **CAP-12** — mesures par case
   - **intent:** Chaque case (tâche × méthode × modèle) est décrite par l'exactitude réservée, la robustesse hors distribution, le coût, la lisibilité et la variance entre tentatives.
   - **success:** Un tableau agrégé est régénéré par commande depuis les journaux, sans saisie manuelle, coût facturé et coût équivalent API en colonnes séparées ; la lisibilité y est mesurée par ablation des blocs déclarés (`methodes-et-lots.md`).

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -129,6 +130,8 @@ def test_importing_cli_and_the_session_side_does_not_load_torch():
         "import nn_weight_writing.cli\n"
         "import nn_weight_writing.session.service, nn_weight_writing.sandbox.runner\n"
         "import nn_weight_writing.network, nn_weight_writing.tasks.toy\n"
+        "import nn_weight_writing.tasks.legal, nn_weight_writing.tasks.registry\n"
+        "assert not [m for m in sys.modules if m.startswith('nn_weight_writing.datasets')]\n"
         "sys.exit(1 if 'torch' in sys.modules else 0)\n"
     )
     result = subprocess.run([sys.executable, "-I", "-c", code], capture_output=True, text=True)
@@ -147,5 +150,9 @@ def test_session_side_never_imports_legal_r():
         "nn_weight_writing.datasets.legal_r.grid",
         "nn_weight_writing.datasets.legal_r.judilibre",
     ]
+    # Story 1-13 : le nom de tâche `legal_r` est admis côté séance (`tasks/legal/`), jamais le
+    # paquet `datasets.legal_r` ni son chemin.
     for path in session_files():
-        assert "legal_r" not in path.read_text("utf-8"), path
+        text = path.read_text("utf-8")
+        assert "datasets.legal_r" not in text and "datasets/legal_r" not in text, path
+        assert not re.search(r"\bimport\s+legal_r\b|from\s+\S*datasets\S*\s+import", text), path

@@ -293,6 +293,7 @@ Les flèches sont les seules dépendances permises. `cli` n'importe `baselines` 
   - **Évaluation.** Elle passe par `nnww evaluate`, comme pour A.
   - **Variantes.**
     - Point « même réseau » : il part du `manifest.json` gelé d'une séance A, poids réinitialisés.
+      Sur R (amendement de 1-13) : réentraîné sur `data/legal_r/train` à N = N_max, taille de ce jeu, au lieu de 8 192 (écart à CAP-7 consigné).
     - E : il part des poids gelés d'une séance A.
 
 ### AD-18 — Publication contrôlée
