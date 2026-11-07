@@ -1,0 +1,15 @@
+nn-weight-writing
+Code sous licence Apache 2.0 (voir LICENSE).
+
+Jeu R (tâche legal_r, lot 1, release v0.1.0)
+--------------------------------------------
+
+Vraies références : base Open Data Judilibre de la Cour de cassation, Licence Ouverte 2.0 (https://www.etalab.gouv.fr/licence-ouverte-open-licence), extraction du 2026-11-07 ; données Conseil d'État : base Open Data du Conseil d'État (opendata.justice-administrative.fr), Licence Ouverte 2.0. Fausses références : générées par des SLM, ne correspondent à aucune décision.
+
+Précisions :
+
+- Date d'extraction des deux jeux de R (data/legal_r/session et heldout/legal_r/eval) : extraction du 2026-11-07 (champ extraction_date de leur dataset.json ; date de dernière mise à jour de chaque décision dans le champ update_date de sources.jsonl, quand la base la donne). Index local du Conseil d'État construit depuis les archives mensuelles le 2026-11-07.
+- Le miroir Hugging Face de Judilibre n'a pas servi ; JADE (DILA) non plus.
+- Origine des fausses références : sorties de petits modèles de langage (SLM) collectées en story 1-12a, classées par la pré-étude 1-12 ; chaque ligne de sources.jsonl porte sa classe et sa source (judilibre, ce-opendata, slm:<tag>) ; aucune fausse référence n'est attribuée à une base publique, aucune n'est fabriquée par retouche d'une vraie.
+- R ne contient que des métadonnées de référence (juridiction, chambre ou formation, siège, date, numéro) : ni texte de décision, ni nom de partie ou de magistrat.
+- Une release est un instantané daté : une décision retirée de la base après le 2026-11-07 peut y rester citée.

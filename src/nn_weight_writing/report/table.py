@@ -271,8 +271,9 @@ def build(
     session_decisions = {
         s.id: decision(s.id, s.open["task"], s.config, None) for s in data.sessions
     }
+    # Clé : chemin, pas run_id (l'annexe `annexe-fields1/` reprend les run_id du F retenu).
     baseline_decisions = {
-        b.id: decision(b.id, b.run.get("task", ""), None, b.chemin) for b in data.baselines
+        b.path: decision(b.id, b.run.get("task", ""), None, b.chemin) for b in data.baselines
     }
     for group in groups:
         if not matched.get(group.scope):
@@ -287,7 +288,7 @@ def build(
         return "counted" if s.id in counted else "replayed"
 
     def baseline_status(b: Baseline) -> str:
-        d = baseline_decisions[b.id]
+        d = baseline_decisions[b.path]
         return d.status if d is not None and d.removes else "counted"
 
     targets = sorted(
@@ -512,7 +513,7 @@ def build(
         for s in sorted(data.sessions, key=lambda s: s.id)
         if session_decisions[s.id] is not None and session_decisions[s.id].removes
     ] + [
-        {"path": b.path, "status": baseline_status(b), "reason": baseline_decisions[b.id].reason}
+        {"path": b.path, "status": baseline_status(b), "reason": baseline_decisions[b.path].reason}
         for b in sorted(data.baselines, key=lambda b: b.path)
         if baseline_status(b) != "counted"
     ]

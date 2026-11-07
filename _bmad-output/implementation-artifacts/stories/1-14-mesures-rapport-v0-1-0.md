@@ -1,7 +1,7 @@
 ---
 story: "1-14"
 title: Mesures, rapport du lot 1 et v0.1.0
-status: review (1-14a parties 1 et 2) ; en attente de 1-13 (1-14b)
+status: review
 branch: feat/1-14-mesures-publication
 ---
 
@@ -400,6 +400,20 @@ Pour 1-13 : jeux `data/legal_r/<jeu>/` et `heldout/legal_r/<jeu>/` avec `sources
 
 Pour 1-14b : créer `NOTICE` (phrase, URL, « extraction du AAAA-MM-JJ » de chaque jeu R), puis `nnww publish 1 --root C:\Users\Utilisateur\nnww-artefacts` ; `nnww publish --check docs/rapport-lot1.md <notes> <billet> --root …` avant la release ; le classement de 1-12 se contrôle par `--check` avant d'être mis en asset.
 
+## Réalisé : 1-14b (rapport, préparation de v0.1.0)
+
+Livré : jugements dans `docs/mesures/decisions-lot1.toml` (plus aucun `pending`), `docs/mesures/lot1.{md,json}` régénérés (`nnww table --lot 1 --strict` vert sur `C:\Users\Utilisateur\nnww-artefacts`, 87 séances, 144 témoins), `NOTICE`, code de B des 13 séances B comptées dans `docs/rapport-lot1/b/`, `docs/rapport-lot1.md`, version 0.1.0 (`pyproject.toml`, `__init__.py`, `uv.lock`). Hors dépôt : `dist/lot1/` (`runs-lot1.tar.gz` sha256 `742fdad1…a1bbae`, `r-lot1.tar.gz` sha256 `a69088a1…f52e54`, `SHA256SUMS`), notes de release et brouillon du billet. Étapes 1 à 7 faites jusqu'à la PR ; étapes 8 à 10 préparées seulement (tag, release, topic et billet : orchestrateur, après accord d'Anaël).
+
+Jugements (2026-11-07) : les 4 `fragment_overlap` (2 de 1-10, Sonnet B t2 et t3 sur R) maintenus, fragments limités à des noms de chambre ; MiMo B t2 sur R maintenu (alerte D8 : heuristique générique sur les numéros, aucune référence recopiée) ; MiMo étapes 1 et 2 en annexe, conformément à 1-10, y compris le groupe A-programme 10⁴ `8e081aa1` de l'étape 2 (non listé dans la spec, même motif) ; l'essai de l'étape 3 compte pour A-programme 10⁴ t1 ; F `fields@1` et séances jouet en annexe.
+
+Écarts à la spec, assumés :
+
+- Correctif de `report/table.py` : les décisions des témoins étaient indexées par `run_id`, que l'annexe `annexe-fields1/` partage avec le F retenu ; le groupe `path = "annexe-fields1"` restait sans effet sur le tableau. Indexées par chemin ; test `test_annex_group_does_not_hide_counted_baseline_with_same_run_id`.
+- `NOTICE` : phrase de la condition 2 du constat 1-3 sans la mention de JADE ni celle du miroir Hugging Face, ni l'un ni l'autre n'ayant servi (comme le `--notice` de test de 1-13).
+- `docs/rapport-lot1/b/` exclu de ruff (code copié tel quel des séances gelées).
+- Classement de 1-12 (`classement.jsonl`, sha256 `527869b5…a4ca62de`) non mis en asset : `nnww publish --check` le refuse (87 `reserved_example` : il contient les fausses du réservé de R). À trancher par Anaël avec le point 7.
+- Journal de `run-autonome.md` non modifié ici (fichier de la branche d'état du run) : décisions remises à l'orchestrateur.
+
 ## Revue
 
 ### Passe 1 (2026-11-07, SHA revu a54766b)
@@ -449,3 +463,18 @@ Relu : `4e55042..2b2cdcb`, sondes exécutées.
 - Rejeté : `table` : temporaire dans `--out`, nettoyé par `TemporaryDirectory` sur refus comme sur exception, test `test_table_refused_leaves_nothing_in_out` ; normalisation appliquée aux deux côtés (index et corpus) ; tri par `repr` sans effet sur l'archive (contrôle seulement).
 - Liens : `is_linked` / `is_symlink`+`is_junction` avant lecture ; test de lien sauté sous Windows sans droit, joué en CI Linux.
 - Complexité : 0 constat.
+
+### 1-14b, passe 1 (2026-11-07, SHA revu 6337931)
+
+Base : `origin/main` (08b9ff8) ancêtre de HEAD, pas de rebase. Relu : `08b9ff8..6337931`. `nnww table --lot 1 --strict` rejoué dans un dossier temporaire sur `nnww-artefacts` : `lot1.{md,json}` identiques octet pour octet aux fichiers commités.
+
+- **Important**, high (ramené à medium : chiffres justes, conclusion trop forte), second avis 1 : « A fait mieux que C à données comparables » reposait sur C à N = 64, où la réserve de 1-11 (100 époques, plateau montré à 8 192 seulement) interdit de conclure, ce que le §5 disait. Corrigé : avantage nominal, l'écart à N = 64 donné comme borne haute (C sous-entraîné, savoir préalable du LLM), comparaison robuste A 10⁵ entre C 8 192 et 32 768 ; §5 aligné ; notes de release et brouillon du billet corrigés (hors dépôt).
+- **Important**, medium, second avis 2 : empreinte du rapport `ff652661…` périmée ; la régénération donne `c768d61d…2493bd1` (celle de `lot1.md`). Corrigé.
+- **Important**, medium, second avis 3 : B MiMo sur R (72,8 %) au-dessus du plafond de la grille par la seule t2 (74,1 %, alerte D8) ; sans elle 72,1 %. Corrigé aux §1, §6 et §10 (écart dû à t2, dans le bruit) et dans les notes de release.
+- **Nit**, low, second avis 4 : « aucune case » nuancé (S-réservé 88,8 contre 88,7, dans le bruit), rapport, notes et billet. Corrigé.
+- Rejeté, second avis 5 (low) : l'omission de JADE est dite dans `NOTICE` (« JADE (DILA) non plus ») et dans les écarts assumés de cette spec.
+- **Nit**, low, second avis 6 : « dont 0,11 $ estimé » ajouté au §7. Corrigé.
+- **Nit**, low, second avis 7 : une décision `[[session]]` visant un témoin par `run_id` s'appliquerait aussi à sa copie d'annexe (même `run_id`). Aucune décision actuelle concernée ; reporté (indexer les décisions de témoin par chemin le jour où un lot en a besoin).
+- Rejeté, second avis 8 (low) : la condition 5 du constat 1-3 est une condition préalable à `r_republish`, pas une mention d'attribution ; remplie et citée dans `config/publish.toml` et le constat 1-3.
+- Vérifié, point laissé ouvert par le second avis : `nnww publish --root nnww-artefacts --check` sur `docs/rapport-lot1.md`, `NOTICE`, les 13 `docs/rapport-lot1/b/*.py`, les notes de release et le billet : aucun refus (4 174 `raw` réservés contrôlés, S-réservé et R compris).
+- Complexité : 0 constat (diff de code limité à la clé des décisions de témoins).

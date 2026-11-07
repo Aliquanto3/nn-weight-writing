@@ -6,6 +6,7 @@
       "baseline": "C",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.492337,
         "legal_s_reserved:eval": 0.51675
       },
       "encoder": "legal.chars@1",
@@ -55,6 +56,7 @@
       "baseline": "C",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.43295,
         "legal_s_reserved:eval": 0.553583
       },
       "encoder": "legal.chars@1",
@@ -104,6 +106,7 @@
       "baseline": "C",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.534483,
         "legal_s_reserved:eval": 0.626167
       },
       "encoder": "legal.chars@1",
@@ -153,6 +156,7 @@
       "baseline": "C",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.591954,
         "legal_s_reserved:eval": 0.837333
       },
       "encoder": "legal.chars@1",
@@ -202,6 +206,7 @@
       "baseline": "C",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.66092,
         "legal_s_reserved:eval": 0.946417
       },
       "encoder": "legal.chars@1",
@@ -251,6 +256,7 @@
       "baseline": "F",
       "chemin": "annexe-fields1",
       "cross": {
+        "legal_r:eval": 0.5,
         "legal_s_reserved:eval": 0.531833
       },
       "encoder": "legal.fields@1",
@@ -290,7 +296,7 @@
         2
       ],
       "status": [
-        "counted"
+        "annex"
       ],
       "task": "legal_s"
     },
@@ -300,6 +306,7 @@
       "baseline": "F",
       "chemin": "annexe-fields1",
       "cross": {
+        "legal_r:eval": 0.477012,
         "legal_s_reserved:eval": 0.555583
       },
       "encoder": "legal.fields@1",
@@ -339,7 +346,7 @@
         2
       ],
       "status": [
-        "counted"
+        "annex"
       ],
       "task": "legal_s"
     },
@@ -349,6 +356,7 @@
       "baseline": "F",
       "chemin": "annexe-fields1",
       "cross": {
+        "legal_r:eval": 0.572797,
         "legal_s_reserved:eval": 0.623333
       },
       "encoder": "legal.fields@1",
@@ -388,7 +396,7 @@
         2
       ],
       "status": [
-        "counted"
+        "annex"
       ],
       "task": "legal_s"
     },
@@ -398,6 +406,7 @@
       "baseline": "F",
       "chemin": "annexe-fields1",
       "cross": {
+        "legal_r:eval": 0.637931,
         "legal_s_reserved:eval": 0.7195
       },
       "encoder": "legal.fields@1",
@@ -437,7 +446,7 @@
         2
       ],
       "status": [
-        "counted"
+        "annex"
       ],
       "task": "legal_s"
     },
@@ -447,6 +456,7 @@
       "baseline": "F",
       "chemin": "annexe-fields1",
       "cross": {
+        "legal_r:eval": 0.683908,
         "legal_s_reserved:eval": 0.881667
       },
       "encoder": "legal.fields@1",
@@ -486,7 +496,7 @@
         2
       ],
       "status": [
-        "counted"
+        "annex"
       ],
       "task": "legal_s"
     },
@@ -496,6 +506,7 @@
       "baseline": "F",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.503831,
         "legal_s_reserved:eval": 0.532583
       },
       "encoder": "legal.fields@2",
@@ -545,6 +556,7 @@
       "baseline": "F",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.463602,
         "legal_s_reserved:eval": 0.56125
       },
       "encoder": "legal.fields@2",
@@ -594,6 +606,7 @@
       "baseline": "F",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.538314,
         "legal_s_reserved:eval": 0.667583
       },
       "encoder": "legal.fields@2",
@@ -643,6 +656,7 @@
       "baseline": "F",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.603448,
         "legal_s_reserved:eval": 0.840917
       },
       "encoder": "legal.fields@2",
@@ -692,6 +706,7 @@
       "baseline": "F",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.664751,
         "legal_s_reserved:eval": 0.934083
       },
       "encoder": "legal.fields@2",
@@ -741,6 +756,7 @@
       "baseline": "C",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.484675,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.chars@1",
@@ -790,6 +806,7 @@
       "baseline": "C",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.47318,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.chars@1",
@@ -839,6 +856,7 @@
       "baseline": "C",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.519157,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.chars@1",
@@ -888,6 +906,7 @@
       "baseline": "C",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.570881,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.chars@1",
@@ -937,6 +956,7 @@
       "baseline": "C",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.58046,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.chars@1",
@@ -986,6 +1006,7 @@
       "baseline": "F",
       "chemin": "annexe-fields1",
       "cross": {
+        "legal_r:eval": 0.48659,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.fields@1",
@@ -1025,7 +1046,7 @@
         2
       ],
       "status": [
-        "counted"
+        "annex"
       ],
       "task": "legal_s_reserved"
     },
@@ -1035,6 +1056,7 @@
       "baseline": "F",
       "chemin": "annexe-fields1",
       "cross": {
+        "legal_r:eval": 0.492337,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.fields@1",
@@ -1074,7 +1096,7 @@
         2
       ],
       "status": [
-        "counted"
+        "annex"
       ],
       "task": "legal_s_reserved"
     },
@@ -1084,6 +1106,7 @@
       "baseline": "F",
       "chemin": "annexe-fields1",
       "cross": {
+        "legal_r:eval": 0.547893,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.fields@1",
@@ -1123,7 +1146,7 @@
         2
       ],
       "status": [
-        "counted"
+        "annex"
       ],
       "task": "legal_s_reserved"
     },
@@ -1133,6 +1156,7 @@
       "baseline": "F",
       "chemin": "annexe-fields1",
       "cross": {
+        "legal_r:eval": 0.557471,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.fields@1",
@@ -1172,7 +1196,7 @@
         2
       ],
       "status": [
-        "counted"
+        "annex"
       ],
       "task": "legal_s_reserved"
     },
@@ -1182,6 +1206,7 @@
       "baseline": "F",
       "chemin": "annexe-fields1",
       "cross": {
+        "legal_r:eval": 0.582376,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.fields@1",
@@ -1221,7 +1246,7 @@
         2
       ],
       "status": [
-        "counted"
+        "annex"
       ],
       "task": "legal_s_reserved"
     },
@@ -1231,6 +1256,7 @@
       "baseline": "F",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.515325,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.fields@2",
@@ -1280,6 +1306,7 @@
       "baseline": "F",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.478927,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.fields@2",
@@ -1329,6 +1356,7 @@
       "baseline": "F",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.542146,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.fields@2",
@@ -1378,6 +1406,7 @@
       "baseline": "F",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.576629,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.fields@2",
@@ -1427,6 +1456,7 @@
       "baseline": "F",
       "chemin": "",
       "cross": {
+        "legal_r:eval": 0.590038,
         "legal_s_reserved:eval": null
       },
       "encoder": "legal.fields@2",
@@ -1474,42 +1504,34 @@
   "cases": [
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.0,
-        "billed_sum": 0.0,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 0.367333,
-        "equiv_median": 0.055017,
-        "equiv_sum": 0.055017,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
-        "legibility": 1.0,
-        "n": 1,
-        "params_nominal": 106.0,
-        "passes_mean": 1.0,
-        "size_script_bytes": 0.0,
-        "size_weights_zlib": 37.0
+        "legibility": null,
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -1529,6 +1551,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.367333,
@@ -1561,42 +1584,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.017368,
-        "billed_sum": 0.017368,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 2.6051,
-        "equiv_median": 0.017368,
-        "equiv_sum": 0.017368,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
-        "legibility": 1.0,
-        "n": 1,
-        "params_nominal": 106.0,
-        "passes_mean": 1.0,
-        "size_script_bytes": 0.0,
-        "size_weights_zlib": 45.0
+        "legibility": null,
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -1616,6 +1631,7 @@
         "billed_median": 0.017368,
         "billed_sum": 0.017368,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 2.6051,
@@ -1648,42 +1664,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.0,
-        "billed_sum": 0.0,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 0.2787,
-        "equiv_median": 0.051003,
-        "equiv_sum": 0.051003,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
-        "legibility": 1.0,
-        "n": 1,
-        "params_nominal": 106.0,
-        "passes_mean": 1.0,
-        "size_script_bytes": 255.0,
-        "size_weights_zlib": 39.0
+        "legibility": null,
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -1703,6 +1711,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.2787,
@@ -1735,42 +1744,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.08494,
-        "billed_sum": 0.08494,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 20.961583,
-        "equiv_median": 0.08494,
-        "equiv_sum": 0.08494,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
-        "legibility": 0.5,
-        "n": 1,
-        "params_nominal": 210.0,
-        "passes_mean": 1.0,
-        "size_script_bytes": 864.0,
-        "size_weights_zlib": 61.0
+        "legibility": null,
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -1790,6 +1791,7 @@
         "billed_median": 0.08494,
         "billed_sum": 0.08494,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 20.961583,
@@ -1822,42 +1824,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.0,
-        "billed_sum": 0.0,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 0.043617,
-        "equiv_median": 0.018582,
-        "equiv_sum": 0.018582,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
         "legibility": null,
-        "n": 1,
-        "params_nominal": 0.0,
-        "passes_mean": 0.0,
-        "size_script_bytes": 67.0,
-        "size_weights_zlib": 0.0
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -1877,6 +1871,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.043617,
@@ -1909,42 +1904,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.003612,
-        "billed_sum": 0.003612,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 0.0574,
-        "equiv_median": 0.003612,
-        "equiv_sum": 0.003612,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
         "legibility": null,
-        "n": 1,
-        "params_nominal": 0.0,
-        "passes_mean": 0.0,
-        "size_script_bytes": 84.0,
-        "size_weights_zlib": 0.0
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -1964,6 +1951,7 @@
         "billed_median": 0.003612,
         "billed_sum": 0.003612,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.0574,
@@ -1996,42 +1984,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.0,
-        "billed_sum": 0.0,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 0.5506,
-        "equiv_median": 0.098564,
-        "equiv_sum": 0.098564,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
         "legibility": null,
-        "n": 1,
-        "params_nominal": 9.0,
-        "passes_mean": 3.0,
-        "size_script_bytes": 0.0,
-        "size_weights_zlib": 25.0
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -2051,6 +2031,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.5506,
@@ -2083,42 +2064,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.05949,
-        "billed_sum": 0.05949,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 6.16095,
-        "equiv_median": 0.05949,
-        "equiv_sum": 0.05949,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
-        "legibility": 0.8,
-        "n": 1,
-        "params_nominal": 27.0,
-        "passes_mean": 2.0,
-        "size_script_bytes": 0.0,
-        "size_weights_zlib": 40.0
+        "legibility": null,
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -2138,6 +2111,7 @@
         "billed_median": 0.05949,
         "billed_sum": 0.05949,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 6.16095,
@@ -2170,42 +2144,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.0,
-        "billed_sum": 0.0,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 0.33445,
-        "equiv_median": 0.053324,
-        "equiv_sum": 0.053324,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
-        "legibility": 1.0,
-        "n": 1,
-        "params_nominal": 15.0,
-        "passes_mean": 1.0,
-        "size_script_bytes": 186.0,
-        "size_weights_zlib": 29.0
+        "legibility": null,
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -2225,6 +2191,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.33445,
@@ -2257,42 +2224,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.046891,
-        "billed_sum": 0.046891,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 11.05115,
-        "equiv_median": 0.046891,
-        "equiv_sum": 0.046891,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
-        "legibility": 0.8,
-        "n": 1,
-        "params_nominal": 27.0,
-        "passes_mean": 1.0,
-        "size_script_bytes": 1183.0,
-        "size_weights_zlib": 38.0
+        "legibility": null,
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -2312,6 +2271,7 @@
         "billed_median": 0.046891,
         "billed_sum": 0.046891,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 11.05115,
@@ -2344,42 +2304,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.0,
-        "billed_sum": 0.0,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 0.04255,
-        "equiv_median": 0.017214,
-        "equiv_sum": 0.017214,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
         "legibility": null,
-        "n": 1,
-        "params_nominal": 0.0,
-        "passes_mean": 0.0,
-        "size_script_bytes": 122.0,
-        "size_weights_zlib": 0.0
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -2399,6 +2351,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.04255,
@@ -2431,42 +2384,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.00574,
-        "billed_sum": 0.00574,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 0.190433,
-        "equiv_median": 0.00574,
-        "equiv_sum": 0.00574,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
         "legibility": null,
-        "n": 1,
-        "params_nominal": 0.0,
-        "passes_mean": 1.0,
-        "size_script_bytes": 325.0,
-        "size_weights_zlib": 0.0
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -2486,6 +2431,7 @@
         "billed_median": 0.00574,
         "billed_sum": 0.00574,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.190433,
@@ -2518,6 +2464,442 @@
     },
     {
       "after_decisions": {
+        "accuracy_frozen_mean": 0.639847,
+        "accuracy_mean": 0.639847,
+        "accuracy_range": [
+          0.563218,
+          0.689655
+        ],
+        "accuracy_sd": 0.06735,
+        "attempts": [
+          {
+            "accuracy": 0.689655,
+            "attempt": 1,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.666667,
+            "attempt": 2,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.563218,
+            "attempt": 3,
+            "state": "ok"
+          }
+        ],
+        "billed_median": 0.0,
+        "billed_sum": 0.0,
+        "cross": {
+          "legal_r:eval": null,
+          "legal_s_reserved:eval": null
+        },
+        "duration_min_median": 3.233967,
+        "equiv_median": 0.54252,
+        "equiv_sum": 2.644483,
+        "evaluated_ok": 3,
+        "flagged": 0,
+        "frozen": 3,
+        "groups": {
+          "fake_known": 0.279693,
+          "held_out": null,
+          "real": 1.0
+        },
+        "legibility": 0.375,
+        "n": 3,
+        "params_nominal": 9191.0,
+        "passes_mean": 2.666667,
+        "size_script_bytes": 0.0,
+        "size_weights_zlib": 85.0
+      },
+      "all_sessions": {
+        "accuracy_frozen_mean": 0.639847,
+        "accuracy_mean": 0.639847,
+        "accuracy_range": [
+          0.563218,
+          0.689655
+        ],
+        "accuracy_sd": 0.06735,
+        "attempts": [
+          {
+            "accuracy": 0.689655,
+            "attempt": 1,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.666667,
+            "attempt": 2,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.563218,
+            "attempt": 3,
+            "state": "ok"
+          }
+        ],
+        "billed_median": 0.0,
+        "billed_sum": 0.0,
+        "cross": {
+          "legal_r:eval": null,
+          "legal_s_reserved:eval": null
+        },
+        "duration_min_median": 3.233967,
+        "equiv_median": 0.54252,
+        "equiv_sum": 2.644483,
+        "evaluated_ok": 3,
+        "flagged": 0,
+        "frozen": 3,
+        "groups": {
+          "fake_known": 0.279693,
+          "held_out": null,
+          "real": 1.0
+        },
+        "legibility": 0.375,
+        "n": 3,
+        "params_nominal": 9191.0,
+        "passes_mean": 2.666667,
+        "size_script_bytes": 0.0,
+        "size_weights_zlib": 85.0
+      },
+      "config": "e5b6c8b7",
+      "method": "A-literal",
+      "model": "claude-sonnet-5-5",
+      "replayed": {
+        "billed_sum": 0,
+        "n": 0
+      },
+      "size_target": 10000,
+      "task": "legal_r"
+    },
+    {
+      "after_decisions": {
+        "accuracy_frozen_mean": 0.689655,
+        "accuracy_mean": 0.689655,
+        "accuracy_range": [
+          0.683908,
+          0.695402
+        ],
+        "accuracy_sd": 0.005747,
+        "attempts": [
+          {
+            "accuracy": 0.683908,
+            "attempt": 1,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.689655,
+            "attempt": 2,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.695402,
+            "attempt": 3,
+            "state": "ok"
+          }
+        ],
+        "billed_median": 0.0,
+        "billed_sum": 0.0,
+        "cross": {
+          "legal_r:eval": null,
+          "legal_s_reserved:eval": null
+        },
+        "duration_min_median": 1.3523,
+        "equiv_median": 0.168445,
+        "equiv_sum": 0.43975,
+        "evaluated_ok": 3,
+        "flagged": 0,
+        "frozen": 3,
+        "groups": {
+          "fake_known": 0.37931,
+          "held_out": null,
+          "real": 1.0
+        },
+        "legibility": 0.108333,
+        "n": 3,
+        "params_nominal": 98018.0,
+        "passes_mean": 2.0,
+        "size_script_bytes": 1624.0,
+        "size_weights_zlib": 673.0
+      },
+      "all_sessions": {
+        "accuracy_frozen_mean": 0.689655,
+        "accuracy_mean": 0.689655,
+        "accuracy_range": [
+          0.683908,
+          0.695402
+        ],
+        "accuracy_sd": 0.005747,
+        "attempts": [
+          {
+            "accuracy": 0.683908,
+            "attempt": 1,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.689655,
+            "attempt": 2,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.695402,
+            "attempt": 3,
+            "state": "ok"
+          }
+        ],
+        "billed_median": 0.0,
+        "billed_sum": 0.0,
+        "cross": {
+          "legal_r:eval": null,
+          "legal_s_reserved:eval": null
+        },
+        "duration_min_median": 1.3523,
+        "equiv_median": 0.168445,
+        "equiv_sum": 0.43975,
+        "evaluated_ok": 3,
+        "flagged": 0,
+        "frozen": 3,
+        "groups": {
+          "fake_known": 0.37931,
+          "held_out": null,
+          "real": 1.0
+        },
+        "legibility": 0.108333,
+        "n": 3,
+        "params_nominal": 98018.0,
+        "passes_mean": 2.0,
+        "size_script_bytes": 1624.0,
+        "size_weights_zlib": 673.0
+      },
+      "config": "a6e463bc",
+      "method": "A-program",
+      "model": "claude-sonnet-5-5",
+      "replayed": {
+        "billed_sum": 0,
+        "n": 0
+      },
+      "size_target": 100000,
+      "task": "legal_r"
+    },
+    {
+      "after_decisions": {
+        "accuracy_frozen_mean": 0.724138,
+        "accuracy_mean": 0.724138,
+        "accuracy_range": [
+          0.724138,
+          0.724138
+        ],
+        "accuracy_sd": 0.0,
+        "attempts": [
+          {
+            "accuracy": 0.724138,
+            "attempt": 1,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.724138,
+            "attempt": 2,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.724138,
+            "attempt": 3,
+            "state": "ok"
+          }
+        ],
+        "billed_median": 0.0,
+        "billed_sum": 0.0,
+        "cross": {
+          "legal_r:eval": null,
+          "legal_s_reserved:eval": null
+        },
+        "duration_min_median": 0.3941,
+        "equiv_median": 0.036191,
+        "equiv_sum": 0.126651,
+        "evaluated_ok": 3,
+        "flagged": 2,
+        "frozen": 3,
+        "groups": {
+          "fake_known": 0.448276,
+          "held_out": null,
+          "real": 1.0
+        },
+        "legibility": null,
+        "n": 3,
+        "params_nominal": 0.0,
+        "passes_mean": 0.0,
+        "size_script_bytes": 2067.0,
+        "size_weights_zlib": 0.0
+      },
+      "all_sessions": {
+        "accuracy_frozen_mean": 0.724138,
+        "accuracy_mean": 0.724138,
+        "accuracy_range": [
+          0.724138,
+          0.724138
+        ],
+        "accuracy_sd": 0.0,
+        "attempts": [
+          {
+            "accuracy": 0.724138,
+            "attempt": 1,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.724138,
+            "attempt": 2,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.724138,
+            "attempt": 3,
+            "state": "ok"
+          }
+        ],
+        "billed_median": 0.0,
+        "billed_sum": 0.0,
+        "cross": {
+          "legal_r:eval": null,
+          "legal_s_reserved:eval": null
+        },
+        "duration_min_median": 0.3941,
+        "equiv_median": 0.036191,
+        "equiv_sum": 0.126651,
+        "evaluated_ok": 3,
+        "flagged": 2,
+        "frozen": 3,
+        "groups": {
+          "fake_known": 0.448276,
+          "held_out": null,
+          "real": 1.0
+        },
+        "legibility": null,
+        "n": 3,
+        "params_nominal": 0.0,
+        "passes_mean": 0.0,
+        "size_script_bytes": 2067.0,
+        "size_weights_zlib": 0.0
+      },
+      "config": "b5f650a6",
+      "method": "B",
+      "model": "claude-sonnet-5-5",
+      "replayed": {
+        "billed_sum": 0,
+        "n": 0
+      },
+      "size_target": null,
+      "task": "legal_r"
+    },
+    {
+      "after_decisions": {
+        "accuracy_frozen_mean": 0.727969,
+        "accuracy_mean": 0.727969,
+        "accuracy_range": [
+          0.718391,
+          0.741379
+        ],
+        "accuracy_sd": 0.011963,
+        "attempts": [
+          {
+            "accuracy": 0.718391,
+            "attempt": 1,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.741379,
+            "attempt": 2,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.724138,
+            "attempt": 3,
+            "state": "ok"
+          }
+        ],
+        "billed_median": 0.192477,
+        "billed_sum": 0.455899,
+        "cross": {
+          "legal_r:eval": null,
+          "legal_s_reserved:eval": null
+        },
+        "duration_min_median": 29.5241,
+        "equiv_median": 0.192477,
+        "equiv_sum": 0.455899,
+        "evaluated_ok": 3,
+        "flagged": 0,
+        "frozen": 3,
+        "groups": {
+          "fake_known": 0.509579,
+          "held_out": null,
+          "real": 0.94636
+        },
+        "legibility": null,
+        "n": 3,
+        "params_nominal": 0.0,
+        "passes_mean": 2.333333,
+        "size_script_bytes": 4122.0,
+        "size_weights_zlib": 0.0
+      },
+      "all_sessions": {
+        "accuracy_frozen_mean": 0.727969,
+        "accuracy_mean": 0.727969,
+        "accuracy_range": [
+          0.718391,
+          0.741379
+        ],
+        "accuracy_sd": 0.011963,
+        "attempts": [
+          {
+            "accuracy": 0.718391,
+            "attempt": 1,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.741379,
+            "attempt": 2,
+            "state": "ok"
+          },
+          {
+            "accuracy": 0.724138,
+            "attempt": 3,
+            "state": "ok"
+          }
+        ],
+        "billed_median": 0.192477,
+        "billed_sum": 0.455899,
+        "cross": {
+          "legal_r:eval": null,
+          "legal_s_reserved:eval": null
+        },
+        "duration_min_median": 29.5241,
+        "equiv_median": 0.192477,
+        "equiv_sum": 0.455899,
+        "evaluated_ok": 3,
+        "flagged": 0,
+        "frozen": 3,
+        "groups": {
+          "fake_known": 0.509579,
+          "held_out": null,
+          "real": 0.94636
+        },
+        "legibility": null,
+        "n": 3,
+        "params_nominal": 0.0,
+        "passes_mean": 2.333333,
+        "size_script_bytes": 4122.0,
+        "size_weights_zlib": 0.0
+      },
+      "config": "22981c11",
+      "method": "B",
+      "model": "xiaomi/mimo-v2.6-pro",
+      "replayed": {
+        "billed_sum": 0,
+        "n": 0
+      },
+      "size_target": null,
+      "task": "legal_r"
+    },
+    {
+      "after_decisions": {
         "accuracy_frozen_mean": 0.87925,
         "accuracy_mean": 0.87925,
         "accuracy_range": [
@@ -2535,6 +2917,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.678161,
           "legal_s_reserved:eval": 0.87925
         },
         "duration_min_median": 43.491417,
@@ -2573,6 +2956,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.678161,
           "legal_s_reserved:eval": 0.87925
         },
         "duration_min_median": 43.491417,
@@ -2632,6 +3016,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.532567,
           "legal_s_reserved:eval": 0.601917
         },
         "duration_min_median": 12.0294,
@@ -2680,6 +3065,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.532567,
           "legal_s_reserved:eval": 0.601917
         },
         "duration_min_median": 12.0294,
@@ -2729,6 +3115,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.689655,
           "legal_s_reserved:eval": 0.92225
         },
         "duration_min_median": 8.309017,
@@ -2767,6 +3154,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.689655,
           "legal_s_reserved:eval": 0.92225
         },
         "duration_min_median": 8.309017,
@@ -2826,6 +3214,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.551724,
           "legal_s_reserved:eval": 0.635167
         },
         "duration_min_median": 1.302017,
@@ -2874,6 +3263,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.551724,
           "legal_s_reserved:eval": 0.635167
         },
         "duration_min_median": 1.302017,
@@ -2912,32 +3302,23 @@
           0.0,
           0.0
         ],
-        "accuracy_sd": 0.0,
+        "accuracy_sd": null,
         "attempts": [
           {
             "accuracy": null,
             "attempt": 1,
             "state": "unfrozen"
-          },
-          {
-            "accuracy": null,
-            "attempt": 2,
-            "state": "unfrozen"
-          },
-          {
-            "accuracy": null,
-            "attempt": 3,
-            "state": "unfrozen"
           }
         ],
-        "billed_median": 0.055705,
-        "billed_sum": 0.227069,
+        "billed_median": 0.115659,
+        "billed_sum": 0.115659,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 12.9992,
-        "equiv_median": 0.055705,
-        "equiv_sum": 0.227069,
+        "duration_min_median": 23.525717,
+        "equiv_median": 0.115659,
+        "equiv_sum": 0.115659,
         "evaluated_ok": 0,
         "flagged": 0,
         "frozen": 0,
@@ -2947,7 +3328,7 @@
           "real": null
         },
         "legibility": null,
-        "n": 3,
+        "n": 1,
         "params_nominal": null,
         "passes_mean": 0.0,
         "size_script_bytes": null,
@@ -2981,6 +3362,7 @@
         "billed_median": 0.055705,
         "billed_sum": 0.227069,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 12.9992,
@@ -3030,6 +3412,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.724138,
           "legal_s_reserved:eval": 0.98375
         },
         "duration_min_median": 8.056633,
@@ -3068,6 +3451,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.724138,
           "legal_s_reserved:eval": 0.98375
         },
         "duration_min_median": 8.056633,
@@ -3127,6 +3511,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.691571,
           "legal_s_reserved:eval": 0.912417
         },
         "duration_min_median": 2.720817,
@@ -3175,6 +3560,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.691571,
           "legal_s_reserved:eval": 0.912417
         },
         "duration_min_median": 2.720817,
@@ -3224,6 +3610,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.724138,
           "legal_s_reserved:eval": 0.98375
         },
         "duration_min_median": 0.573067,
@@ -3262,6 +3649,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.724138,
           "legal_s_reserved:eval": 0.98375
         },
         "duration_min_median": 0.573067,
@@ -3321,6 +3709,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.724138,
           "legal_s_reserved:eval": 0.99125
         },
         "duration_min_median": 0.4143,
@@ -3369,6 +3758,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.724138,
           "legal_s_reserved:eval": 0.99125
         },
         "duration_min_median": 0.4143,
@@ -3402,37 +3792,19 @@
     {
       "after_decisions": {
         "accuracy_frozen_mean": null,
-        "accuracy_mean": 0.0,
-        "accuracy_range": [
-          0.0,
-          0.0
-        ],
-        "accuracy_sd": 0.0,
-        "attempts": [
-          {
-            "accuracy": null,
-            "attempt": 1,
-            "state": "unfrozen"
-          },
-          {
-            "accuracy": null,
-            "attempt": 2,
-            "state": "unfrozen"
-          },
-          {
-            "accuracy": null,
-            "attempt": 3,
-            "state": "unfrozen"
-          }
-        ],
-        "billed_median": 0.055723,
-        "billed_sum": 0.164395,
+        "accuracy_mean": null,
+        "accuracy_range": null,
+        "accuracy_sd": null,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 11.3923,
-        "equiv_median": 0.055723,
-        "equiv_sum": 0.164395,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
         "evaluated_ok": 0,
         "flagged": 0,
         "frozen": 0,
@@ -3442,9 +3814,9 @@
           "real": null
         },
         "legibility": null,
-        "n": 3,
+        "n": 0,
         "params_nominal": null,
-        "passes_mean": 0.0,
+        "passes_mean": null,
         "size_script_bytes": null,
         "size_weights_zlib": null
       },
@@ -3476,6 +3848,7 @@
         "billed_median": 0.055723,
         "billed_sum": 0.164395,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 11.3923,
@@ -3508,52 +3881,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 0.992,
-        "accuracy_mean": 0.330667,
-        "accuracy_range": [
-          0.0,
-          0.992
-        ],
-        "accuracy_sd": 0.572731,
-        "attempts": [
-          {
-            "accuracy": null,
-            "attempt": 1,
-            "state": "unfrozen"
-          },
-          {
-            "accuracy": null,
-            "attempt": 2,
-            "state": "unfrozen"
-          },
-          {
-            "accuracy": 0.992,
-            "attempt": 3,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.057379,
-        "billed_sum": 0.188873,
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
+        "accuracy_sd": null,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
-          "legal_s_reserved:eval": 0.992
+          "legal_r:eval": null,
+          "legal_s_reserved:eval": null
         },
-        "duration_min_median": 13.09515,
-        "equiv_median": 0.057379,
-        "equiv_sum": 0.188873,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
-          "fake_known": 0.99,
+          "fake_known": null,
           "held_out": null,
-          "real": 0.994
+          "real": null
         },
         "legibility": null,
-        "n": 3,
-        "params_nominal": 0.0,
-        "passes_mean": 0.333333,
-        "size_script_bytes": 3617.0,
-        "size_weights_zlib": 0.0
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 0.992,
@@ -3583,6 +3938,7 @@
         "billed_median": 0.057379,
         "billed_sum": 0.188873,
         "cross": {
+          "legal_r:eval": 0.724138,
           "legal_s_reserved:eval": 0.992
         },
         "duration_min_median": 13.09515,
@@ -3642,6 +3998,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.574713,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 8.60585,
@@ -3690,6 +4047,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.574713,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 8.60585,
@@ -3749,6 +4107,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.693486,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 2.698117,
@@ -3797,6 +4156,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.693486,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 2.698117,
@@ -3856,6 +4216,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.672414,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.27385,
@@ -3904,6 +4265,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": 0.672414,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.27385,
@@ -3936,52 +4298,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 0.898625,
-        "accuracy_mean": 0.599083,
-        "accuracy_range": [
-          0.0,
-          0.9
-        ],
-        "accuracy_sd": 0.518823,
-        "attempts": [
-          {
-            "accuracy": null,
-            "attempt": 1,
-            "state": "unfrozen"
-          },
-          {
-            "accuracy": 0.89725,
-            "attempt": 2,
-            "state": "ok"
-          },
-          {
-            "accuracy": 0.9,
-            "attempt": 3,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.057283,
-        "billed_sum": 0.175792,
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
+        "accuracy_sd": null,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 6.516267,
-        "equiv_median": 0.057283,
-        "equiv_sum": 0.175792,
-        "evaluated_ok": 2,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 2,
+        "frozen": 0,
         "groups": {
-          "fake_known": 0.995877,
-          "held_out": 0.399399,
-          "real": 1.0
+          "fake_known": null,
+          "held_out": null,
+          "real": null
         },
         "legibility": null,
-        "n": 3,
-        "params_nominal": 0.0,
-        "passes_mean": 0.666667,
-        "size_script_bytes": 3821.0,
-        "size_weights_zlib": 0.0
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 0.898625,
@@ -4011,6 +4355,7 @@
         "billed_median": 0.057283,
         "billed_sum": 0.175792,
         "cross": {
+          "legal_r:eval": 0.695402,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 6.516267,
@@ -4044,37 +4389,19 @@
     {
       "after_decisions": {
         "accuracy_frozen_mean": null,
-        "accuracy_mean": 0.0,
-        "accuracy_range": [
-          0.0,
-          0.0
-        ],
-        "accuracy_sd": 0.0,
-        "attempts": [
-          {
-            "accuracy": null,
-            "attempt": 1,
-            "state": "unfrozen"
-          },
-          {
-            "accuracy": null,
-            "attempt": 2,
-            "state": "unfrozen"
-          },
-          {
-            "accuracy": null,
-            "attempt": 3,
-            "state": "unfrozen"
-          }
-        ],
-        "billed_median": 0.057173,
-        "billed_sum": 0.170193,
+        "accuracy_mean": null,
+        "accuracy_range": null,
+        "accuracy_sd": null,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 14.02515,
-        "equiv_median": 0.057173,
-        "equiv_sum": 0.170193,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
         "evaluated_ok": 0,
         "flagged": 0,
         "frozen": 0,
@@ -4084,9 +4411,9 @@
           "real": null
         },
         "legibility": null,
-        "n": 3,
+        "n": 0,
         "params_nominal": null,
-        "passes_mean": 0.0,
+        "passes_mean": null,
         "size_script_bytes": null,
         "size_weights_zlib": null
       },
@@ -4118,6 +4445,7 @@
         "billed_median": 0.057173,
         "billed_sum": 0.170193,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 14.02515,
@@ -4150,42 +4478,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.0,
-        "billed_sum": 0.0,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 0.340133,
-        "equiv_median": 0.054344,
-        "equiv_sum": 0.054344,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
-        "legibility": 0.8,
-        "n": 1,
-        "params_nominal": 132.0,
-        "passes_mean": 1.0,
-        "size_script_bytes": 0.0,
-        "size_weights_zlib": 59.0
+        "legibility": null,
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -4205,6 +4525,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.340133,
@@ -4237,42 +4558,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.02446,
-        "billed_sum": 0.02446,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 3.314617,
-        "equiv_median": 0.02446,
-        "equiv_sum": 0.02446,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
-        "legibility": 0.714286,
-        "n": 1,
-        "params_nominal": 63.0,
-        "passes_mean": 1.0,
-        "size_script_bytes": 0.0,
-        "size_weights_zlib": 65.0
+        "legibility": null,
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -4292,6 +4605,7 @@
         "billed_median": 0.02446,
         "billed_sum": 0.02446,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 3.314617,
@@ -4324,42 +4638,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.0,
-        "billed_sum": 0.0,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 0.285533,
-        "equiv_median": 0.051617,
-        "equiv_sum": 0.051617,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
-        "legibility": 0.8,
-        "n": 1,
-        "params_nominal": 132.0,
-        "passes_mean": 1.0,
-        "size_script_bytes": 257.0,
-        "size_weights_zlib": 60.0
+        "legibility": null,
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -4379,6 +4685,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.285533,
@@ -4411,42 +4718,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.015622,
-        "billed_sum": 0.015622,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 1.843133,
-        "equiv_median": 0.015622,
-        "equiv_sum": 0.015622,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
-        "legibility": 0.8,
-        "n": 1,
-        "params_nominal": 132.0,
-        "passes_mean": 1.0,
-        "size_script_bytes": 697.0,
-        "size_weights_zlib": 58.0
+        "legibility": null,
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -4466,6 +4765,7 @@
         "billed_median": 0.015622,
         "billed_sum": 0.015622,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 1.843133,
@@ -4498,42 +4798,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.0,
-        "billed_sum": 0.0,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 0.061367,
-        "equiv_median": 0.022219,
-        "equiv_sum": 0.022219,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
         "legibility": null,
-        "n": 1,
-        "params_nominal": 0.0,
-        "passes_mean": 0.0,
-        "size_script_bytes": 68.0,
-        "size_weights_zlib": 0.0
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -4553,6 +4845,7 @@
         "billed_median": 0.0,
         "billed_sum": 0.0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.061367,
@@ -4585,42 +4878,34 @@
     },
     {
       "after_decisions": {
-        "accuracy_frozen_mean": 1.0,
-        "accuracy_mean": 1.0,
-        "accuracy_range": [
-          1.0,
-          1.0
-        ],
+        "accuracy_frozen_mean": null,
+        "accuracy_mean": null,
+        "accuracy_range": null,
         "accuracy_sd": null,
-        "attempts": [
-          {
-            "accuracy": 1.0,
-            "attempt": 1,
-            "state": "ok"
-          }
-        ],
-        "billed_median": 0.006013,
-        "billed_sum": 0.006013,
+        "attempts": [],
+        "billed_median": null,
+        "billed_sum": 0,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
-        "duration_min_median": 0.224467,
-        "equiv_median": 0.006013,
-        "equiv_sum": 0.006013,
-        "evaluated_ok": 1,
+        "duration_min_median": null,
+        "equiv_median": null,
+        "equiv_sum": 0,
+        "evaluated_ok": 0,
         "flagged": 0,
-        "frozen": 1,
+        "frozen": 0,
         "groups": {
           "fake_known": null,
           "held_out": null,
           "real": null
         },
         "legibility": null,
-        "n": 1,
-        "params_nominal": 0.0,
-        "passes_mean": 1.0,
-        "size_script_bytes": 73.0,
-        "size_weights_zlib": 0.0
+        "n": 0,
+        "params_nominal": null,
+        "passes_mean": null,
+        "size_script_bytes": null,
+        "size_weights_zlib": null
       },
       "all_sessions": {
         "accuracy_frozen_mean": 1.0,
@@ -4640,6 +4925,7 @@
         "billed_median": 0.006013,
         "billed_sum": 0.006013,
         "cross": {
+          "legal_r:eval": null,
           "legal_s_reserved:eval": null
         },
         "duration_min_median": 0.224467,
@@ -4672,6 +4958,16 @@
     }
   ],
   "configs": {
+    "22981c11": {
+      "driver": "api",
+      "effort": "medium",
+      "max_tokens": 131072,
+      "pass_budget": 20,
+      "protocol_sha256": "0d753121ff3bb3a5b8eccfd603c1775cf6dba8169ded62ed62af06e0104b34f0",
+      "provider": "openrouter",
+      "sampling": {},
+      "system_prompt_sha256": "fa5f8335a67ecdb29ffb938615b598d505e4ee35b6ee4f696dfed4725c4ecd99"
+    },
     "273ad6f9": {
       "driver": "api",
       "effort": null,
@@ -4784,8 +5080,8 @@
     }
   },
   "costs": {
-    "billed_share_of_cap": 0.012651,
-    "billed_usd": 1.265114,
+    "billed_share_of_cap": 0.01721,
+    "billed_usd": 1.721013,
     "by_model": [
       {
         "billed_usd": 0.0,
@@ -4795,22 +5091,22 @@
       },
       {
         "billed_usd": 0.0,
-        "cost_equiv_usd": 12.51126,
+        "cost_equiv_usd": 15.722144,
         "driver": "claude_code",
         "model": "claude-sonnet-5-5"
       },
       {
-        "billed_usd": 1.265114,
-        "cost_equiv_usd": 1.265114,
+        "billed_usd": 1.721013,
+        "cost_equiv_usd": 1.721013,
         "driver": "api",
         "model": "xiaomi/mimo-v2.6-pro"
       }
     ],
-    "cost_equiv_usd": 34.554201,
+    "cost_equiv_usd": 38.220984,
     "gap_billed_usd": -0.008467,
     "gap_cost_equiv_usd": -0.008467,
-    "ledger_billed_usd": 1.273581,
-    "ledger_cost_equiv_usd": 34.562668,
+    "ledger_billed_usd": 1.72948,
+    "ledger_cost_equiv_usd": 38.229451,
     "lot_cap_usd": 100.0,
     "only_in_journals": [],
     "only_in_ledger": [
@@ -4821,6 +5117,16 @@
   },
   "cross": [
     {
+      "accuracy": 0.609195,
+      "error": null,
+      "fake_known": 0.62069,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n1024-s0",
+      "real": 0.597701,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.62525,
       "error": null,
       "fake_known": 0.682159,
@@ -4828,6 +5134,16 @@
       "path": "annexe-fields1/train/legal_s-F-n1024-s0",
       "real": 0.6005,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.545977,
+      "error": null,
+      "fake_known": 0.505747,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n1024-s1",
+      "real": 0.586207,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -4841,6 +5157,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.563218,
+      "error": null,
+      "fake_known": 0.609195,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n1024-s2",
+      "real": 0.517241,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.6215,
       "error": null,
       "fake_known": 0.654423,
@@ -4848,6 +5174,16 @@
       "path": "annexe-fields1/train/legal_s-F-n1024-s2",
       "real": 0.6155,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.494253,
+      "error": null,
+      "fake_known": 0.448276,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n256-s0",
+      "real": 0.54023,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -4861,6 +5197,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.448276,
+      "error": null,
+      "fake_known": 0.37931,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n256-s1",
+      "real": 0.517241,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.55075,
       "error": null,
       "fake_known": 0.565967,
@@ -4868,6 +5214,16 @@
       "path": "annexe-fields1/train/legal_s-F-n256-s1",
       "real": 0.5545,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.488506,
+      "error": null,
+      "fake_known": 0.482759,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n256-s2",
+      "real": 0.494253,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -4881,6 +5237,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.683908,
+      "error": null,
+      "fake_known": 0.37931,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n32768-s0",
+      "real": 0.988506,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.88825,
       "error": null,
       "fake_known": 0.894303,
@@ -4888,6 +5254,16 @@
       "path": "annexe-fields1/train/legal_s-F-n32768-s0",
       "real": 0.94,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.683908,
+      "error": null,
+      "fake_known": 0.390805,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n32768-s1",
+      "real": 0.977011,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -4901,6 +5277,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.683908,
+      "error": null,
+      "fake_known": 0.471264,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n32768-s2",
+      "real": 0.896552,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.8705,
       "error": null,
       "fake_known": 0.838831,
@@ -4908,6 +5294,16 @@
       "path": "annexe-fields1/train/legal_s-F-n32768-s2",
       "real": 0.9405,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.517241,
+      "error": null,
+      "fake_known": 0.816092,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n64-s0",
+      "real": 0.218391,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -4921,6 +5317,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.488506,
+      "error": null,
+      "fake_known": 0.804598,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n64-s1",
+      "real": 0.172414,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.53025,
       "error": null,
       "fake_known": 0.586957,
@@ -4928,6 +5334,16 @@
       "path": "annexe-fields1/train/legal_s-F-n64-s1",
       "real": 0.537,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.494253,
+      "error": null,
+      "fake_known": 0.804598,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n64-s2",
+      "real": 0.183908,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -4941,6 +5357,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.66092,
+      "error": null,
+      "fake_known": 0.390805,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n8192-s0",
+      "real": 0.931034,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.738,
       "error": null,
       "fake_known": 0.746627,
@@ -4948,6 +5374,16 @@
       "path": "annexe-fields1/train/legal_s-F-n8192-s0",
       "real": 0.774,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.614943,
+      "error": null,
+      "fake_known": 0.45977,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n8192-s1",
+      "real": 0.770115,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -4961,6 +5397,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.637931,
+      "error": null,
+      "fake_known": 0.37931,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s-F-n8192-s2",
+      "real": 0.896552,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.7285,
       "error": null,
       "fake_known": 0.736132,
@@ -4968,6 +5414,166 @@
       "path": "annexe-fields1/train/legal_s-F-n8192-s2",
       "real": 0.7545,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.517241,
+      "error": null,
+      "fake_known": 0.482759,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n1024-s0",
+      "real": 0.551724,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.568966,
+      "error": null,
+      "fake_known": 0.586207,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n1024-s1",
+      "real": 0.551724,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.557471,
+      "error": null,
+      "fake_known": 0.574713,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n1024-s2",
+      "real": 0.54023,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.477011,
+      "error": null,
+      "fake_known": 0.356322,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n256-s0",
+      "real": 0.597701,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.505747,
+      "error": null,
+      "fake_known": 0.390805,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n256-s1",
+      "real": 0.62069,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.494253,
+      "error": null,
+      "fake_known": 0.367816,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n256-s2",
+      "real": 0.62069,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.586207,
+      "error": null,
+      "fake_known": 0.183908,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n32768-s0",
+      "real": 0.988506,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.586207,
+      "error": null,
+      "fake_known": 0.172414,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n32768-s1",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.574713,
+      "error": null,
+      "fake_known": 0.206897,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n32768-s2",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.5,
+      "error": null,
+      "fake_known": 0.597701,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n64-s0",
+      "real": 0.402299,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.477011,
+      "error": null,
+      "fake_known": 0.597701,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n64-s1",
+      "real": 0.356322,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.482759,
+      "error": null,
+      "fake_known": 0.586207,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n64-s2",
+      "real": 0.37931,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.551724,
+      "error": null,
+      "fake_known": 0.275862,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n8192-s0",
+      "real": 0.827586,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.557471,
+      "error": null,
+      "fake_known": 0.229885,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n8192-s1",
+      "real": 0.885057,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.563218,
+      "error": null,
+      "fake_known": 0.275862,
+      "held_out": null,
+      "path": "annexe-fields1/train/legal_s_reserved-F-n8192-s2",
+      "real": 0.850575,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.678161,
+      "error": null,
+      "fake_known": 0.356322,
+      "held_out": null,
+      "path": "legal_s-A-literal-1e4-fable-5.1-t1-20261106T075353Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -4981,6 +5587,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.534483,
+      "error": null,
+      "fake_known": 0.068966,
+      "held_out": null,
+      "path": "legal_s-A-literal-1e4-sonnet-5.5-t1-20261106T062928Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.5795,
       "error": null,
       "fake_known": 0.221139,
@@ -4988,6 +5604,16 @@
       "path": "legal_s-A-literal-1e4-sonnet-5.5-t1-20261106T062928Z",
       "real": 0.9955,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.563218,
+      "error": null,
+      "fake_known": 0.126437,
+      "held_out": null,
+      "path": "legal_s-A-literal-1e4-sonnet-5.5-t2-20261106T064131Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5001,6 +5627,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.5,
+      "error": null,
+      "fake_known": 0.0,
+      "held_out": null,
+      "path": "legal_s-A-literal-1e4-sonnet-5.5-t3-20261106T065605Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.5635,
       "error": null,
       "fake_known": 0.190405,
@@ -5008,6 +5644,16 @@
       "path": "legal_s-A-literal-1e4-sonnet-5.5-t3-20261106T065605Z",
       "real": 1.0,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.689655,
+      "error": null,
+      "fake_known": 0.37931,
+      "held_out": null,
+      "path": "legal_s-A-program-1e4-fable-5.1-t1-20261106T073730Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5021,6 +5667,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.563218,
+      "error": null,
+      "fake_known": 0.183908,
+      "held_out": null,
+      "path": "legal_s-A-program-1e4-sonnet-5.5-t1-20261106T061605Z",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.686,
       "error": null,
       "fake_known": 0.437031,
@@ -5028,6 +5684,16 @@
       "path": "legal_s-A-program-1e4-sonnet-5.5-t1-20261106T061605Z",
       "real": 0.9755,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.528736,
+      "error": null,
+      "fake_known": 0.172414,
+      "held_out": null,
+      "path": "legal_s-A-program-1e4-sonnet-5.5-t2-20261106T061724Z",
+      "real": 0.885057,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5041,6 +5707,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.563218,
+      "error": null,
+      "fake_known": 0.126437,
+      "held_out": null,
+      "path": "legal_s-A-program-1e4-sonnet-5.5-t3-20261106T061819Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.61225,
       "error": null,
       "fake_known": 0.343328,
@@ -5048,6 +5724,16 @@
       "path": "legal_s-A-program-1e4-sonnet-5.5-t3-20261106T061819Z",
       "real": 0.929,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.724138,
+      "error": null,
+      "fake_known": 0.448276,
+      "held_out": null,
+      "path": "legal_s-A-program-1e5-fable-5.1-t1-20261106T074549Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5061,6 +5747,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.695402,
+      "error": null,
+      "fake_known": 0.390805,
+      "held_out": null,
+      "path": "legal_s-A-program-1e5-sonnet-5.5-t1-20261106T062003Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.94925,
       "error": null,
       "fake_known": 0.98051,
@@ -5068,6 +5764,16 @@
       "path": "legal_s-A-program-1e5-sonnet-5.5-t1-20261106T062003Z",
       "real": 0.9995,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.695402,
+      "error": null,
+      "fake_known": 0.448276,
+      "held_out": null,
+      "path": "legal_s-A-program-1e5-sonnet-5.5-t2-20261106T062355Z",
+      "real": 0.942529,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5081,6 +5787,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.683908,
+      "error": null,
+      "fake_known": 0.37931,
+      "held_out": null,
+      "path": "legal_s-A-program-1e5-sonnet-5.5-t3-20261106T062619Z",
+      "real": 0.988506,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.9305,
       "error": null,
       "fake_known": 0.949775,
@@ -5088,6 +5804,16 @@
       "path": "legal_s-A-program-1e5-sonnet-5.5-t3-20261106T062619Z",
       "real": 0.9785,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.724138,
+      "error": null,
+      "fake_known": 0.505747,
+      "held_out": null,
+      "path": "legal_s-B-fable-5.1-t1-20261106T060616Z",
+      "real": 0.942529,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5101,6 +5827,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.724138,
+      "error": null,
+      "fake_known": 0.448276,
+      "held_out": null,
+      "path": "legal_s-B-mimo-v2.6-pro-t3-20261106T063042Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.992,
       "error": null,
       "fake_known": 0.985007,
@@ -5108,6 +5844,16 @@
       "path": "legal_s-B-mimo-v2.6-pro-t3-20261106T063042Z",
       "real": 0.994,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.724138,
+      "error": null,
+      "fake_known": 0.448276,
+      "held_out": null,
+      "path": "legal_s-B-sonnet-5.5-t1-20261106T060304Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5121,6 +5867,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.724138,
+      "error": null,
+      "fake_known": 0.448276,
+      "held_out": null,
+      "path": "legal_s-B-sonnet-5.5-t2-20261106T060430Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.995,
       "error": null,
       "fake_known": 0.985007,
@@ -5128,6 +5884,16 @@
       "path": "legal_s-B-sonnet-5.5-t2-20261106T060430Z",
       "real": 1.0,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.724138,
+      "error": null,
+      "fake_known": 0.448276,
+      "held_out": null,
+      "path": "legal_s-B-sonnet-5.5-t3-20261106T060456Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5141,6 +5907,126 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.689655,
+      "error": null,
+      "fake_known": 0.37931,
+      "held_out": null,
+      "path": "legal_s_reserved-A-literal-1e4-sonnet-5.5-t1-20261106T070925Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.5,
+      "error": null,
+      "fake_known": 0.0,
+      "held_out": null,
+      "path": "legal_s_reserved-A-literal-1e4-sonnet-5.5-t2-20261106T072328Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.534483,
+      "error": null,
+      "fake_known": 0.068966,
+      "held_out": null,
+      "path": "legal_s_reserved-A-literal-1e4-sonnet-5.5-t3-20261106T072852Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.695402,
+      "error": null,
+      "fake_known": 0.390805,
+      "held_out": null,
+      "path": "legal_s_reserved-A-program-1e5-sonnet-5.5-t1-20261106T070108Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.695402,
+      "error": null,
+      "fake_known": 0.390805,
+      "held_out": null,
+      "path": "legal_s_reserved-A-program-1e5-sonnet-5.5-t2-20261106T070402Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.689655,
+      "error": null,
+      "fake_known": 0.436782,
+      "held_out": null,
+      "path": "legal_s_reserved-A-program-1e5-sonnet-5.5-t3-20261106T070645Z",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.695402,
+      "error": null,
+      "fake_known": 0.390805,
+      "held_out": null,
+      "path": "legal_s_reserved-B-mimo-v2.6-pro-t2-20261106T173223Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.695402,
+      "error": null,
+      "fake_known": 0.390805,
+      "held_out": null,
+      "path": "legal_s_reserved-B-mimo-v2.6-pro-t3-20261106T173602Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.626437,
+      "error": null,
+      "fake_known": 0.655172,
+      "held_out": null,
+      "path": "legal_s_reserved-B-sonnet-5.5-t1-20261106T060520Z",
+      "real": 0.597701,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.695402,
+      "error": null,
+      "fake_known": 0.390805,
+      "held_out": null,
+      "path": "legal_s_reserved-B-sonnet-5.5-t2-20261106T060535Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.695402,
+      "error": null,
+      "fake_known": 0.390805,
+      "held_out": null,
+      "path": "legal_s_reserved-B-sonnet-5.5-t3-20261106T060552Z",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.632184,
+      "error": null,
+      "fake_known": 0.344828,
+      "held_out": null,
+      "path": "train/legal_s-A-literal-1e4-fable-5.1-t1-20261106T075353Z-retrain-n8192-s0",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.87225,
       "error": null,
       "fake_known": 0.928786,
@@ -5148,6 +6034,16 @@
       "path": "train/legal_s-A-literal-1e4-fable-5.1-t1-20261106T075353Z-retrain-n8192-s0",
       "real": 0.874,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.563218,
+      "error": null,
+      "fake_known": 0.298851,
+      "held_out": null,
+      "path": "train/legal_s-A-literal-1e4-fable-5.1-t1-20261106T075353Z-retrain-n8192-s1",
+      "real": 0.827586,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5161,6 +6057,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.591954,
+      "error": null,
+      "fake_known": 0.264368,
+      "held_out": null,
+      "path": "train/legal_s-A-literal-1e4-fable-5.1-t1-20261106T075353Z-retrain-n8192-s2",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.856,
       "error": null,
       "fake_known": 0.921289,
@@ -5168,6 +6074,16 @@
       "path": "train/legal_s-A-literal-1e4-fable-5.1-t1-20261106T075353Z-retrain-n8192-s2",
       "real": 0.8435,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.632184,
+      "error": null,
+      "fake_known": 0.344828,
+      "held_out": null,
+      "path": "train/legal_s-A-literal-1e4-sonnet-5.5-t1-20261106T062928Z-retrain-n8192-s0",
+      "real": 0.91954,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5181,6 +6097,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.563218,
+      "error": null,
+      "fake_known": 0.298851,
+      "held_out": null,
+      "path": "train/legal_s-A-literal-1e4-sonnet-5.5-t1-20261106T062928Z-retrain-n8192-s1",
+      "real": 0.827586,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.85125,
       "error": null,
       "fake_known": 0.864318,
@@ -5188,6 +6114,16 @@
       "path": "train/legal_s-A-literal-1e4-sonnet-5.5-t1-20261106T062928Z-retrain-n8192-s1",
       "real": 0.884,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.591954,
+      "error": null,
+      "fake_known": 0.264368,
+      "held_out": null,
+      "path": "train/legal_s-A-literal-1e4-sonnet-5.5-t1-20261106T062928Z-retrain-n8192-s2",
+      "real": 0.91954,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5201,6 +6137,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.632184,
+      "error": null,
+      "fake_known": 0.344828,
+      "held_out": null,
+      "path": "train/legal_s-A-literal-1e4-sonnet-5.5-t2-20261106T064131Z-retrain-n8192-s0",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.87225,
       "error": null,
       "fake_known": 0.928786,
@@ -5208,6 +6154,16 @@
       "path": "train/legal_s-A-literal-1e4-sonnet-5.5-t2-20261106T064131Z-retrain-n8192-s0",
       "real": 0.874,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.563218,
+      "error": null,
+      "fake_known": 0.298851,
+      "held_out": null,
+      "path": "train/legal_s-A-literal-1e4-sonnet-5.5-t2-20261106T064131Z-retrain-n8192-s1",
+      "real": 0.827586,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5221,6 +6177,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.591954,
+      "error": null,
+      "fake_known": 0.264368,
+      "held_out": null,
+      "path": "train/legal_s-A-literal-1e4-sonnet-5.5-t2-20261106T064131Z-retrain-n8192-s2",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.856,
       "error": null,
       "fake_known": 0.921289,
@@ -5228,6 +6194,16 @@
       "path": "train/legal_s-A-literal-1e4-sonnet-5.5-t2-20261106T064131Z-retrain-n8192-s2",
       "real": 0.8435,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.643678,
+      "error": null,
+      "fake_known": 0.390805,
+      "held_out": null,
+      "path": "train/legal_s-A-literal-1e4-sonnet-5.5-t3-20261106T065605Z-retrain-n8192-s0",
+      "real": 0.896552,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5241,6 +6217,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.626437,
+      "error": null,
+      "fake_known": 0.356322,
+      "held_out": null,
+      "path": "train/legal_s-A-literal-1e4-sonnet-5.5-t3-20261106T065605Z-retrain-n8192-s1",
+      "real": 0.896552,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.8375,
       "error": null,
       "fake_known": 0.816342,
@@ -5248,6 +6234,16 @@
       "path": "train/legal_s-A-literal-1e4-sonnet-5.5-t3-20261106T065605Z-retrain-n8192-s1",
       "real": 0.9275,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.614943,
+      "error": null,
+      "fake_known": 0.356322,
+      "held_out": null,
+      "path": "train/legal_s-A-literal-1e4-sonnet-5.5-t3-20261106T065605Z-retrain-n8192-s2",
+      "real": 0.873563,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5261,6 +6257,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.632184,
+      "error": null,
+      "fake_known": 0.344828,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e4-fable-5.1-t1-20261106T073730Z-retrain-n8192-s0",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.87225,
       "error": null,
       "fake_known": 0.928786,
@@ -5268,6 +6274,16 @@
       "path": "train/legal_s-A-program-1e4-fable-5.1-t1-20261106T073730Z-retrain-n8192-s0",
       "real": 0.874,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.563218,
+      "error": null,
+      "fake_known": 0.298851,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e4-fable-5.1-t1-20261106T073730Z-retrain-n8192-s1",
+      "real": 0.827586,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5281,6 +6297,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.591954,
+      "error": null,
+      "fake_known": 0.264368,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e4-fable-5.1-t1-20261106T073730Z-retrain-n8192-s2",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.856,
       "error": null,
       "fake_known": 0.921289,
@@ -5288,6 +6314,16 @@
       "path": "train/legal_s-A-program-1e4-fable-5.1-t1-20261106T073730Z-retrain-n8192-s2",
       "real": 0.8435,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.632184,
+      "error": null,
+      "fake_known": 0.344828,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e4-sonnet-5.5-t1-20261106T061605Z-retrain-n8192-s0",
+      "real": 0.91954,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5301,6 +6337,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.563218,
+      "error": null,
+      "fake_known": 0.298851,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e4-sonnet-5.5-t1-20261106T061605Z-retrain-n8192-s1",
+      "real": 0.827586,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.85125,
       "error": null,
       "fake_known": 0.864318,
@@ -5308,6 +6354,16 @@
       "path": "train/legal_s-A-program-1e4-sonnet-5.5-t1-20261106T061605Z-retrain-n8192-s1",
       "real": 0.884,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.591954,
+      "error": null,
+      "fake_known": 0.264368,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e4-sonnet-5.5-t1-20261106T061605Z-retrain-n8192-s2",
+      "real": 0.91954,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5321,6 +6377,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.632184,
+      "error": null,
+      "fake_known": 0.344828,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e4-sonnet-5.5-t2-20261106T061724Z-retrain-n8192-s0",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.87225,
       "error": null,
       "fake_known": 0.928786,
@@ -5328,6 +6394,16 @@
       "path": "train/legal_s-A-program-1e4-sonnet-5.5-t2-20261106T061724Z-retrain-n8192-s0",
       "real": 0.874,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.563218,
+      "error": null,
+      "fake_known": 0.298851,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e4-sonnet-5.5-t2-20261106T061724Z-retrain-n8192-s1",
+      "real": 0.827586,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5341,6 +6417,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.591954,
+      "error": null,
+      "fake_known": 0.264368,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e4-sonnet-5.5-t2-20261106T061724Z-retrain-n8192-s2",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.856,
       "error": null,
       "fake_known": 0.921289,
@@ -5348,6 +6434,16 @@
       "path": "train/legal_s-A-program-1e4-sonnet-5.5-t2-20261106T061724Z-retrain-n8192-s2",
       "real": 0.8435,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.632184,
+      "error": null,
+      "fake_known": 0.344828,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e4-sonnet-5.5-t3-20261106T061819Z-retrain-n8192-s0",
+      "real": 0.91954,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5361,6 +6457,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.563218,
+      "error": null,
+      "fake_known": 0.298851,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e4-sonnet-5.5-t3-20261106T061819Z-retrain-n8192-s1",
+      "real": 0.827586,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.85125,
       "error": null,
       "fake_known": 0.864318,
@@ -5368,6 +6474,16 @@
       "path": "train/legal_s-A-program-1e4-sonnet-5.5-t3-20261106T061819Z-retrain-n8192-s1",
       "real": 0.884,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.591954,
+      "error": null,
+      "fake_known": 0.264368,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e4-sonnet-5.5-t3-20261106T061819Z-retrain-n8192-s2",
+      "real": 0.91954,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5384,10 +6500,30 @@
       "accuracy": 0.5,
       "error": null,
       "fake_known": 0.0,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e5-fable-5.1-t1-20261106T074549Z-retrain-n8192-s0",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.5,
+      "error": null,
+      "fake_known": 0.0,
       "held_out": 0.0,
       "path": "train/legal_s-A-program-1e5-fable-5.1-t1-20261106T074549Z-retrain-n8192-s0",
       "real": 1.0,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.603448,
+      "error": null,
+      "fake_known": 0.37931,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e5-fable-5.1-t1-20261106T074549Z-retrain-n8192-s1",
+      "real": 0.827586,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5404,10 +6540,30 @@
       "accuracy": 0.5,
       "error": null,
       "fake_known": 0.0,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e5-fable-5.1-t1-20261106T074549Z-retrain-n8192-s2",
+      "real": 1.0,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.5,
+      "error": null,
+      "fake_known": 0.0,
       "held_out": 0.0,
       "path": "train/legal_s-A-program-1e5-fable-5.1-t1-20261106T074549Z-retrain-n8192-s2",
       "real": 1.0,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.603448,
+      "error": null,
+      "fake_known": 0.356322,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e5-sonnet-5.5-t1-20261106T062003Z-retrain-n8192-s0",
+      "real": 0.850575,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5421,6 +6577,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.626437,
+      "error": null,
+      "fake_known": 0.45977,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e5-sonnet-5.5-t1-20261106T062003Z-retrain-n8192-s1",
+      "real": 0.793103,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.8425,
       "error": null,
       "fake_known": 0.903298,
@@ -5428,6 +6594,16 @@
       "path": "train/legal_s-A-program-1e5-sonnet-5.5-t1-20261106T062003Z-retrain-n8192-s1",
       "real": 0.8385,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.649425,
+      "error": null,
+      "fake_known": 0.390805,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e5-sonnet-5.5-t1-20261106T062003Z-retrain-n8192-s2",
+      "real": 0.908046,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5441,6 +6617,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.597701,
+      "error": null,
+      "fake_known": 0.367816,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e5-sonnet-5.5-t2-20261106T062355Z-retrain-n8192-s0",
+      "real": 0.827586,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.82025,
       "error": null,
       "fake_known": 0.869565,
@@ -5448,6 +6634,16 @@
       "path": "train/legal_s-A-program-1e5-sonnet-5.5-t2-20261106T062355Z-retrain-n8192-s0",
       "real": 0.8355,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.591954,
+      "error": null,
+      "fake_known": 0.275862,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e5-sonnet-5.5-t2-20261106T062355Z-retrain-n8192-s1",
+      "real": 0.908046,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5461,6 +6657,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.614943,
+      "error": null,
+      "fake_known": 0.390805,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e5-sonnet-5.5-t2-20261106T062355Z-retrain-n8192-s2",
+      "real": 0.83908,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.8365,
       "error": null,
       "fake_known": 0.889055,
@@ -5468,6 +6674,16 @@
       "path": "train/legal_s-A-program-1e5-sonnet-5.5-t2-20261106T062355Z-retrain-n8192-s2",
       "real": 0.848,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.626437,
+      "error": null,
+      "fake_known": 0.367816,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e5-sonnet-5.5-t3-20261106T062619Z-retrain-n8192-s0",
+      "real": 0.885057,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5481,6 +6697,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.62069,
+      "error": null,
+      "fake_known": 0.333333,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e5-sonnet-5.5-t3-20261106T062619Z-retrain-n8192-s1",
+      "real": 0.908046,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.82775,
       "error": null,
       "fake_known": 0.875562,
@@ -5488,6 +6714,16 @@
       "path": "train/legal_s-A-program-1e5-sonnet-5.5-t3-20261106T062619Z-retrain-n8192-s1",
       "real": 0.8395,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.62069,
+      "error": null,
+      "fake_known": 0.344828,
+      "held_out": null,
+      "path": "train/legal_s-A-program-1e5-sonnet-5.5-t3-20261106T062619Z-retrain-n8192-s2",
+      "real": 0.896552,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5501,6 +6737,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.551724,
+      "error": null,
+      "fake_known": 0.471264,
+      "held_out": null,
+      "path": "train/legal_s-C-n1024-s0",
+      "real": 0.632184,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.62725,
       "error": null,
       "fake_known": 0.703898,
@@ -5508,6 +6754,16 @@
       "path": "train/legal_s-C-n1024-s0",
       "real": 0.597,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.522989,
+      "error": null,
+      "fake_known": 0.436782,
+      "held_out": null,
+      "path": "train/legal_s-C-n1024-s1",
+      "real": 0.609195,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5521,6 +6777,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.528736,
+      "error": null,
+      "fake_known": 0.597701,
+      "held_out": null,
+      "path": "train/legal_s-C-n1024-s2",
+      "real": 0.45977,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.62925,
       "error": null,
       "fake_known": 0.7009,
@@ -5528,6 +6794,16 @@
       "path": "train/legal_s-C-n1024-s2",
       "real": 0.608,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.442529,
+      "error": null,
+      "fake_known": 0.471264,
+      "held_out": null,
+      "path": "train/legal_s-C-n256-s0",
+      "real": 0.413793,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5541,6 +6817,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.448276,
+      "error": null,
+      "fake_known": 0.425287,
+      "held_out": null,
+      "path": "train/legal_s-C-n256-s1",
+      "real": 0.471264,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.555,
       "error": null,
       "fake_known": 0.592204,
@@ -5548,6 +6834,16 @@
       "path": "train/legal_s-C-n256-s1",
       "real": 0.5585,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.408046,
+      "error": null,
+      "fake_known": 0.448276,
+      "held_out": null,
+      "path": "train/legal_s-C-n256-s2",
+      "real": 0.367816,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5561,6 +6857,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.649425,
+      "error": null,
+      "fake_known": 0.356322,
+      "held_out": null,
+      "path": "train/legal_s-C-n32768-s0",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.94525,
       "error": null,
       "fake_known": 0.985757,
@@ -5568,6 +6874,16 @@
       "path": "train/legal_s-C-n32768-s0",
       "real": 0.9635,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.672414,
+      "error": null,
+      "fake_known": 0.402299,
+      "held_out": null,
+      "path": "train/legal_s-C-n32768-s1",
+      "real": 0.942529,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5581,6 +6897,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.66092,
+      "error": null,
+      "fake_known": 0.413793,
+      "held_out": null,
+      "path": "train/legal_s-C-n32768-s2",
+      "real": 0.908046,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.948,
       "error": null,
       "fake_known": 0.985757,
@@ -5588,6 +6914,16 @@
       "path": "train/legal_s-C-n32768-s2",
       "real": 0.9705,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.505747,
+      "error": null,
+      "fake_known": 0.793103,
+      "held_out": null,
+      "path": "train/legal_s-C-n64-s0",
+      "real": 0.218391,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5601,6 +6937,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.494253,
+      "error": null,
+      "fake_known": 0.712644,
+      "held_out": null,
+      "path": "train/legal_s-C-n64-s1",
+      "real": 0.275862,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.517,
       "error": null,
       "fake_known": 0.546477,
@@ -5608,6 +6954,16 @@
       "path": "train/legal_s-C-n64-s1",
       "real": 0.553,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.477011,
+      "error": null,
+      "fake_known": 0.655172,
+      "held_out": null,
+      "path": "train/legal_s-C-n64-s2",
+      "real": 0.298851,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5621,6 +6977,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.591954,
+      "error": null,
+      "fake_known": 0.321839,
+      "held_out": null,
+      "path": "train/legal_s-C-n8192-s0",
+      "real": 0.862069,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.83125,
       "error": null,
       "fake_known": 0.872564,
@@ -5628,6 +6994,16 @@
       "path": "train/legal_s-C-n8192-s0",
       "real": 0.857,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.597701,
+      "error": null,
+      "fake_known": 0.310345,
+      "held_out": null,
+      "path": "train/legal_s-C-n8192-s1",
+      "real": 0.885057,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5641,6 +7017,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.586207,
+      "error": null,
+      "fake_known": 0.333333,
+      "held_out": null,
+      "path": "train/legal_s-C-n8192-s2",
+      "real": 0.83908,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.833,
       "error": null,
       "fake_known": 0.9003,
@@ -5648,6 +7034,16 @@
       "path": "train/legal_s-C-n8192-s2",
       "real": 0.8175,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.534483,
+      "error": null,
+      "fake_known": 0.356322,
+      "held_out": null,
+      "path": "train/legal_s-F-n1024-s0",
+      "real": 0.712644,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5661,6 +7057,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.534483,
+      "error": null,
+      "fake_known": 0.402299,
+      "held_out": null,
+      "path": "train/legal_s-F-n1024-s1",
+      "real": 0.666667,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.672,
       "error": null,
       "fake_known": 0.73913,
@@ -5668,6 +7074,16 @@
       "path": "train/legal_s-F-n1024-s1",
       "real": 0.678,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.545977,
+      "error": null,
+      "fake_known": 0.402299,
+      "held_out": null,
+      "path": "train/legal_s-F-n1024-s2",
+      "real": 0.689655,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5681,6 +7097,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.436782,
+      "error": null,
+      "fake_known": 0.517241,
+      "held_out": null,
+      "path": "train/legal_s-F-n256-s0",
+      "real": 0.356322,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.5585,
       "error": null,
       "fake_known": 0.601199,
@@ -5688,6 +7114,16 @@
       "path": "train/legal_s-F-n256-s0",
       "real": 0.568,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.471264,
+      "error": null,
+      "fake_known": 0.551724,
+      "held_out": null,
+      "path": "train/legal_s-F-n256-s1",
+      "real": 0.390805,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5701,6 +7137,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.482759,
+      "error": null,
+      "fake_known": 0.54023,
+      "held_out": null,
+      "path": "train/legal_s-F-n256-s2",
+      "real": 0.425287,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.5665,
       "error": null,
       "fake_known": 0.581709,
@@ -5708,6 +7154,16 @@
       "path": "train/legal_s-F-n256-s2",
       "real": 0.597,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.701149,
+      "error": null,
+      "fake_known": 0.471264,
+      "held_out": null,
+      "path": "train/legal_s-F-n32768-s0",
+      "real": 0.931034,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5721,6 +7177,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.66092,
+      "error": null,
+      "fake_known": 0.402299,
+      "held_out": null,
+      "path": "train/legal_s-F-n32768-s1",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.93225,
       "error": null,
       "fake_known": 0.981259,
@@ -5728,6 +7194,16 @@
       "path": "train/legal_s-F-n32768-s1",
       "real": 0.9285,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.632184,
+      "error": null,
+      "fake_known": 0.333333,
+      "held_out": null,
+      "path": "train/legal_s-F-n32768-s2",
+      "real": 0.931034,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5741,6 +7217,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.505747,
+      "error": null,
+      "fake_known": 0.816092,
+      "held_out": null,
+      "path": "train/legal_s-F-n64-s0",
+      "real": 0.195402,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.53075,
       "error": null,
       "fake_known": 0.587706,
@@ -5748,6 +7234,16 @@
       "path": "train/legal_s-F-n64-s0",
       "real": 0.541,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.5,
+      "error": null,
+      "fake_known": 0.827586,
+      "held_out": null,
+      "path": "train/legal_s-F-n64-s1",
+      "real": 0.172414,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5761,6 +7257,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.505747,
+      "error": null,
+      "fake_known": 0.827586,
+      "held_out": null,
+      "path": "train/legal_s-F-n64-s2",
+      "real": 0.183908,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.5325,
       "error": null,
       "fake_known": 0.608696,
@@ -5768,6 +7274,16 @@
       "path": "train/legal_s-F-n64-s2",
       "real": 0.5225,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.626437,
+      "error": null,
+      "fake_known": 0.367816,
+      "held_out": null,
+      "path": "train/legal_s-F-n8192-s0",
+      "real": 0.885057,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5781,6 +7297,16 @@
       "written_task": "legal_s"
     },
     {
+      "accuracy": 0.591954,
+      "error": null,
+      "fake_known": 0.310345,
+      "held_out": null,
+      "path": "train/legal_s-F-n8192-s1",
+      "real": 0.873563,
+      "target": "legal_r:eval",
+      "written_task": "legal_s"
+    },
+    {
       "accuracy": 0.85,
       "error": null,
       "fake_known": 0.894303,
@@ -5788,6 +7314,16 @@
       "path": "train/legal_s-F-n8192-s1",
       "real": 0.869,
       "target": "legal_s_reserved:eval",
+      "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.591954,
+      "error": null,
+      "fake_known": 0.321839,
+      "held_out": null,
+      "path": "train/legal_s-F-n8192-s2",
+      "real": 0.862069,
+      "target": "legal_r:eval",
       "written_task": "legal_s"
     },
     {
@@ -5799,6 +7335,486 @@
       "real": 0.8645,
       "target": "legal_s_reserved:eval",
       "written_task": "legal_s"
+    },
+    {
+      "accuracy": 0.563218,
+      "error": null,
+      "fake_known": 0.183908,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-literal-1e4-sonnet-5.5-t1-20261106T070925Z-retrain-n8192-s0",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.574713,
+      "error": null,
+      "fake_known": 0.264368,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-literal-1e4-sonnet-5.5-t1-20261106T070925Z-retrain-n8192-s1",
+      "real": 0.885057,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.557471,
+      "error": null,
+      "fake_known": 0.172414,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-literal-1e4-sonnet-5.5-t1-20261106T070925Z-retrain-n8192-s2",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.568966,
+      "error": null,
+      "fake_known": 0.218391,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-literal-1e4-sonnet-5.5-t2-20261106T072328Z-retrain-n8192-s0",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.568966,
+      "error": null,
+      "fake_known": 0.195402,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-literal-1e4-sonnet-5.5-t2-20261106T072328Z-retrain-n8192-s1",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.557471,
+      "error": null,
+      "fake_known": 0.172414,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-literal-1e4-sonnet-5.5-t2-20261106T072328Z-retrain-n8192-s2",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.568966,
+      "error": null,
+      "fake_known": 0.229885,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-literal-1e4-sonnet-5.5-t3-20261106T072852Z-retrain-n8192-s0",
+      "real": 0.908046,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.574713,
+      "error": null,
+      "fake_known": 0.252874,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-literal-1e4-sonnet-5.5-t3-20261106T072852Z-retrain-n8192-s1",
+      "real": 0.896552,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.557471,
+      "error": null,
+      "fake_known": 0.183908,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-literal-1e4-sonnet-5.5-t3-20261106T072852Z-retrain-n8192-s2",
+      "real": 0.931034,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.574713,
+      "error": null,
+      "fake_known": 0.229885,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-program-1e5-sonnet-5.5-t1-20261106T070108Z-retrain-n8192-s0",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.58046,
+      "error": null,
+      "fake_known": 0.229885,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-program-1e5-sonnet-5.5-t1-20261106T070108Z-retrain-n8192-s1",
+      "real": 0.931034,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.557471,
+      "error": null,
+      "fake_known": 0.241379,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-program-1e5-sonnet-5.5-t1-20261106T070108Z-retrain-n8192-s2",
+      "real": 0.873563,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.568966,
+      "error": null,
+      "fake_known": 0.218391,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-program-1e5-sonnet-5.5-t2-20261106T070402Z-retrain-n8192-s0",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.574713,
+      "error": null,
+      "fake_known": 0.241379,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-program-1e5-sonnet-5.5-t2-20261106T070402Z-retrain-n8192-s1",
+      "real": 0.908046,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.58046,
+      "error": null,
+      "fake_known": 0.252874,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-program-1e5-sonnet-5.5-t2-20261106T070402Z-retrain-n8192-s2",
+      "real": 0.908046,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.597701,
+      "error": null,
+      "fake_known": 0.264368,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-program-1e5-sonnet-5.5-t3-20261106T070645Z-retrain-n8192-s0",
+      "real": 0.931034,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.58046,
+      "error": null,
+      "fake_known": 0.241379,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-program-1e5-sonnet-5.5-t3-20261106T070645Z-retrain-n8192-s1",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.586207,
+      "error": null,
+      "fake_known": 0.252874,
+      "held_out": null,
+      "path": "train/legal_s_reserved-A-program-1e5-sonnet-5.5-t3-20261106T070645Z-retrain-n8192-s2",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.505747,
+      "error": null,
+      "fake_known": 0.494253,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n1024-s0",
+      "real": 0.517241,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.517241,
+      "error": null,
+      "fake_known": 0.471264,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n1024-s1",
+      "real": 0.563218,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.534483,
+      "error": null,
+      "fake_known": 0.505747,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n1024-s2",
+      "real": 0.563218,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.465517,
+      "error": null,
+      "fake_known": 0.229885,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n256-s0",
+      "real": 0.701149,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.465517,
+      "error": null,
+      "fake_known": 0.195402,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n256-s1",
+      "real": 0.735632,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.488506,
+      "error": null,
+      "fake_known": 0.218391,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n256-s2",
+      "real": 0.758621,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.586207,
+      "error": null,
+      "fake_known": 0.229885,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n32768-s0",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.574713,
+      "error": null,
+      "fake_known": 0.206897,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n32768-s1",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.58046,
+      "error": null,
+      "fake_known": 0.218391,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n32768-s2",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.482759,
+      "error": null,
+      "fake_known": 0.425287,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n64-s0",
+      "real": 0.54023,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.482759,
+      "error": null,
+      "fake_known": 0.436782,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n64-s1",
+      "real": 0.528736,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.488506,
+      "error": null,
+      "fake_known": 0.448276,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n64-s2",
+      "real": 0.528736,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.574713,
+      "error": null,
+      "fake_known": 0.229885,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n8192-s0",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.58046,
+      "error": null,
+      "fake_known": 0.229885,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n8192-s1",
+      "real": 0.931034,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.557471,
+      "error": null,
+      "fake_known": 0.241379,
+      "held_out": null,
+      "path": "train/legal_s_reserved-C-n8192-s2",
+      "real": 0.873563,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.545977,
+      "error": null,
+      "fake_known": 0.448276,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n1024-s0",
+      "real": 0.643678,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.534483,
+      "error": null,
+      "fake_known": 0.505747,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n1024-s1",
+      "real": 0.563218,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.545977,
+      "error": null,
+      "fake_known": 0.425287,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n1024-s2",
+      "real": 0.666667,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.482759,
+      "error": null,
+      "fake_known": 0.344828,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n256-s0",
+      "real": 0.62069,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.471264,
+      "error": null,
+      "fake_known": 0.310345,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n256-s1",
+      "real": 0.632184,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.482759,
+      "error": null,
+      "fake_known": 0.344828,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n256-s2",
+      "real": 0.62069,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.597701,
+      "error": null,
+      "fake_known": 0.252874,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n32768-s0",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.597701,
+      "error": null,
+      "fake_known": 0.252874,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n32768-s1",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.574713,
+      "error": null,
+      "fake_known": 0.206897,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n32768-s2",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.517241,
+      "error": null,
+      "fake_known": 0.54023,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n64-s0",
+      "real": 0.494253,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.511494,
+      "error": null,
+      "fake_known": 0.54023,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n64-s1",
+      "real": 0.482759,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.517241,
+      "error": null,
+      "fake_known": 0.563218,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n64-s2",
+      "real": 0.471264,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.574713,
+      "error": null,
+      "fake_known": 0.206897,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n8192-s0",
+      "real": 0.942529,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.58046,
+      "error": null,
+      "fake_known": 0.229885,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n8192-s1",
+      "real": 0.931034,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
+    },
+    {
+      "accuracy": 0.574713,
+      "error": null,
+      "fake_known": 0.229885,
+      "held_out": null,
+      "path": "train/legal_s_reserved-F-n8192-s2",
+      "real": 0.91954,
+      "target": "legal_r:eval",
+      "written_task": "legal_s_reserved"
     }
   ],
   "decisions": [
@@ -5806,103 +7822,177 @@
       "audit": null,
       "date": "2026-11-07",
       "matched": 30,
-      "reason": "à juger en 1-14b : F legal.fields@1 de 1-11 : annexe",
-      "ref": "spec 1-14, jugements à rendre (1-14b)",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "ref": "docs/experiences/1-11-temoins-c-f.md",
       "scope": "group:path=annexe-fields1",
-      "status": "pending"
+      "status": "annex"
     },
     {
       "audit": null,
       "date": "2026-11-07",
       "matched": 6,
-      "reason": "à juger en 1-14b : séances jouet de 1-8 (calibrage, hors conclusions) : annexe ou section à part ?",
-      "ref": "spec 1-14, jugements à rendre (1-14b)",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "ref": "docs/experiences/1-8-jouet-sonnet.md, 1-8-jouet-mimo.md",
       "scope": "group:task=automaton",
-      "status": "pending"
+      "status": "annex"
     },
     {
       "audit": null,
       "date": "2026-11-07",
       "matched": 7,
-      "reason": "à juger en 1-14b : séances jouet de 1-8 (calibrage, hors conclusions) : annexe ou section à part ?",
-      "ref": "spec 1-14, jugements à rendre (1-14b)",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "ref": "docs/experiences/1-8-jouet-sonnet.md, 1-8-jouet-mimo.md",
       "scope": "group:task=compare",
-      "status": "pending"
+      "status": "annex"
     },
     {
       "audit": null,
       "date": "2026-11-07",
       "matched": 3,
-      "reason": "à juger en 1-14b : MiMo étape 2 (64000 jetons, effort medium) : annexe ou case ?",
-      "ref": "spec 1-14, jugements à rendre (1-14b)",
+      "reason": "MiMo A-programme 10⁴, étape 2 (64000 jetons, effort medium, tronquées ×3) : déjà mis en annexe par 1-10 ; seul l'essai de l'étape 3 (même config, entrée [[session]] ci-dessus) compte",
+      "ref": "docs/experiences/1-10-s-mimo.md, annexe 2, section A",
+      "scope": "group:task=legal_s,config=8e081aa1",
+      "status": "annex"
+    },
+    {
+      "audit": null,
+      "date": "2026-11-07",
+      "matched": 3,
+      "reason": "MiMo étape 2 (64000 jetons, effort medium, graine non transmise) : réglage remplacé par l'étape 3, déjà mis en annexe par 1-10",
+      "ref": "docs/experiences/1-10-s-mimo.md, annexe 2",
       "scope": "group:task=legal_s,config=a52ba2e6",
-      "status": "pending"
+      "status": "annex"
     },
     {
       "audit": null,
       "date": "2026-11-07",
       "matched": 3,
-      "reason": "à juger en 1-14b : MiMo étape 1 (64000 jetons, effort par défaut) : annexe ou case ?",
-      "ref": "spec 1-14, jugements à rendre (1-14b)",
+      "reason": "MiMo étape 1 (64000 jetons, effort par défaut, graine non transmise) : réglage antérieur à la décision d'Anaël sur l'effort, déjà mis en annexe par 1-10 ; B legal_s t3 (3968/4000) cité en annexe du rapport, hors case",
+      "ref": "docs/experiences/1-10-s-mimo.md, annexe 1",
       "scope": "group:task=legal_s,config=d4523fc4",
-      "status": "pending"
+      "status": "annex"
     },
     {
       "audit": null,
       "date": "2026-11-07",
       "matched": 3,
-      "reason": "à juger en 1-14b : MiMo étape 2 (64000 jetons, effort medium) : annexe ou case ?",
-      "ref": "spec 1-14, jugements à rendre (1-14b)",
+      "reason": "MiMo étape 2 (64000 jetons, effort medium, graine non transmise) : déjà mis en annexe par 1-10 ; B t2 et t3 gelées (89,7 et 90,0 %) citées en annexe du rapport, hors case",
+      "ref": "docs/experiences/1-10-s-mimo.md, annexe 2",
       "scope": "group:task=legal_s_reserved,config=a52ba2e6",
-      "status": "pending"
+      "status": "annex"
     },
     {
       "audit": null,
       "date": "2026-11-07",
       "matched": 3,
-      "reason": "à juger en 1-14b : MiMo étape 1 (64000 jetons, effort par défaut) : annexe ou case ?",
-      "ref": "spec 1-14, jugements à rendre (1-14b)",
+      "reason": "MiMo étape 1 (64000 jetons, effort par défaut, graine non transmise) : réglage antérieur à la décision d'Anaël sur l'effort, déjà mis en annexe par 1-10",
+      "ref": "docs/experiences/1-10-s-mimo.md, annexe 1",
       "scope": "group:task=legal_s_reserved,config=d4523fc4",
-      "status": "pending"
+      "status": "annex"
     },
     {
       "audit": null,
       "date": "2026-11-07",
       "matched": 7,
-      "reason": "à juger en 1-14b : séances jouet de 1-8 (calibrage, hors conclusions) : annexe ou section à part ?",
-      "ref": "spec 1-14, jugements à rendre (1-14b)",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "ref": "docs/experiences/1-8-jouet-sonnet.md, 1-8-jouet-mimo.md",
       "scope": "group:task=parity",
-      "status": "pending"
+      "status": "annex"
     },
     {
       "audit": null,
       "date": "2026-11-07",
       "matched": 1,
-      "reason": "à juger en 1-14b : la règle « dernière séance » compte l'essai de l'étape 3 à la place de l'étape 2 (même config, max_tokens non journalisé) : confirmer",
-      "ref": "spec 1-14, jugements à rendre (1-14b)",
+      "reason": "rappel c00 de 13/48 jugé indice générique, pas mémoire : rules.py ne contient aucune référence ni numéro d'exemple ; il marque fausses les numéros de pourvoi d'allure fabriquée (multiple de 1000 ou de 100, trois chiffres égaux, chiffres consécutifs, répétition du numéro de chambre), au prix de 10 vraies manquées ; exactitude au-dessus du plafond de la grille gardée et lue comme telle",
+      "ref": "1-13, séances signalées (alerte D8) ; frozen/rules.py, fonction _suspicious_num",
+      "scope": "session:legal_r-B-mimo-v2.6-pro-t2-20261107T162355Z",
+      "status": "kept"
+    },
+    {
+      "audit": "judged",
+      "date": "2026-11-07",
+      "matched": 1,
+      "reason": "fragment_overlap jugé vocabulaire de format : les 10 fragments viennent de 3 littéraux de noms de chambre (Cass. civ. 1re, Cass. civ. 2e, Cass. ass. plén.) parmi 50 ; aucun numéro, aucune date, aucune référence d'exemple recopiée",
+      "ref": "1-13, séances signalées ; journal, événement script_run ; frozen/rules.py",
+      "scope": "session:legal_r-B-sonnet-5.5-t2-20261107T154153Z",
+      "status": "kept"
+    },
+    {
+      "audit": "judged",
+      "date": "2026-11-07",
+      "matched": 1,
+      "reason": "fragment_overlap jugé vocabulaire de format : les 10 fragments viennent de 3 littéraux de noms de chambre (Cass. civ. 1re, Cass. civ. 2e, Cass. ass. plén.) parmi 52 ; aucun numéro, aucune date, aucune référence d'exemple recopiée",
+      "ref": "1-13, séances signalées ; journal, événement script_run ; frozen/rules.py",
+      "scope": "session:legal_r-B-sonnet-5.5-t3-20261107T154616Z",
+      "status": "kept"
+    },
+    {
+      "audit": null,
+      "date": "2026-11-07",
+      "matched": 1,
+      "reason": "confirmé : l'essai de l'étape 3 (131072 jetons, effort medium, graine envoyée), réglage retenu par 1-10, compte pour la tentative 1 ; la séance de l'étape 2 de même config (max_tokens non journalisé) passe en annexe avec son groupe",
+      "ref": "docs/experiences/1-10-s-mimo.md, réglage retenu (étape 3)",
       "scope": "session:legal_s-A-program-1e4-mimo-v2.6-pro-t1-20261106T213133Z",
-      "status": "pending"
+      "status": "kept"
     },
     {
-      "audit": null,
+      "audit": "judged",
       "date": "2026-11-07",
       "matched": 1,
-      "reason": "à juger en 1-14b : fragment_overlap (2 script_run, 4 fragments) : vocabulaire de format ou recopie d'exemples ?",
-      "ref": "spec 1-14, jugements à rendre (1-14b)",
+      "reason": "fragment_overlap jugé vocabulaire de format : les 4 fragments viennent de 3 littéraux de noms de chambre (cass. civ. 1re, 2e, 3e) parmi 258 ; aucun numéro, aucune date, aucune référence d'exemple recopiée",
+      "ref": "spec 1-14, jugements à rendre (1-14b) ; journal, événements script_run ; frozen/script.py",
       "scope": "session:legal_s-A-program-1e5-fable-5.1-t1-20261106T074549Z",
-      "status": "pending"
+      "status": "kept"
     },
     {
-      "audit": null,
+      "audit": "judged",
       "date": "2026-11-07",
       "matched": 1,
-      "reason": "à juger en 1-14b : fragment_overlap (2 script_run, 4 fragments) : vocabulaire de format ou recopie d'exemples ?",
-      "ref": "spec 1-14, jugements à rendre (1-14b)",
+      "reason": "fragment_overlap jugé vocabulaire de format : les 4 fragments viennent de 3 littéraux de noms de chambre (cass. civ. 1re, 2e, 3e) parmi 57 ; aucun numéro, aucune date, aucune référence d'exemple recopiée",
+      "ref": "spec 1-14, jugements à rendre (1-14b) ; journal, événements script_run ; frozen/script.py",
       "scope": "session:legal_s_reserved-A-program-1e5-sonnet-5.5-t2-20261106T070402Z",
-      "status": "pending"
+      "status": "kept"
     }
   ],
   "flags": [
+    {
+      "example_ids": [
+        "jr-s00002",
+        "jr-s00003",
+        "jr-s00020"
+      ],
+      "flagged_script_runs": 1,
+      "judgement": {
+        "date": "2026-11-07",
+        "reason": "fragment_overlap jugé vocabulaire de format : les 10 fragments viennent de 3 littéraux de noms de chambre (Cass. civ. 1re, Cass. civ. 2e, Cass. ass. plén.) parmi 50 ; aucun numéro, aucune date, aucune référence d'exemple recopiée",
+        "status": "kept"
+      },
+      "kinds": {
+        "fragment_overlap": 10
+      },
+      "script_runs": 1,
+      "session": "legal_r-B-sonnet-5.5-t2-20261107T154153Z",
+      "to_judge": false
+    },
+    {
+      "example_ids": [
+        "jr-s00002",
+        "jr-s00003",
+        "jr-s00020"
+      ],
+      "flagged_script_runs": 1,
+      "judgement": {
+        "date": "2026-11-07",
+        "reason": "fragment_overlap jugé vocabulaire de format : les 10 fragments viennent de 3 littéraux de noms de chambre (Cass. civ. 1re, Cass. civ. 2e, Cass. ass. plén.) parmi 52 ; aucun numéro, aucune date, aucune référence d'exemple recopiée",
+        "status": "kept"
+      },
+      "kinds": {
+        "fragment_overlap": 10
+      },
+      "script_runs": 1,
+      "session": "legal_r-B-sonnet-5.5-t3-20261107T154616Z",
+      "to_judge": false
+    },
     {
       "example_ids": [
         "legal-s00009",
@@ -5910,13 +8000,17 @@
         "legal-s00013"
       ],
       "flagged_script_runs": 2,
-      "judgement": null,
+      "judgement": {
+        "date": "2026-11-07",
+        "reason": "fragment_overlap jugé vocabulaire de format : les 4 fragments viennent de 3 littéraux de noms de chambre (cass. civ. 1re, 2e, 3e) parmi 258 ; aucun numéro, aucune date, aucune référence d'exemple recopiée",
+        "status": "kept"
+      },
       "kinds": {
         "fragment_overlap": 4
       },
       "script_runs": 2,
       "session": "legal_s-A-program-1e5-fable-5.1-t1-20261106T074549Z",
-      "to_judge": true
+      "to_judge": false
     },
     {
       "example_ids": [
@@ -5925,24 +8019,354 @@
         "legal-r00020"
       ],
       "flagged_script_runs": 2,
-      "judgement": null,
+      "judgement": {
+        "date": "2026-11-07",
+        "reason": "fragment_overlap jugé vocabulaire de format : les 4 fragments viennent de 3 littéraux de noms de chambre (cass. civ. 1re, 2e, 3e) parmi 57 ; aucun numéro, aucune date, aucune référence d'exemple recopiée",
+        "status": "kept"
+      },
       "kinds": {
         "fragment_overlap": 4
       },
       "script_runs": 2,
       "session": "legal_s_reserved-A-program-1e5-sonnet-5.5-t2-20261106T070402Z",
-      "to_judge": true
+      "to_judge": false
     }
   ],
   "inputs": {
-    "eval_json": 288,
-    "fingerprint": "5a26779a74f7863eb48008d378aae4694bbdb15da473038ae74f055c5deb660f",
-    "journals": 75,
+    "eval_json": 472,
+    "fingerprint": "c768d61d6afa6f9754156367f29b0307c724ee1849f5a5a62dacb22fd2493bd1",
+    "journals": 87,
     "run_json": 144
   },
   "lot": 1,
   "not_evaluated": [],
-  "removed": [],
+  "removed": [
+    {
+      "path": "automaton-A-literal-mimo-v2.6-pro-t1-20261105T233158Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "automaton-A-literal-sonnet-5.5-t1-20261106T042957Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "automaton-A-program-mimo-v2.6-pro-t1-20261105T231059Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "automaton-A-program-sonnet-5.5-t1-20261106T042934Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "automaton-B-mimo-v2.6-pro-t1-20261105T233435Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "automaton-B-sonnet-5.5-t1-20261106T043025Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "compare-A-literal-mimo-v2.6-pro-t1-20261105T230436Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "compare-A-literal-sonnet-5.5-t1-20261106T042847Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "compare-A-program-mimo-v2.6-pro-t1-20261105T225332Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "compare-A-program-sonnet-5.5-t1-20261106T042604Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "compare-A-program-sonnet-5.5-t1-20261106T042737Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "compare-B-mimo-v2.6-pro-t1-20261105T231047Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "compare-B-sonnet-5.5-t1-20261106T042926Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s-A-program-1e4-mimo-v2.6-pro-t1-20261106T174235Z",
+      "reason": "MiMo A-programme 10⁴, étape 2 (64000 jetons, effort medium, tronquées ×3) : déjà mis en annexe par 1-10 ; seul l'essai de l'étape 3 (même config, entrée [[session]] ci-dessus) compte",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s-A-program-1e4-mimo-v2.6-pro-t2-20261106T175503Z",
+      "reason": "MiMo A-programme 10⁴, étape 2 (64000 jetons, effort medium, tronquées ×3) : déjà mis en annexe par 1-10 ; seul l'essai de l'étape 3 (même config, entrée [[session]] ci-dessus) compte",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s-A-program-1e4-mimo-v2.6-pro-t3-20261106T180740Z",
+      "reason": "MiMo A-programme 10⁴, étape 2 (64000 jetons, effort medium, tronquées ×3) : déjà mis en annexe par 1-10 ; seul l'essai de l'étape 3 (même config, entrée [[session]] ci-dessus) compte",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s-B-mimo-v2.6-pro-t1-20261106T060302Z",
+      "reason": "MiMo étape 1 (64000 jetons, effort par défaut, graine non transmise) : réglage antérieur à la décision d'Anaël sur l'effort, déjà mis en annexe par 1-10 ; B legal_s t3 (3968/4000) cité en annexe du rapport, hors case",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s-B-mimo-v2.6-pro-t1-20261106T165222Z",
+      "reason": "MiMo étape 2 (64000 jetons, effort medium, graine non transmise) : réglage remplacé par l'étape 3, déjà mis en annexe par 1-10",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s-B-mimo-v2.6-pro-t2-20261106T061711Z",
+      "reason": "MiMo étape 1 (64000 jetons, effort par défaut, graine non transmise) : réglage antérieur à la décision d'Anaël sur l'effort, déjà mis en annexe par 1-10 ; B legal_s t3 (3968/4000) cité en annexe du rapport, hors case",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s-B-mimo-v2.6-pro-t2-20261106T170346Z",
+      "reason": "MiMo étape 2 (64000 jetons, effort medium, graine non transmise) : réglage remplacé par l'étape 3, déjà mis en annexe par 1-10",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s-B-mimo-v2.6-pro-t3-20261106T063042Z",
+      "reason": "MiMo étape 1 (64000 jetons, effort par défaut, graine non transmise) : réglage antérieur à la décision d'Anaël sur l'effort, déjà mis en annexe par 1-10 ; B legal_s t3 (3968/4000) cité en annexe du rapport, hors case",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s-B-mimo-v2.6-pro-t3-20261106T171527Z",
+      "reason": "MiMo étape 2 (64000 jetons, effort medium, graine non transmise) : réglage remplacé par l'étape 3, déjà mis en annexe par 1-10",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s_reserved-B-mimo-v2.6-pro-t1-20261106T064206Z",
+      "reason": "MiMo étape 1 (64000 jetons, effort par défaut, graine non transmise) : réglage antérieur à la décision d'Anaël sur l'effort, déjà mis en annexe par 1-10",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s_reserved-B-mimo-v2.6-pro-t1-20261106T172547Z",
+      "reason": "MiMo étape 2 (64000 jetons, effort medium, graine non transmise) : déjà mis en annexe par 1-10 ; B t2 et t3 gelées (89,7 et 90,0 %) citées en annexe du rapport, hors case",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s_reserved-B-mimo-v2.6-pro-t2-20261106T065445Z",
+      "reason": "MiMo étape 1 (64000 jetons, effort par défaut, graine non transmise) : réglage antérieur à la décision d'Anaël sur l'effort, déjà mis en annexe par 1-10",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s_reserved-B-mimo-v2.6-pro-t2-20261106T173223Z",
+      "reason": "MiMo étape 2 (64000 jetons, effort medium, graine non transmise) : déjà mis en annexe par 1-10 ; B t2 et t3 gelées (89,7 et 90,0 %) citées en annexe du rapport, hors case",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s_reserved-B-mimo-v2.6-pro-t3-20261106T070932Z",
+      "reason": "MiMo étape 1 (64000 jetons, effort par défaut, graine non transmise) : réglage antérieur à la décision d'Anaël sur l'effort, déjà mis en annexe par 1-10",
+      "status": "annex"
+    },
+    {
+      "path": "legal_s_reserved-B-mimo-v2.6-pro-t3-20261106T173602Z",
+      "reason": "MiMo étape 2 (64000 jetons, effort medium, graine non transmise) : déjà mis en annexe par 1-10 ; B t2 et t3 gelées (89,7 et 90,0 %) citées en annexe du rapport, hors case",
+      "status": "annex"
+    },
+    {
+      "path": "parity-A-literal-mimo-v2.6-pro-t1-20261105T224942Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "parity-A-literal-sonnet-5.5-t1-20261106T042814Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "parity-A-program-mimo-v2.6-pro-t1-20261105T224224Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "parity-A-program-mimo-v2.6-pro-t1-20261105T224746Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "parity-A-program-sonnet-5.5-t1-20261106T042528Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "parity-B-mimo-v2.6-pro-t1-20261105T225302Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "parity-B-sonnet-5.5-t1-20261106T042840Z",
+      "reason": "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n1024-s0",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n1024-s1",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n1024-s2",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n256-s0",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n256-s1",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n256-s2",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n32768-s0",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n32768-s1",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n32768-s2",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n64-s0",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n64-s1",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n64-s2",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n8192-s0",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n8192-s1",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s-F-n8192-s2",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n1024-s0",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n1024-s1",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n1024-s2",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n256-s0",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n256-s1",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n256-s2",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n32768-s0",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n32768-s1",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n32768-s2",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n64-s0",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n64-s1",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n64-s2",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n8192-s0",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n8192-s1",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    },
+    {
+      "path": "annexe-fields1/train/legal_s_reserved-F-n8192-s2",
+      "reason": "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)",
+      "status": "annex"
+    }
+  ],
   "same_network": [
     {
       "gap": -0.019417,
@@ -6638,7 +9062,7 @@
       "seed": 0,
       "session": "automaton-A-literal-mimo-v2.6-pro-t1-20261105T233158Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "e0287d0328f3ebaf2cf0086b1b134d04ce69909b4fa91570ecb2191681b97d20",
       "turns": 9
     },
@@ -6668,7 +9092,7 @@
       "seed": 0,
       "session": "automaton-A-literal-sonnet-5.5-t1-20261106T042957Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "9a568da85df13685fa4cfebecdde2f7aaee58070aa4ab79d37fba5395a1f9fc9",
       "turns": 15
     },
@@ -6699,7 +9123,7 @@
       "seed": 0,
       "session": "automaton-A-program-mimo-v2.6-pro-t1-20261105T231059Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "c59dc680ec733f90b4d0481ae2f667faaf0b49da5a30edb1fb9a297ad192bf1a",
       "turns": 6
     },
@@ -6730,7 +9154,7 @@
       "seed": 0,
       "session": "automaton-A-program-sonnet-5.5-t1-20261106T042934Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "470f53a8b296d8bc6f7dcec7f94e4b64ef1802db3fcaa5f6f7708b35ea7d37e7",
       "turns": 10
     },
@@ -6758,7 +9182,7 @@
       "seed": 0,
       "session": "automaton-B-mimo-v2.6-pro-t1-20261105T233435Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "36722b1043d60c4ca1fe6b137b75262c69c6bfe36eddad504fa80205f841fbdc",
       "turns": 2
     },
@@ -6786,7 +9210,7 @@
       "seed": 0,
       "session": "automaton-B-sonnet-5.5-t1-20261106T043025Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "5cec9fa0f62177306c6eb3be4bddfb0d81612c0a6deee87419b33f4a65790bb1",
       "turns": 2
     },
@@ -6816,7 +9240,7 @@
       "seed": 0,
       "session": "compare-A-literal-mimo-v2.6-pro-t1-20261105T230436Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "b8c0b46c55780bcb26b84965df9789e1415b4a0de22e4e36d7022350ee565b5f",
       "turns": 8
     },
@@ -6848,7 +9272,7 @@
       "seed": 0,
       "session": "compare-A-literal-sonnet-5.5-t1-20261106T042847Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "c86a1c4b3643306e0e95a84d1a2c487022a0e14995f9f22b1c9e60238dcc355d",
       "turns": 23
     },
@@ -6879,7 +9303,7 @@
       "seed": 0,
       "session": "compare-A-program-mimo-v2.6-pro-t1-20261105T225332Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "512d7440af08d1eb4ee80d7b77e2a8e8e14f794f001a6aac1123903904fb9292",
       "turns": 5
     },
@@ -6904,7 +9328,7 @@
       "seed": 0,
       "session": "compare-A-program-sonnet-5.5-t1-20261106T042604Z",
       "state": "unfrozen",
-      "status": "replayed",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 0
     },
@@ -6934,7 +9358,7 @@
       "seed": 0,
       "session": "compare-A-program-sonnet-5.5-t1-20261106T042737Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "d523d21bbaa99d1b02b65d61724c53cd8a73e3500921f5489199f4613d855e9b",
       "turns": 12
     },
@@ -6962,7 +9386,7 @@
       "seed": 0,
       "session": "compare-B-mimo-v2.6-pro-t1-20261105T231047Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "c0ef47f7972304951580f64a8617f4d21b805df24456b70fc70b1f0686e06a22",
       "turns": 3
     },
@@ -6990,9 +9414,360 @@
       "seed": 0,
       "session": "compare-B-sonnet-5.5-t1-20261106T042926Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "8cc4386a9bc120cd59eb706f9787b7061c3fde1836f4815130f1b8d982993c5f",
       "turns": 2
+    },
+    {
+      "accuracy": 0.689655,
+      "accuracy_counts": {
+        "correct": 120,
+        "n": 174
+      },
+      "attempt": 1,
+      "case": "legal_r/A-literal/10000/claude-sonnet-5-5/e5b6c8b7",
+      "costs": {
+        "billed_usd": 0.0,
+        "cache_read_tokens": 1884934,
+        "cache_write_tokens": 118031,
+        "cost_equiv_usd": 1.694164,
+        "duration_s": 554.677,
+        "input_tokens": 64,
+        "output_tokens": 103342
+      },
+      "detail": "",
+      "end": "frozen",
+      "passes": 3,
+      "refusals": [
+        "invalid_manifest",
+        "invalid_weights"
+      ],
+      "seed": 0,
+      "session": "legal_r-A-literal-1e4-sonnet-5.5-t1-20261107T153237Z",
+      "state": "ok",
+      "status": "counted",
+      "tree_sha256": "aa675cff763867f959e4efde01d814798ac71e1d0f6969b425737f91f1813f90",
+      "turns": 129
+    },
+    {
+      "accuracy": 0.666667,
+      "accuracy_counts": {
+        "correct": 116,
+        "n": 174
+      },
+      "attempt": 2,
+      "case": "legal_r/A-literal/10000/claude-sonnet-5-5/e5b6c8b7",
+      "costs": {
+        "billed_usd": 0.0,
+        "cache_read_tokens": 230608,
+        "cache_write_tokens": 30092,
+        "cost_equiv_usd": 0.407799,
+        "duration_s": 170.24,
+        "input_tokens": 30,
+        "output_tokens": 26431
+      },
+      "detail": "",
+      "end": "frozen",
+      "passes": 3,
+      "refusals": [
+        "invalid_manifest",
+        "invalid_weights"
+      ],
+      "seed": 1,
+      "session": "legal_r-A-literal-1e4-sonnet-5.5-t2-20261107T154325Z",
+      "state": "ok",
+      "status": "counted",
+      "tree_sha256": "6a91cc18fcef11ffe2cdd05c68aefb20d67343fb49d2e7b7493ceb3186b23a84",
+      "turns": 46
+    },
+    {
+      "accuracy": 0.563218,
+      "accuracy_counts": {
+        "correct": 98,
+        "n": 174
+      },
+      "attempt": 3,
+      "case": "legal_r/A-literal/10000/claude-sonnet-5-5/e5b6c8b7",
+      "costs": {
+        "billed_usd": 0.0,
+        "cache_read_tokens": 284438,
+        "cache_write_tokens": 39329,
+        "cost_equiv_usd": 0.54252,
+        "duration_s": 194.038,
+        "input_tokens": 30,
+        "output_tokens": 35670
+      },
+      "detail": "",
+      "end": "frozen",
+      "passes": 2,
+      "refusals": [
+        "invalid_manifest",
+        "invalid_weights"
+      ],
+      "seed": 2,
+      "session": "legal_r-A-literal-1e4-sonnet-5.5-t3-20261107T154814Z",
+      "state": "ok",
+      "status": "counted",
+      "tree_sha256": "6224ada6f3c49fecece653677f1e9507b69797cb8fe2af36192760a652a4758c",
+      "turns": 36
+    },
+    {
+      "accuracy": 0.683908,
+      "accuracy_counts": {
+        "correct": 119,
+        "n": 174
+      },
+      "attempt": 1,
+      "case": "legal_r/A-program/100000/claude-sonnet-5-5/a6e463bc",
+      "costs": {
+        "billed_usd": 0.0,
+        "cache_read_tokens": 57462,
+        "cache_write_tokens": 17696,
+        "cost_equiv_usd": 0.168445,
+        "duration_s": 81.138,
+        "input_tokens": 12,
+        "output_tokens": 9189
+      },
+      "detail": "",
+      "end": "frozen",
+      "passes": 2,
+      "refusals": [
+        "invalid_manifest"
+      ],
+      "seed": 0,
+      "session": "legal_r-A-program-1e5-sonnet-5.5-t1-20261107T153115Z",
+      "state": "ok",
+      "status": "counted",
+      "tree_sha256": "0baa35fe232eb9f5129408fd5b8bb6f54b231bcbae9c4d900363da7a2014b517",
+      "turns": 13
+    },
+    {
+      "accuracy": 0.689655,
+      "accuracy_counts": {
+        "correct": 120,
+        "n": 174
+      },
+      "attempt": 2,
+      "case": "legal_r/A-program/100000/claude-sonnet-5-5/a6e463bc",
+      "costs": {
+        "billed_usd": 0.0,
+        "cache_read_tokens": 44414,
+        "cache_write_tokens": 7439,
+        "cost_equiv_usd": 0.097277,
+        "duration_s": 62.175,
+        "input_tokens": 10,
+        "output_tokens": 6306
+      },
+      "detail": "",
+      "end": "frozen",
+      "passes": 1,
+      "refusals": [
+        "invalid_manifest"
+      ],
+      "seed": 1,
+      "session": "legal_r-A-program-1e5-sonnet-5.5-t2-20261107T154222Z",
+      "state": "ok",
+      "status": "counted",
+      "tree_sha256": "b829bf82c40666f403b76dff645c5342b4782d4b0ddc7186648efce74b1a2a97",
+      "turns": 9
+    },
+    {
+      "accuracy": 0.695402,
+      "accuracy_counts": {
+        "correct": 121,
+        "n": 174
+      },
+      "attempt": 3,
+      "case": "legal_r/A-program/100000/claude-sonnet-5-5/a6e463bc",
+      "costs": {
+        "billed_usd": 0.0,
+        "cache_read_tokens": 81523,
+        "cache_write_tokens": 13682,
+        "cost_equiv_usd": 0.174028,
+        "duration_s": 95.591,
+        "input_tokens": 14,
+        "output_tokens": 11112
+      },
+      "detail": "",
+      "end": "frozen",
+      "passes": 3,
+      "refusals": [
+        "invalid_manifest"
+      ],
+      "seed": 2,
+      "session": "legal_r-A-program-1e5-sonnet-5.5-t3-20261107T154638Z",
+      "state": "ok",
+      "status": "counted",
+      "tree_sha256": "d48edae36458121685afd0e53bb9737bc0088fc6a210c0a759c7b8dcdd1d2e96",
+      "turns": 16
+    },
+    {
+      "accuracy": 0.718391,
+      "accuracy_counts": {
+        "correct": 125,
+        "n": 174
+      },
+      "attempt": 1,
+      "case": "legal_r/B/None/xiaomi/mimo-v2.6-pro/22981c11",
+      "costs": {
+        "billed_usd": 0.204587,
+        "cache_read_tokens": 899200,
+        "cache_write_tokens": 0,
+        "cost_equiv_usd": 0.204587,
+        "duration_s": 1922.043,
+        "input_tokens": 150832,
+        "output_tokens": 156022
+      },
+      "detail": "",
+      "end": "frozen",
+      "passes": 4,
+      "refusals": [],
+      "seed": 0,
+      "session": "legal_r-B-mimo-v2.6-pro-t1-20261107T155152Z",
+      "state": "ok",
+      "status": "counted",
+      "tree_sha256": "5707c2a738dd50cad386ce941cae9698630f4dfc71405b5033c6a9e9d5bcdd63",
+      "turns": 9
+    },
+    {
+      "accuracy": 0.741379,
+      "accuracy_counts": {
+        "correct": 129,
+        "n": 174
+      },
+      "attempt": 2,
+      "case": "legal_r/B/None/xiaomi/mimo-v2.6-pro/22981c11",
+      "costs": {
+        "billed_usd": 0.192477,
+        "cache_read_tokens": 377600,
+        "cache_write_tokens": 0,
+        "cost_equiv_usd": 0.192477,
+        "duration_s": 1771.446,
+        "input_tokens": 148227,
+        "output_tokens": 145562
+      },
+      "detail": "",
+      "end": "frozen",
+      "passes": 2,
+      "refusals": [],
+      "seed": 1,
+      "session": "legal_r-B-mimo-v2.6-pro-t2-20261107T162355Z",
+      "state": "ok",
+      "status": "counted",
+      "tree_sha256": "fd3380c5aea64d8791b9117e873a78c71b5b7a287ce501deabce1220af6e6044",
+      "turns": 5
+    },
+    {
+      "accuracy": 0.724138,
+      "accuracy_counts": {
+        "correct": 126,
+        "n": 174
+      },
+      "attempt": 3,
+      "case": "legal_r/B/None/xiaomi/mimo-v2.6-pro/22981c11",
+      "costs": {
+        "billed_usd": 0.058835,
+        "cache_read_tokens": 48896,
+        "cache_write_tokens": 0,
+        "cost_equiv_usd": 0.058835,
+        "duration_s": 723.829,
+        "input_tokens": 41888,
+        "output_tokens": 46480
+      },
+      "detail": "",
+      "end": "frozen",
+      "passes": 1,
+      "refusals": [],
+      "seed": 2,
+      "session": "legal_r-B-mimo-v2.6-pro-t3-20261107T165329Z",
+      "state": "ok",
+      "status": "counted",
+      "tree_sha256": "b060676e79873694625aa5c0359a9a5fb53db8765d5b3093ff5c32a4a18c7e0c",
+      "turns": 3
+    },
+    {
+      "accuracy": 0.724138,
+      "accuracy_counts": {
+        "correct": 126,
+        "n": 174
+      },
+      "attempt": 1,
+      "case": "legal_r/B/None/claude-sonnet-5-5/b5f650a6",
+      "costs": {
+        "billed_usd": 0.0,
+        "cache_read_tokens": 5635,
+        "cache_write_tokens": 7540,
+        "cost_equiv_usd": 0.057171,
+        "duration_s": 23.646,
+        "input_tokens": 4,
+        "output_tokens": 2644
+      },
+      "detail": "",
+      "end": "frozen",
+      "passes": 0,
+      "refusals": [],
+      "seed": 0,
+      "session": "legal_r-B-sonnet-5.5-t1-20261107T153051Z",
+      "state": "ok",
+      "status": "counted",
+      "tree_sha256": "f6ca233b583c09e5a6e9a55d37032fa9944cdf3d4059bcd0a2cd69ad6ed2ef55",
+      "turns": 5
+    },
+    {
+      "accuracy": 0.724138,
+      "accuracy_counts": {
+        "correct": 126,
+        "n": 174
+      },
+      "attempt": 2,
+      "case": "legal_r/B/None/claude-sonnet-5-5/b5f650a6",
+      "costs": {
+        "billed_usd": 0.0,
+        "cache_read_tokens": 10916,
+        "cache_write_tokens": 2085,
+        "cost_equiv_usd": 0.033289,
+        "duration_s": 28.05,
+        "input_tokens": 4,
+        "output_tokens": 2385
+      },
+      "detail": "",
+      "end": "frozen",
+      "passes": 0,
+      "refusals": [],
+      "seed": 1,
+      "session": "legal_r-B-sonnet-5.5-t2-20261107T154153Z",
+      "state": "ok",
+      "status": "counted",
+      "tree_sha256": "e9bc7a44200051286b13d213ec77b3f4fe7369d8345968f78ce029af296b2e89",
+      "turns": 5
+    },
+    {
+      "accuracy": 0.724138,
+      "accuracy_counts": {
+        "correct": 126,
+        "n": 174
+      },
+      "attempt": 3,
+      "case": "legal_r/B/None/claude-sonnet-5-5/b5f650a6",
+      "costs": {
+        "billed_usd": 0.0,
+        "cache_read_tokens": 10915,
+        "cache_write_tokens": 2263,
+        "cost_equiv_usd": 0.036191,
+        "duration_s": 20.51,
+        "input_tokens": 4,
+        "output_tokens": 2604
+      },
+      "detail": "",
+      "end": "frozen",
+      "passes": 0,
+      "refusals": [],
+      "seed": 2,
+      "session": "legal_r-B-sonnet-5.5-t3-20261107T154616Z",
+      "state": "ok",
+      "status": "counted",
+      "tree_sha256": "686cccb0f52f0fa6af41c402ee24b7cb796a48747d6cb2ef458072182beb11cc",
+      "turns": 5
     },
     {
       "accuracy": null,
@@ -7293,7 +10068,7 @@
       "seed": 0,
       "session": "legal_s-A-program-1e4-mimo-v2.6-pro-t1-20261106T174235Z",
       "state": "unfrozen",
-      "status": "replayed",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 1
     },
@@ -7343,7 +10118,7 @@
       "seed": 1,
       "session": "legal_s-A-program-1e4-mimo-v2.6-pro-t2-20261106T175503Z",
       "state": "unfrozen",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 1
     },
@@ -7368,7 +10143,7 @@
       "seed": 2,
       "session": "legal_s-A-program-1e4-mimo-v2.6-pro-t3-20261106T180740Z",
       "state": "unfrozen",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 1
     },
@@ -7709,7 +10484,7 @@
       "seed": 1,
       "session": "legal_s-B-mimo-v2.6-pro-t1-20261106T060302Z",
       "state": "unfrozen",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 1
     },
@@ -7734,7 +10509,7 @@
       "seed": 0,
       "session": "legal_s-B-mimo-v2.6-pro-t1-20261106T165222Z",
       "state": "unfrozen",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 1
     },
@@ -7759,7 +10534,7 @@
       "seed": 2,
       "session": "legal_s-B-mimo-v2.6-pro-t2-20261106T061711Z",
       "state": "unfrozen",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 1
     },
@@ -7784,7 +10559,7 @@
       "seed": 1,
       "session": "legal_s-B-mimo-v2.6-pro-t2-20261106T170346Z",
       "state": "unfrozen",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 1
     },
@@ -7812,7 +10587,7 @@
       "seed": 3,
       "session": "legal_s-B-mimo-v2.6-pro-t3-20261106T063042Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "76ffecbfcd8629c5104a69990c2e5801c8fc65e051afe71d5e5c8ca22bdd74aa",
       "turns": 3
     },
@@ -7837,7 +10612,7 @@
       "seed": 2,
       "session": "legal_s-B-mimo-v2.6-pro-t3-20261106T171527Z",
       "state": "unfrozen",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 1
     },
@@ -8281,7 +11056,7 @@
       "seed": 1,
       "session": "legal_s_reserved-B-mimo-v2.6-pro-t1-20261106T064206Z",
       "state": "unfrozen",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 1
     },
@@ -8306,7 +11081,7 @@
       "seed": 0,
       "session": "legal_s_reserved-B-mimo-v2.6-pro-t1-20261106T172547Z",
       "state": "unfrozen",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 1
     },
@@ -8331,7 +11106,7 @@
       "seed": 2,
       "session": "legal_s_reserved-B-mimo-v2.6-pro-t2-20261106T065445Z",
       "state": "unfrozen",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 1
     },
@@ -8359,7 +11134,7 @@
       "seed": 1,
       "session": "legal_s_reserved-B-mimo-v2.6-pro-t2-20261106T173223Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "1b8efec5d39d047d1667306b69bacb7da60b6350efd0bc143174e93b5bf871d0",
       "turns": 3
     },
@@ -8384,7 +11159,7 @@
       "seed": 3,
       "session": "legal_s_reserved-B-mimo-v2.6-pro-t3-20261106T070932Z",
       "state": "unfrozen",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 1
     },
@@ -8412,7 +11187,7 @@
       "seed": 2,
       "session": "legal_s_reserved-B-mimo-v2.6-pro-t3-20261106T173602Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "48fe41d6796a66070880e593253c1a6ab6572a9e12f703f7141c61fbdd78c840",
       "turns": 3
     },
@@ -8526,7 +11301,7 @@
       "seed": 0,
       "session": "parity-A-literal-mimo-v2.6-pro-t1-20261105T224942Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "74522504d5b572ae7c333e2a57670c673b0558c256ba83b65f7436bc75509f86",
       "turns": 9
     },
@@ -8556,7 +11331,7 @@
       "seed": 0,
       "session": "parity-A-literal-sonnet-5.5-t1-20261106T042814Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "568a7b77e6193397cbe11692090ece5d5244aa55209af0b5622e16164f551d61",
       "turns": 14
     },
@@ -8581,7 +11356,7 @@
       "seed": 0,
       "session": "parity-A-program-mimo-v2.6-pro-t1-20261105T224224Z",
       "state": "unfrozen",
-      "status": "replayed",
+      "status": "annex",
       "tree_sha256": null,
       "turns": 1
     },
@@ -8612,7 +11387,7 @@
       "seed": 0,
       "session": "parity-A-program-mimo-v2.6-pro-t1-20261105T224746Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "5d38406970ed952eb1235d68b0668900514ec6ecc96c7c79553f19f09f1d0754",
       "turns": 9
     },
@@ -8643,7 +11418,7 @@
       "seed": 0,
       "session": "parity-A-program-sonnet-5.5-t1-20261106T042528Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "8c9110f28ee7d439497bff0bdfbbc0dc93c0459d349df390290e477e1be36aaa",
       "turns": 10
     },
@@ -8671,7 +11446,7 @@
       "seed": 0,
       "session": "parity-B-mimo-v2.6-pro-t1-20261105T225302Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "5ec521c21527563e23e0cadaa5327df66b107cc7ba4e8df2d86f8f8fa7448437",
       "turns": 3
     },
@@ -8699,12 +11474,13 @@
       "seed": 0,
       "session": "parity-B-sonnet-5.5-t1-20261106T042840Z",
       "state": "ok",
-      "status": "counted",
+      "status": "annex",
       "tree_sha256": "8256ddb7dda1b81e6e20d791516a61e4d39874e92b54fca8f34c0c69902e8f29",
       "turns": 2
     }
   ],
   "targets": [
+    "legal_r:eval",
     "legal_s_reserved:eval"
   ],
   "warnings": []

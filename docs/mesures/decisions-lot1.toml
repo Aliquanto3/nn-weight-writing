@@ -1,84 +1,125 @@
 # Décisions du lot 1 (story 1-14) : jugements datés, jamais des mesures.
 # Lu par `nnww table --lot 1` (format : src/nn_weight_writing/report/decisions.py).
-# status = "pending" : question laissée à 1-14b, « à juger » ; `--strict` échoue tant qu'il en reste.
+# Jugements rendus en 1-14b, d'après les journaux et le code gelé des séances.
+
+# --- Drapeaux d'audit fragment_overlap (AD-19)
 
 [[session]]
 id = "legal_s-A-program-1e5-fable-5.1-t1-20261106T074549Z"
-status = "pending"
+status = "kept"
+audit = "judged"
 date = "2026-11-07"
-reason = "à juger en 1-14b : fragment_overlap (2 script_run, 4 fragments) : vocabulaire de format ou recopie d'exemples ?"
-ref = "spec 1-14, jugements à rendre (1-14b)"
+reason = "fragment_overlap jugé vocabulaire de format : les 4 fragments viennent de 3 littéraux de noms de chambre (cass. civ. 1re, 2e, 3e) parmi 258 ; aucun numéro, aucune date, aucune référence d'exemple recopiée"
+ref = "spec 1-14, jugements à rendre (1-14b) ; journal, événements script_run ; frozen/script.py"
 
 [[session]]
 id = "legal_s_reserved-A-program-1e5-sonnet-5.5-t2-20261106T070402Z"
-status = "pending"
+status = "kept"
+audit = "judged"
 date = "2026-11-07"
-reason = "à juger en 1-14b : fragment_overlap (2 script_run, 4 fragments) : vocabulaire de format ou recopie d'exemples ?"
-ref = "spec 1-14, jugements à rendre (1-14b)"
+reason = "fragment_overlap jugé vocabulaire de format : les 4 fragments viennent de 3 littéraux de noms de chambre (cass. civ. 1re, 2e, 3e) parmi 57 ; aucun numéro, aucune date, aucune référence d'exemple recopiée"
+ref = "spec 1-14, jugements à rendre (1-14b) ; journal, événements script_run ; frozen/script.py"
+
+[[session]]
+id = "legal_r-B-sonnet-5.5-t2-20261107T154153Z"
+status = "kept"
+audit = "judged"
+date = "2026-11-07"
+reason = "fragment_overlap jugé vocabulaire de format : les 10 fragments viennent de 3 littéraux de noms de chambre (Cass. civ. 1re, Cass. civ. 2e, Cass. ass. plén.) parmi 50 ; aucun numéro, aucune date, aucune référence d'exemple recopiée"
+ref = "1-13, séances signalées ; journal, événement script_run ; frozen/rules.py"
+
+[[session]]
+id = "legal_r-B-sonnet-5.5-t3-20261107T154616Z"
+status = "kept"
+audit = "judged"
+date = "2026-11-07"
+reason = "fragment_overlap jugé vocabulaire de format : les 10 fragments viennent de 3 littéraux de noms de chambre (Cass. civ. 1re, Cass. civ. 2e, Cass. ass. plén.) parmi 52 ; aucun numéro, aucune date, aucune référence d'exemple recopiée"
+ref = "1-13, séances signalées ; journal, événement script_run ; frozen/rules.py"
+
+# --- Alerte D8 de 1-13 (hors drapeaux AD-19)
+
+[[session]]
+id = "legal_r-B-mimo-v2.6-pro-t2-20261107T162355Z"
+status = "kept"
+date = "2026-11-07"
+reason = "rappel c00 de 13/48 jugé indice générique, pas mémoire : rules.py ne contient aucune référence ni numéro d'exemple ; il marque fausses les numéros de pourvoi d'allure fabriquée (multiple de 1000 ou de 100, trois chiffres égaux, chiffres consécutifs, répétition du numéro de chambre), au prix de 10 vraies manquées ; exactitude au-dessus du plafond de la grille gardée et lue comme telle"
+ref = "1-13, séances signalées (alerte D8) ; frozen/rules.py, fonction _suspicious_num"
+
+# --- MiMo sur S (1-10) : étapes 1 et 2 en annexe, étape 3 retenue
 
 [[session]]
 id = "legal_s-A-program-1e4-mimo-v2.6-pro-t1-20261106T213133Z"
-status = "pending"
+status = "kept"
 date = "2026-11-07"
-reason = "à juger en 1-14b : la règle « dernière séance » compte l'essai de l'étape 3 à la place de l'étape 2 (même config, max_tokens non journalisé) : confirmer"
-ref = "spec 1-14, jugements à rendre (1-14b)"
+reason = "confirmé : l'essai de l'étape 3 (131072 jetons, effort medium, graine envoyée), réglage retenu par 1-10, compte pour la tentative 1 ; la séance de l'étape 2 de même config (max_tokens non journalisé) passe en annexe avec son groupe"
+ref = "docs/experiences/1-10-s-mimo.md, réglage retenu (étape 3)"
 
 [[group]]
 task = "legal_s"
 config = "d4523fc4"
-status = "pending"
+status = "annex"
 date = "2026-11-07"
-reason = "à juger en 1-14b : MiMo étape 1 (64000 jetons, effort par défaut) : annexe ou case ?"
-ref = "spec 1-14, jugements à rendre (1-14b)"
+reason = "MiMo étape 1 (64000 jetons, effort par défaut, graine non transmise) : réglage antérieur à la décision d'Anaël sur l'effort, déjà mis en annexe par 1-10 ; B legal_s t3 (3968/4000) cité en annexe du rapport, hors case"
+ref = "docs/experiences/1-10-s-mimo.md, annexe 1"
 
 [[group]]
 task = "legal_s"
 config = "a52ba2e6"
-status = "pending"
+status = "annex"
 date = "2026-11-07"
-reason = "à juger en 1-14b : MiMo étape 2 (64000 jetons, effort medium) : annexe ou case ?"
-ref = "spec 1-14, jugements à rendre (1-14b)"
+reason = "MiMo étape 2 (64000 jetons, effort medium, graine non transmise) : réglage remplacé par l'étape 3, déjà mis en annexe par 1-10"
+ref = "docs/experiences/1-10-s-mimo.md, annexe 2"
+
+[[group]]
+task = "legal_s"
+config = "8e081aa1"
+status = "annex"
+date = "2026-11-07"
+reason = "MiMo A-programme 10⁴, étape 2 (64000 jetons, effort medium, tronquées ×3) : déjà mis en annexe par 1-10 ; seul l'essai de l'étape 3 (même config, entrée [[session]] ci-dessus) compte"
+ref = "docs/experiences/1-10-s-mimo.md, annexe 2, section A"
 
 [[group]]
 task = "legal_s_reserved"
 config = "d4523fc4"
-status = "pending"
+status = "annex"
 date = "2026-11-07"
-reason = "à juger en 1-14b : MiMo étape 1 (64000 jetons, effort par défaut) : annexe ou case ?"
-ref = "spec 1-14, jugements à rendre (1-14b)"
+reason = "MiMo étape 1 (64000 jetons, effort par défaut, graine non transmise) : réglage antérieur à la décision d'Anaël sur l'effort, déjà mis en annexe par 1-10"
+ref = "docs/experiences/1-10-s-mimo.md, annexe 1"
 
 [[group]]
 task = "legal_s_reserved"
 config = "a52ba2e6"
-status = "pending"
+status = "annex"
 date = "2026-11-07"
-reason = "à juger en 1-14b : MiMo étape 2 (64000 jetons, effort medium) : annexe ou case ?"
-ref = "spec 1-14, jugements à rendre (1-14b)"
+reason = "MiMo étape 2 (64000 jetons, effort medium, graine non transmise) : déjà mis en annexe par 1-10 ; B t2 et t3 gelées (89,7 et 90,0 %) citées en annexe du rapport, hors case"
+ref = "docs/experiences/1-10-s-mimo.md, annexe 2"
+
+# --- Témoins et jouet
 
 [[group]]
 path = "annexe-fields1"
-status = "pending"
+status = "annex"
 date = "2026-11-07"
-reason = "à juger en 1-14b : F legal.fields@1 de 1-11 : annexe"
-ref = "spec 1-14, jugements à rendre (1-14b)"
+reason = "F legal.fields@1 (champs scalaires) : annexe de 1-11 ; F retenu = legal.fields@2 (one-hot)"
+ref = "docs/experiences/1-11-temoins-c-f.md"
 
 [[group]]
 task = "automaton"
-status = "pending"
+status = "annex"
 date = "2026-11-07"
-reason = "à juger en 1-14b : séances jouet de 1-8 (calibrage, hors conclusions) : annexe ou section à part ?"
-ref = "spec 1-14, jugements à rendre (1-14b)"
+reason = "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe"
+ref = "docs/experiences/1-8-jouet-sonnet.md, 1-8-jouet-mimo.md"
 
 [[group]]
 task = "compare"
-status = "pending"
+status = "annex"
 date = "2026-11-07"
-reason = "à juger en 1-14b : séances jouet de 1-8 (calibrage, hors conclusions) : annexe ou section à part ?"
-ref = "spec 1-14, jugements à rendre (1-14b)"
+reason = "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe"
+ref = "docs/experiences/1-8-jouet-sonnet.md, 1-8-jouet-mimo.md"
 
 [[group]]
 task = "parity"
-status = "pending"
+status = "annex"
 date = "2026-11-07"
-reason = "à juger en 1-14b : séances jouet de 1-8 (calibrage, hors conclusions) : annexe ou section à part ?"
-ref = "spec 1-14, jugements à rendre (1-14b)"
+reason = "séances jouet de 1-8 : calibrage du protocole, hors conclusions (methodes-et-lots.md) ; montrées en annexe"
+ref = "docs/experiences/1-8-jouet-sonnet.md, 1-8-jouet-mimo.md"

@@ -1,7 +1,6 @@
 [project]
 name = "nn-weight-writing"
-# Pas encore de release : première version (v0.1.0) quand le premier banc comparatif tourne.
-version = "0.0.0"
+version = "0.1.0"
 description = "Un LLM écrit tous les poids d'un réseau de neurones, sans entraînement, comparé aux règles en code, à l'entraînement standard, à l'édition de poids et au steering"
 readme = "README.md"
 authors = [{ name = "Anaël Yahi" }]
@@ -31,7 +30,8 @@ build-backend = "uv_build"
 line-length = 100
 target-version = "py314"
 # Code tiers installé (BMAD, agent-cost-kit) : hors de nos règles de style.
-extend-exclude = [".claude", "_bmad"]
+# Code de B copié tel quel des séances gelées (rapport du lot 1) : pas reformaté.
+extend-exclude = [".claude", "_bmad", "docs/rapport-lot1/b"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]
