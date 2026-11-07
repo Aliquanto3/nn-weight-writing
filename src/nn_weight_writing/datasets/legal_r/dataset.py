@@ -16,6 +16,7 @@ Aucune fonction ne lit `data/r/` : le script `scripts/jeu_r.py` leur passe ce qu
 from __future__ import annotations
 
 import calendar
+import hashlib
 import json
 import re
 from collections import Counter
@@ -44,6 +45,9 @@ MIN_FAKES = 80
 TRAIN_MIN_FAKES = 120
 SESSION_PAIRS = 20
 MAX_DAY_TRIES = 15  # jours interrogés au plus par fausse (le jour visé compris), S10
+# Garde-fou de 2937aff : au-delà, un extracteur ou un normaliseur cassé ferait disparaître
+# des fausses sans bruit (3 unités au tour 1 de 1-12) ; la construction s'arrête.
+MAX_SPAN_CONTEXT = 10
 GATE_CLASSES = ("incoherent", "coherent_absent")
 FORMATION_RULES = frozenset({"R-O1", "R-O2", "R-O4", "R-O5"})
 FUTURE_RULE = "R-C3"
@@ -343,6 +347,11 @@ def select_fakes(
             continue
         numbers.add((fake.jurisdiction, fake.number))
         fakes.append(fake)
+    if excluded["span_context"] > MAX_SPAN_CONTEXT:
+        raise RBuildError(
+            "span_context_excess",
+            f"{excluded['span_context']} passages sans référence complète (> {MAX_SPAN_CONTEXT})",
+        )
     return Selection(fakes, excluded, dict(sorted(before.items())))
 
 
@@ -421,6 +430,12 @@ def _days_around(target: date, kind: str | None, low: date, high: date) -> list[
     return out
 
 
+def unit_seed(unit_id: str) -> int:
+    """Graine d'une fausse tirée de son `unit_id` (sha256, 64 bits) : retirer une fausse en amont
+    (revérification, exclusion) ne change pas le tirage des autres."""
+    return int.from_bytes(hashlib.sha256(unit_id.encode("utf-8")).digest()[:8], "big")
+
+
 def match_reals(
     fakes: Sequence[FakeRow],
     pool: Pool,
@@ -437,7 +452,9 @@ def match_reals(
     qui porte le champ incohérent de la fausse n'est pas apparié (type de jour pour une règle de
     date, formation pour une règle de formation, écart pour une règle de numéro ou un numéro
     `none`) ; l'année d'une fausse future est la plus proche dans la fenêtre. Tirage uniforme
-    sans remise par `default_rng([seed, 0, i])`.
+    sans remise par `default_rng([seed, 0, unit_seed(unit_id)])` (revue A1) : le tirage d'une
+    fausse ne dépend pas de son rang, seulement des vraies déjà consommées (`used`, numéros) et
+    des numéros des autres fausses.
     """
     ordered = sorted(fakes, key=lambda f: f.unit_id)
     fake_numbers = {(f.jurisdiction, f.number) for f in ordered}
@@ -445,8 +462,8 @@ def match_reals(
     used_numbers: set[tuple[str, str]] = set()  # numéros des vraies déjà tirées (D5)
     pairs: list[Pair] = []
     unmatched: list[str] = []
-    for i, fake in enumerate(ordered):
-        rng = np.random.default_rng([seed, 0, i])
+    for fake in ordered:
+        rng = np.random.default_rng([seed, 0, unit_seed(fake.unit_id)])
         window = windows[fake.jurisdiction]
         high = min(window.end, corpus_date)
         notes: dict = {}

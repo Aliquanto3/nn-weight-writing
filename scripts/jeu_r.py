@@ -57,6 +57,7 @@ from nn_weight_writing.datasets.legal_r.judilibre import (
     KEY_ENV,
     JudilibreClient,
     JudilibreError,
+    cache_key,
     key_from_env,
 )
 from nn_weight_writing.datasets.legal_r.normalize import NORMALIZER_ID
@@ -112,8 +113,36 @@ def load_key(env_file: Path | None) -> str:
     return key_from_env()
 
 
-def make_client(args) -> JudilibreClient:
-    return JudilibreClient(
+class TracedClient(JudilibreClient):
+    """Client qui consigne chaque page lue, du cache ou du réseau (revue A1) : `construire`
+    publie l'empreinte des pages lues et leurs dates d'extraction (`fetched_at`), le cache
+    pouvant avoir été enrichi depuis 1-12."""
+
+    def __init__(self, *args, **kwargs) -> None:
+        super().__init__(*args, **kwargs)
+        self.read: dict[str, tuple[str, str]] = {}  # clé de cache -> (sha256, fetched_at)
+
+    def get(self, path, params) -> dict:
+        entry = super().get(path, params)
+        body = json.dumps(entry, ensure_ascii=False, sort_keys=True).encode("utf-8")
+        digest = hashlib.sha256(body).hexdigest()
+        self.read[cache_key(path, params)] = (digest, str(entry.get("fetched_at", "")))
+        return entry
+
+    def fingerprint(self) -> dict:
+        """Pages lues, sha256 des lignes `clé sha256` triées, plus ancienne et plus récente."""
+        lines = "".join(f"{k} {h}\n" for k, (h, _) in sorted(self.read.items()))
+        dates = sorted(t for _, t in self.read.values())
+        return {
+            "pages": len(self.read),
+            "sha256": hashlib.sha256(lines.encode("utf-8")).hexdigest(),
+            "fetched_at": [dates[0], dates[-1]] if dates else None,
+            "network_requests": self.requests,
+        }
+
+
+def make_client(args) -> TracedClient:
+    return TracedClient(
         load_key(args.env_file), fetch=FETCH, cache_dir=args.cache, log=print, **CLIENT_KW
     )
 
@@ -288,6 +317,7 @@ def _construire(args) -> int:
         "fakes": len(pairs),
     }
     incoherent = sum(1 for p in pairs if p.fake.type_id != "c00")
+    judilibre_cache = client.fingerprint()  # revérification et vraies, cache ou réseau
     meta = {
         "encoder": LEGAL_TASKS[R_TASK].encoder_id,
         "generator": R_TASK,
@@ -309,6 +339,7 @@ def _construire(args) -> int:
         "facts_sha256": facts_sha256(),
         "code_commit": sha["code_commit"],
         "ce_index_sha256": sha["ce_index_manifest"],
+        "judilibre_cache": judilibre_cache,
         "swagger_sha256": sha256_file(args.swagger) if args.swagger else None,
         "funnel": funnel,
         "p_R_all": incoherent / len(pairs) if pairs else None,
@@ -350,6 +381,10 @@ def _construire(args) -> int:
         "splits": written,
         "notes": dict(notes),
         "day_offsets": dict(Counter(p.notes.get("day_offset", 0) for p in pairs)),
+        "unmatched_criteria": dict(
+            Counter(c for p in pairs for c in p.notes.get("unmatched_criteria", []))
+        ),
+        "judilibre_cache": judilibre_cache,
     }
     write_json(out / "resume.json", resume)
     write_json(
@@ -362,6 +397,7 @@ def _construire(args) -> int:
                 "requests": client.requests,
                 "cache_hits": client.cache_hits,
                 "x_rate_limit": client.rate.raw,
+                "cache": judilibre_cache,
             },
         },
     )

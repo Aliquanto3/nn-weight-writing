@@ -98,7 +98,7 @@ Pour chaque fausse *f* (ordre des `unit_id`), dans sa juridiction :
 2. **Formation** : celle de *f* si elle existe à cette date dans la base réelle (chambre de la Cour de cassation ; formation du Conseil d'État, chambres réunies et juge des référés compris). Sinon (chambre inexistante, formation de l'autre ordre, rang hors de [1, 10]…), une formation tirée selon la distribution des formations existantes parmi les fausses de la même juridiction et de la même période.
 3. **Décision** : tirée uniformément, sans remise, parmi les décisions de la base de cette juridiction, formation et année, dans la fenêtre de couverture, dont la normalisation donne une référence complète écrite en D1.
 
-Tirages par `numpy.random.default_rng([seed, 0, i])` (*i* = rang de *f*), graine de construction 0.
+Tirages par `numpy.random.default_rng([seed, 0, i])` (*i* = rang de *f*), graine de construction 0. Remplacé par la revue A1 : *i* = `unit_seed(unit_id)` (voir « Amendement A1 »).
 
 **Bases** (lecture seule du contrat de 1-12) :
 
@@ -395,6 +395,22 @@ Correctifs de la passe 1 seuls (diff `ba67579..28be85e`), sans rebase.
 - **Rejeté** : borne de S8 par jeu correcte ; test d'import en sous-processus 0,19 s, `-I` et `sys.executable`, portable.
 - Tests ciblés (140) et ruff verts.
 
+### Passe 3 (2026-11-07, SHA revu 5e7cd62)
+
+Amendement A1 et correctif 2937aff (diff `24c0073..5e7cd62`) ; branche à jour sur `main` (890e19a, ancêtre de HEAD, aucun écart).
+
+- **Important**, medium, second avis 3 : graine `default_rng([seed, 0, i])` par rang ; retirer une fausse en amont (revérification) décalait le tirage de toutes les suivantes. **Corrigé** : `unit_seed(unit_id)` (sha256) ; dépendances restantes (vraie ou numéro consommé, numéro d'une fausse retirée) documentées dans A1 ; test de localité.
+- **Important**, medium, second avis 4 : cache Judilibre lu sans empreinte ni date. **Corrigé** : `judilibre_cache` (pages, sha256, `fetched_at` extrêmes, requêtes réseau) dans la composition, `resume.json` et `manifest.json` ; test qui change une page et voit l'empreinte changer. Cache enrichi par 1-13 de 650 pages de jours du pool depuis 1-12 (détail dans A1), sans atteinte à D4 ni au jeu figé.
+- **Nit**, medium, second avis 1 : année des t06 ramenée à la dernière année de la fenêtre. **Rejeté** pour ce jeu (aucune t06 parmi les fausses estimées, décision A1 d'Anaël) ; limite documentée dans A1, à rouvrir si des t06 entrent.
+- **Nit**, medium, second avis 2 : formation des vraies des R-O tirée du pool brut. **Rejeté** : rétablir un tirage de formation contredit A1 et revidait les strates (t05 16 sur 18 perdues au premier passage) ; gain borné à ~3 points pour un témoin de formation, borne notée dans A1.
+- **Nit**, low, second avis 5 : `span_context` silencieux. **Corrigé** : arrêt au-delà de 10 (`span_context_excess`), compte publié dans l'entonnoir.
+- **Nit**, low, second avis 6 : R-E* non testées à l'appariement. **Corrigé** : `test_ecli_rules_free_no_criterion` (une fausse à règles seulement ECLI est exclue en amont, `ecli_only`).
+- **Nit**, low, second avis 7 : R-A1 garde la formation. **Rejeté** : déjà dans la table d'A1 ; motif ajouté.
+- **Pre-existing**, medium, reviewer : la revérification de D4 lit « le même cache » que 1-12 ; la page d'un jour déjà interrogé par 1-12 est rejouée, et `found_at_build` vaut 0 par construction pour ces jours. **Reporté à Anaël** : pour une vraie revérification, rafraîchir les `/scan` des jours des fausses (environ 140 requêtes) avant `construire` ; `judilibre_cache.fetched_at` montre désormais l'âge des pages lues.
+- Complexité : 0 constat (critères libres en O(1) par fausse, 15 jours au plus, ensembles pour `used` et les numéros).
+- Lu sans constat : 2937aff (juridiction héritée seulement pour une référence sans juridiction, clé complète différente toujours refusée), `_days_around` à type libre, année proche limitée aux futures (`before_window` exclut en amont).
+- Tests `tests/test_legal_r*.py` et ruff verts.
+
 ## Phase B — arrêt au seuil de 80 fausses (2026-11-07)
 
 `origin/main` (890e19a, porte de 1-12) fusionné sans conflit (`24c0073`). `construire` lit le classement du tour 1 (sha256 `527869b5…62de`, égal à `config/r_gate.toml`), `--s-root` sur les jeux de S rassemblés, `--cache` sur le cache de 1-12.
@@ -443,3 +459,13 @@ Décision d'Anaël, prise dans la session principale avant toute séance (aucune
 Une fausse à plusieurs règles cumule les critères libérés. Le numéro du CE est toujours de classe `none` (vraies comme fausses) : l'écart n'y est jamais apparié, sans effet sur le tirage.
 
 Code : `FakeRow.match_gap`, `FakeRow.match_day_kind`, `NUMBER_RULES`, `DATE_RULES`, `match_reals` (`datasets/legal_r/dataset.py`). Tests : `test_a1_number_none_not_matched_on_gap`, `test_a1_incoherent_formation_free_jurisdiction_kept`, `test_a1_t12_day_kind_free_year_kept`, `test_a1_c00_matched_on_every_criterion`, `test_match_reals_follows_fakes` et `test_neighbour_days_and_empty_stratum` réalignés.
+
+**Compléments de la revue (passe 3, 2026-11-07).**
+
+- R-A1 (t14) garde la formation : l'incohérence est le couple série du numéro et chambre ; la vraie a la même chambre et un numéro cohérent, seul l'écart d'année est libéré. R-E1 à R-E5 ne libèrent rien (ECLI hors du `raw`) ; une fausse à règles R-E et non-E ne libère que les critères de ses règles non-E (`test_ecli_rules_free_no_criterion`).
+- **Graine par fausse** : `default_rng([seed, 0, unit_seed(unit_id)])`, `unit_seed` = 64 premiers bits du sha256 de l'`unit_id`, au lieu du rang. Retirer une fausse en amont (revérification `found_at_build`, exclusion) ne change plus le tirage des autres. Restent deux dépendances voulues : une vraie (ou un de ses numéros) consommée par une fausse retirée redevient disponible pour les fausses suivantes, et une candidate qui porte le numéro d'une fausse retirée n'est plus exclue ; dans ces deux cas seulement, la vraie d'une autre fausse peut changer (`test_match_reals_local_to_each_fake`).
+- **Garde-fou `span_context`** : plus de `MAX_SPAN_CONTEXT` = 10 exclusions `span_context` (3 au tour 1 de 1-12) arrêtent `construire` (code 2, `span_context_excess`, rien d'écrit) : un extracteur ou un normaliseur cassé ne fait plus disparaître de fausses sans bruit. Le compte reste publié dans l'entonnoir (`test_span_context_capped`).
+- **Cache Judilibre lu** : `construire` consigne dans `composition.judilibre_cache` (et dans `resume.json` et `manifest.json`) le nombre de pages lues, le sha256 des lignes « clé, sha256 du contenu » triées, la plus ancienne et la plus récente `fetched_at`, et les requêtes réseau (`TracedClient` de `scripts/jeu_r.py`, aucun module de 1-12 modifié ; `test_build_records_the_judilibre_cache_it_read`). `resume.json` compte aussi les critères libérés (`unmatched_criteria`).
+- **État du cache** (`.claude/worktrees/1-12/data/r/cache/judilibre/`, relu le 2026-11-07) : 768 pages à la fin de 1-12 (dernière vers 13:3x UTC), puis 650 `/scan` d'un jour ajoutés par 1-13 (616 vers 14:1x UTC, première `construire` arrêtée à 66 ; 34 vers 15:1x UTC, estimation à blanc), aucun `/search`. Ce sont des jours du pool des vraies ; aucune règle de D4 ni du commit « jeu R figé » n'est touchée (rien d'écrit sous `data/legal_r` ni `heldout/`, `R_CORPUS_DATE` non posé). Les dates sont désormais publiées.
+- **Limite, année des t06** : l'année la plus proche dans la fenêtre est toujours la dernière (`high.year`), les t06 gardées étant postérieures à `corpus_date` ; leurs vraies s'entassent sur cette année, indice possible « année de fin de fenêtre, donc vraie ». Sans effet sur ce jeu (aucune t06 parmi les 108 fausses estimées) ; décision d'Anaël gardée. Si des t06 entrent dans R, à rouvrir avec Anaël (par exemple année tirée parmi celles des vraies de la juridiction).
+- **Limite, formation libre des R-O** : la vraie d'une R-O1, R-O2, R-O4 ou R-O5 suit la distribution des formations du jour dans la base, celle d'une `c00` copie la formation de la fausse. Un témoin qui ne lit que la formation ne gagne rien sur les paires dont la vraie copie la formation, et au plus la moitié des vraies libérées sur les autres : avec 13 paires R-O sur 108 (t05 11, t03 2), au plus 13 / 216 × 0,5 ≈ 3 points d'exactitude. Non mesuré par le plancher (pas de jeu d'entraînement sous 120 fausses) ; borne à publier au compte rendu.

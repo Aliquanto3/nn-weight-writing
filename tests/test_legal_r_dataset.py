@@ -22,6 +22,7 @@ from nn_weight_writing.datasets.legal_r import pool as pool_module
 from nn_weight_writing.datasets.legal_r.ce_index import CeIndex
 from nn_weight_writing.datasets.legal_r.dataset import (
     EXCLUSIONS,
+    MAX_SPAN_CONTEXT,
     RBuildError,
     Selection,
     day_kind,
@@ -258,6 +259,21 @@ def test_inherited_jurisdiction_and_span_context():
         select_fakes([row], extraction=[other], windows=WINDOWS)
 
 
+def test_span_context_capped():
+    """Au-delà de MAX_SPAN_CONTEXT passages sans référence, la construction s'arrête."""
+    rows, extraction = [], []
+    for k in range(MAX_SPAN_CONTEXT + 1):
+        number = f"13-27.{k:03d}"
+        uid = f"r-u{k + 1:05d}"
+        row = classement_row(uid, "cc", "civ. 1re", 2015, 3, 12, number, "coherent_absent")
+        rows.append(row)
+        extraction.append({**extraction_row(row), "raw": f"{number}**\n**Chambre :** 1re"})
+    with pytest.raises(RBuildError, match="span_context_excess"):
+        select_fakes(rows, extraction=extraction, windows=WINDOWS)
+    kept = select_fakes(rows[:-1], extraction=extraction[:-1], windows=WINDOWS)
+    assert kept.excluded["span_context"] == MAX_SPAN_CONTEXT
+
+
 # --- AC6 : appariement ---------------------------------------------------------------------
 
 
@@ -360,6 +376,39 @@ def test_match_reals_reproducible():
     ]
     other, _ = match_reals(fakes, pool, seed=1, windows=WINDOWS, corpus_date=CORPUS)
     assert [p.real.raw for p in other] != [p.real.raw for p in first]
+
+
+def test_match_reals_local_to_each_fake():
+    """Graine tirée de l'`unit_id` : retirer une fausse ne change pas la vraie des autres, sauf
+    si la vraie retirée ou ses numéros étaient consommés (`used`), ce que ce monde évite."""
+    fakes, pool, _ = _pool_world()
+    first, _ = match_reals(fakes, pool, seed=0, windows=WINDOWS, corpus_date=CORPUS)
+    drawn = {p.fake.unit_id: p.real.raw for p in first}
+    removed = sorted(drawn)[0]
+    rest = [f for f in fakes if f.unit_id != removed]
+    again, _ = match_reals(rest, pool, seed=0, windows=WINDOWS, corpus_date=CORPUS)
+    assert {p.fake.unit_id: p.real.raw for p in again} == {
+        u: r for u, r in drawn.items() if u != removed
+    }
+
+
+def test_ecli_rules_free_no_criterion():
+    """R-E1 à R-E5 portent sur l'ECLI, hors du `raw` : aucun critère n'est libéré."""
+    both = fake("r-u00001", "cc", "civ. 4e", 2015, 3, 12, "14-10.001", rules=("R-E2", "R-O1"))
+    pool = _a1_pool({date(2015, 3, 12): [("crim.", "14-30.001")]})
+    (pair,), _ = match_reals([both], pool, seed=0, windows=WINDOWS, corpus_date=CORPUS)
+    assert pair.notes["unmatched_criteria"] == ["formation"]
+    # dimanche 15 mars 2015 : seul le type de jour est libéré, formation et écart restent
+    sunday = fake("r-u00002", "cc", "civ. 1re", 2015, 3, 15, "14-10.002", rules=("R-C4", "R-E1"))
+    assert sunday.match_gap and not sunday.match_day_kind and sunday.formation_exists
+    wrong = {date(2015, 3, 16): [("crim.", "14-30.002"), ("civ. 1re", "11-30.003")]}
+    assert match_reals([sunday], _a1_pool(wrong), seed=0, windows=WINDOWS, corpus_date=CORPUS) == (
+        [],
+        ["r-u00002"],
+    )
+    good = {**wrong, date(2015, 3, 17): [("civ. 1re", "14-30.004")]}
+    (pair,), _ = match_reals([sunday], _a1_pool(good), seed=0, windows=WINDOWS, corpus_date=CORPUS)
+    assert pair.real.number == "14-30.004" and pair.notes["unmatched_criteria"] == ["day_kind"]
 
 
 def test_neighbour_days_and_empty_stratum():
@@ -696,6 +745,31 @@ def test_build_writes_three_sets_and_reals_match_their_source(built, script):
     assert len(all_raws) == len(set(all_raws)) == 2 * fakes
     assert len(all_numbers) == len(set(all_numbers))
     assert not set(all_raws) & paths["s_raws"]  # S7, vraies et fausses
+
+
+def test_build_records_the_judilibre_cache_it_read(built, script):
+    """Revue A1 : empreinte et dates des pages Judilibre lues ; une page changée la change."""
+    _, paths = built
+    assert script.main(_argv(paths)) == 0
+    jeu = paths["out"] / "data" / "r" / "jeu_r"
+    first = json.loads((jeu / "resume.json").read_text("utf-8"))["judilibre_cache"]
+    files = sorted(paths["cache"].glob("*.json"))
+    dates = sorted(json.loads(f.read_text("utf-8"))["fetched_at"] for f in files)
+    assert first["pages"] == len(files) > 0 and first["fetched_at"] == [dates[0], dates[-1]]
+    assert first["network_requests"] == len(files)  # cache neuf : tout vient du réseau
+    meta = json.loads((paths["out"] / "data/legal_r/session/dataset.json").read_text("utf-8"))
+    manifest = json.loads((jeu / "manifest.json").read_text("utf-8"))
+    assert meta["composition"]["judilibre_cache"] == manifest["judilibre"]["cache"] == first
+    entry = json.loads(files[0].read_text("utf-8"))
+    entry["fetched_at"] = "2026-01-01T00:00:00Z"
+    files[0].write_text(json.dumps(entry, ensure_ascii=False), encoding="utf-8")
+    paths["out"] = paths["out"].with_name("out2")
+    assert script.main(_argv(paths)) == 0
+    jeu = paths["out"] / "data" / "r" / "jeu_r"
+    second = json.loads((jeu / "resume.json").read_text("utf-8"))["judilibre_cache"]
+    assert second["pages"] == first["pages"] and second["network_requests"] == 0
+    assert second["sha256"] != first["sha256"]
+    assert second["fetched_at"][0] == "2026-01-01T00:00:00Z"
 
 
 def test_build_recheck_existence(built, script, capsys):
