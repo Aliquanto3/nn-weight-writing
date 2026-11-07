@@ -1,13 +1,13 @@
 # Rapport du lot 1 — reproduction critique (v0.1.0)
 
-Lot 1 de nn-weight-writing, 2026-11-05 au 2026-11-07. Un LLM écrit tous les poids d'un petit réseau (méthode A), ou des règles en Python (méthode B), sans gradient ; comparaison aux témoins entraînés C (architecture de référence) et F (encodeur de champs). Chiffres tirés de `docs/mesures/lot1.md` (généré par `nnww table --lot 1`, empreinte des entrées `ff652661…b2462d`), jugements dans `docs/mesures/decisions-lot1.toml`. Les pourcentages sont des exactitudes sur le jeu réservé, jamais lu par l'agent.
+Lot 1 de nn-weight-writing, 2026-11-05 au 2026-11-07. Un LLM écrit tous les poids d'un petit réseau (méthode A), ou des règles en Python (méthode B), sans gradient ; comparaison aux témoins entraînés C (architecture de référence) et F (encodeur de champs). Chiffres tirés de `docs/mesures/lot1.md` (généré par `nnww table --lot 1`, empreinte des entrées `c768d61d…2493bd1`), jugements dans `docs/mesures/decisions-lot1.toml`. Les pourcentages sont des exactitudes sur le jeu réservé, jamais lu par l'agent.
 
 ## 1. Réponse courte
 
-- **Sur S, A ne fait pas mieux que B.** Sonnet : B 99,1 % (3/3 gelées), A-programme 10⁵ 91,2 %, A-programme 10⁴ 63,5 %, A-littéral 10⁴ 60,2 %. Fable (une tentative) : A-programme 10⁵ 98,4 %, égal à B (98,4 %). **Résultat négatif, dit comme tel** : écrire les poids n'a battu les règles écrites en code dans aucune case.
-- **A fait mieux que C à données comparables.** L'agent voit 40 exemples ; C à N = 64 fait 51,7 %, F à N = 64 53,3 %. A-programme 10⁵ de Sonnet (91,2 %) se place entre C à N = 8 192 (83,7 %) et C à N = 32 768 (94,6 %).
+- **Sur S, A ne fait pas mieux que B.** Sonnet : B 99,1 % (3/3 gelées), A-programme 10⁵ 91,2 %, A-programme 10⁴ 63,5 %, A-littéral 10⁴ 60,2 %. Fable (une tentative) : A-programme 10⁵ 98,4 %, égal à B (98,4 %). **Résultat négatif, dit comme tel** : écrire les poids n'a battu nettement les règles écrites en code dans aucune case (seul écart nominal en faveur de A : S-réservé, 88,8 ± 0,9 contre 88,7 ± 1,1 chez Sonnet, dans le bruit).
+- **A contre C à données comparables : avantage nominal à A, sous réserve.** L'agent voit 40 exemples ; C à N = 64 fait 51,7 %, F à N = 64 53,3 %. Mais C n'est pas réglé pour les petits N : 100 époques y font 100 à 400 pas d'Adam et le plateau n'est montré qu'à N = 8 192 (réserve de 1-11, section 5) ; l'écart à N = 64 est donc une borne haute de l'avantage de A, et A profite aussi de ce que le LLM sait déjà du format des références. Comparaison qui ne dépend pas des petits N : A-programme 10⁵ de Sonnet (91,2 %) se place entre C à N = 8 192 (83,7 %) et C à N = 32 768 (94,6 %), avec 40 exemples vus.
 - **MiMo-V2.6-Pro ne tient pas S** (réponses tronquées en raisonnement à 64 000 puis 131 072 jetons) : aucune case MiMo comptée sur S, donc aucune conclusion A contre B ou C pour MiMo sur S.
-- **Sur R** (vraies références de Judilibre et du Conseil d'État, fausses produites par des SLM), la porte de 1-12 a rendu **comparatif** : p_d1 = 0,675, intervalle de Wilson [0,630 ; 0,717] sur 437 unités, **pas serrée** (l'intervalle ne contient pas 30 %), avec une **réserve forte** (section 3). Sur le réservé de R (174 exemples, plafond de la grille 72,4 %) : B Sonnet 72,4 % (3/3, au plafond), B MiMo 72,8 %, A-programme 10⁵ 69,0 %, A-littéral 10⁴ 64,0 %. Les règles écrites sur S transfèrent sur R au plafond (B Sonnet S → R : 72,4 %) ; C à 32 768 exemples reste à 66,1 %.
+- **Sur R** (vraies références de Judilibre et du Conseil d'État, fausses produites par des SLM), la porte de 1-12 a rendu **comparatif** : p_d1 = 0,675, intervalle de Wilson [0,630 ; 0,717] sur 437 unités, **pas serrée** (l'intervalle ne contient pas 30 %), avec une **réserve forte** (section 3). Sur le réservé de R (174 exemples, plafond de la grille 72,4 %) : B Sonnet 72,4 % (3/3, au plafond), B MiMo 72,8 % (au-dessus du plafond par sa seule tentative t2, 74,1 %, séance sous alerte D8 maintenue en section 8 ; sans elle 72,1 %), A-programme 10⁵ 69,0 %, A-littéral 10⁴ 64,0 %. Les règles écrites sur S transfèrent sur R au plafond (B Sonnet S → R : 72,4 %) ; C à 32 768 exemples reste à 66,1 %.
 
 ## 2. Protocole
 
@@ -65,7 +65,7 @@ Lecture : A gagne surtout en taille (10⁴ → 10⁵ : +28 points chez Sonnet su
 ## 5. Témoins C et F
 
 - Courbe (section 2 de `lot1.md`, 3 graines par N) : C sur S de 51,7 % (N = 64) à 94,6 % (N = 32 768) ; F `legal.fields@2` (one-hot), retenu, de 53,3 % à 93,4 %. F `legal.fields@1` (scalaires) en annexe (`annexe-fields1/`, statut `annex`), de 53,2 % à 88,2 %.
-- Entraînement à 100 époques fixes, choisies sur une validation tirée de l'entraînement ; le plateau n'est montré qu'à N = 8 192 : aux petits N, 100 époques ne font que 100 à 400 pas d'Adam (réserve de 1-11, sans conclusion tirée des petits N ici).
+- Entraînement à 100 époques fixes, choisies sur une validation tirée de l'entraînement ; le plateau n'est montré qu'à N = 8 192 : aux petits N, 100 époques ne font que 100 à 400 pas d'Adam (réserve de 1-11 ; la comparaison A contre C à N = 64 de la section 1 en hérite et n'est donnée que comme borne).
 - C « même réseau » (section 3, architecture gelée réentraînée à N = 8 192) : la forme 3 060 → 10 → 2 réentraînée fait 86,0 ± 1,1 %, au-dessus des séances A 10⁴ de Sonnet (56 à 69 %) ; les séances A-programme 10⁵ de Sonnet battent leur réentraînement de 2,6 à 11,1 points. **Goulet de Fable A-programme 10⁵** : architecture 3 060 → 89 → 31 → 33 → 2 → 2, `relu` partout, goulet de 2 unités ; réentraînée, elle prédit une classe constante sur 2 graines sur 3 (2000/4000), d'où 61,5 ± 20,0 % contre 98,4 % pour la séance.
 
 ## 6. MiMo
@@ -73,7 +73,7 @@ Lecture : A gagne surtout en taille (10⁴ → 10⁵ : +28 points chez Sonnet su
 - MiMo-V2.6-Pro ne tient pas S : réponses tronquées en raisonnement à 64 000 jetons (effort par défaut, puis medium) puis 131 072 jetons (étape 3, un essai). Étapes 1 et 2 en annexe (jugement du 2026-11-07, section 8) ; seul l'essai de l'étape 3 compte (A-programme 10⁴, t1, `error`).
 - En annexe, hors case : 2 séances B gelées sur S-réservé à l'étape 2 (89,7 et 90,0 %, types tenus à l'écart 266/666) et une séance B gelée sur S à l'étape 1 (3968/4000, 99,2 %).
 - Graine non transmise au fournisseur avant `4fe9975` : le champ `seed` des journaux des étapes 1 et 2 dit la graine prévue, pas une graine reçue.
-- Sur R, sans troncature : B 72,8 ± 1,2 % (3/3). MiMo sort du choix du modèle du lot 2 (section 10).
+- Sur R, sans troncature : B 72,8 ± 1,2 % (3/3 ; 71,8, 74,1 et 72,4 par tentative, la t2 sous alerte D8). MiMo sort du choix du modèle du lot 2 (section 10).
 
 ## 7. Coûts
 
@@ -86,7 +86,7 @@ Lecture : A gagne surtout en taille (10⁴ → 10⁵ : +28 points chez Sonnet su
 | Registre `budget/ledger.csv` (lignes closes) | 1,7295 | 38,2295 |
 
 - Facturé du lot : 1,73 $ sur un plafond de 100 $ (1,7 %). Écart journaux − registre : −0,0085 $, expliqué par 3 lignes du registre sans journal (`live-1-6-*` ×2, `probe-1-2`).
-- Équivalent API du pilote Claude Code sous-compté avant 1-8 (0,42 $ au journal contre 0,83 $ réels sur les 9 séances Sonnet du pilote), corrigé en 1-8.
+- Équivalent API du pilote Claude Code sous-compté avant 1-8 (0,42 $ au journal contre 0,83 $ réels sur les 9 séances Sonnet du pilote, dont 0,11 $ estimé pour une séance sans `result`), corrigé en 1-8.
 - L'équivalent API n'est pas plafonné en abonnement : Fable A-littéral 10⁴ a coûté 14,50 $ d'équivalent pour une séance (plafond de séance sur le facturé seul, AD-11).
 
 ## 8. Audit de l'interdit statistique
@@ -126,6 +126,6 @@ Les flottants de la passe NumPy peuvent différer d'une machine à l'autre : une
 
 ## 10. Suite
 
-Règle du lot 2 (`methodes-et-lots.md`) : MiMo s'il reste à moins de 3 points de Sonnet au lot 1, sinon Sonnet avec 3 tentatives par abonnement. MiMo n'a aucune case comptée sur S (décision consignée le 2026-11-06 en 1-10) ; son B sur R (72,8 % contre 72,4 %) ne suffit pas, faute de A joué par MiMo. **Le lot 2 se fait avec Sonnet, 3 tentatives par abonnement.**
+Règle du lot 2 (`methodes-et-lots.md`) : MiMo s'il reste à moins de 3 points de Sonnet au lot 1, sinon Sonnet avec 3 tentatives par abonnement. MiMo n'a aucune case comptée sur S (décision consignée le 2026-11-06 en 1-10) ; son B sur R (72,8 % contre 72,4 %) ne suffit pas : l'écart tient à la seule tentative t2 (sans elle, 72,1 %), reste dans le bruit (± 1,2), et MiMo n'a joué aucun A. **Le lot 2 se fait avec Sonnet, 3 tentatives par abonnement.**
 
 Points ouverts, à trancher par Anaël : énergie estimée (absente du tableau faute de formule) ; publication en asset du classement de 1-12 (`classement.jsonl`, contrôlable par `nnww publish --check`) ; la collecte brute de 1-12a reste non publiée.

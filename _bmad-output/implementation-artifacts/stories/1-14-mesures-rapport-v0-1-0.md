@@ -463,3 +463,18 @@ Relu : `4e55042..2b2cdcb`, sondes exécutées.
 - Rejeté : `table` : temporaire dans `--out`, nettoyé par `TemporaryDirectory` sur refus comme sur exception, test `test_table_refused_leaves_nothing_in_out` ; normalisation appliquée aux deux côtés (index et corpus) ; tri par `repr` sans effet sur l'archive (contrôle seulement).
 - Liens : `is_linked` / `is_symlink`+`is_junction` avant lecture ; test de lien sauté sous Windows sans droit, joué en CI Linux.
 - Complexité : 0 constat.
+
+### 1-14b, passe 1 (2026-11-07, SHA revu 6337931)
+
+Base : `origin/main` (08b9ff8) ancêtre de HEAD, pas de rebase. Relu : `08b9ff8..6337931`. `nnww table --lot 1 --strict` rejoué dans un dossier temporaire sur `nnww-artefacts` : `lot1.{md,json}` identiques octet pour octet aux fichiers commités.
+
+- **Important**, high (ramené à medium : chiffres justes, conclusion trop forte), second avis 1 : « A fait mieux que C à données comparables » reposait sur C à N = 64, où la réserve de 1-11 (100 époques, plateau montré à 8 192 seulement) interdit de conclure, ce que le §5 disait. Corrigé : avantage nominal, l'écart à N = 64 donné comme borne haute (C sous-entraîné, savoir préalable du LLM), comparaison robuste A 10⁵ entre C 8 192 et 32 768 ; §5 aligné ; notes de release et brouillon du billet corrigés (hors dépôt).
+- **Important**, medium, second avis 2 : empreinte du rapport `ff652661…` périmée ; la régénération donne `c768d61d…2493bd1` (celle de `lot1.md`). Corrigé.
+- **Important**, medium, second avis 3 : B MiMo sur R (72,8 %) au-dessus du plafond de la grille par la seule t2 (74,1 %, alerte D8) ; sans elle 72,1 %. Corrigé aux §1, §6 et §10 (écart dû à t2, dans le bruit) et dans les notes de release.
+- **Nit**, low, second avis 4 : « aucune case » nuancé (S-réservé 88,8 contre 88,7, dans le bruit), rapport, notes et billet. Corrigé.
+- Rejeté, second avis 5 (low) : l'omission de JADE est dite dans `NOTICE` (« JADE (DILA) non plus ») et dans les écarts assumés de cette spec.
+- **Nit**, low, second avis 6 : « dont 0,11 $ estimé » ajouté au §7. Corrigé.
+- **Nit**, low, second avis 7 : une décision `[[session]]` visant un témoin par `run_id` s'appliquerait aussi à sa copie d'annexe (même `run_id`). Aucune décision actuelle concernée ; reporté (indexer les décisions de témoin par chemin le jour où un lot en a besoin).
+- Rejeté, second avis 8 (low) : la condition 5 du constat 1-3 est une condition préalable à `r_republish`, pas une mention d'attribution ; remplie et citée dans `config/publish.toml` et le constat 1-3.
+- Vérifié, point laissé ouvert par le second avis : `nnww publish --root nnww-artefacts --check` sur `docs/rapport-lot1.md`, `NOTICE`, les 13 `docs/rapport-lot1/b/*.py`, les notes de release et le billet : aucun refus (4 174 `raw` réservés contrôlés, S-réservé et R compris).
+- Complexité : 0 constat (diff de code limité à la clé des décisions de témoins).
