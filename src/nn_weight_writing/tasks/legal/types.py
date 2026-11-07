@@ -166,3 +166,21 @@ BY_ID: dict[str, ErrorType] = {t.id: t for t in TYPES}
 # Types tenus à l'écart de S-réservé : vus seulement à l'évaluation.
 HELD_OUT: tuple[str, ...] = ("t04", "t07", "t09", "t11", "t12")
 KNOWN: tuple[str, ...] = tuple(t.id for t in TYPES if t.id not in HELD_OUT)
+
+# Jeu R (story 1-13, D6) : types de S qui visent la Cour de cassation ou le Conseil d'État
+# (t04, t09 et t13 ne visent que les cours d'appel, absentes de R), plus `x01`. `x01` n'est pas
+# dans `TYPES` : la composition de S ne change pas. `c00` n'est pas un type d'incohérence.
+R_EXTRA_TYPES: tuple[ErrorType, ...] = (
+    _t(
+        "x01",
+        "other_detectable",
+        "reconstructed",
+        "reconstructed",
+        ("cc", "ce"),
+        "Autre incohérence détectable sans base de données, hors des types ci-dessus.",
+    ),
+)
+R_VISIBLE: tuple[str, ...] = (
+    *(t.id for t in TYPES if set(t.jurisdictions) & {"cc", "ce"}),
+    *(t.id for t in R_EXTRA_TYPES),
+)

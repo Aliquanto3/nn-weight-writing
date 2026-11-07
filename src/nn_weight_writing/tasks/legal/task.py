@@ -1,14 +1,17 @@
-"""Les tâches `legal_s` et `legal_s_reserved` : description, vocabulaire, codec (D5, D7)."""
+"""Tâches `legal_s`, `legal_s_reserved` (1-9, D5, D7) et `legal_r` (1-13, D6) : description,
+vocabulaire, codec."""
 
 from __future__ import annotations
 
 from collections.abc import Callable
 from dataclasses import dataclass
+from datetime import date
 
 import numpy as np
 
 from nn_weight_writing.tasks.legal import encoders
-from nn_weight_writing.tasks.legal.types import KNOWN, TYPES, ErrorType
+from nn_weight_writing.tasks.legal.reference import format_date
+from nn_weight_writing.tasks.legal.types import KNOWN, R_EXTRA_TYPES, R_VISIBLE, TYPES, ErrorType
 
 CHARS_ID = "legal.chars@1"
 FIELDS_V1_ID = "legal.fields@1"  # runs gelés de 1-11 seulement
@@ -48,8 +51,44 @@ TAIL = (
 )
 
 
-def _vocabulary(types: tuple[ErrorType, ...]) -> tuple[dict, ...]:
-    return tuple({"id": t.id, "description": t.description} for t in types)
+def _vocabulary(
+    types: tuple[ErrorType, ...], overrides: dict[str, str] | None = None
+) -> tuple[dict, ...]:
+    overrides = overrides or {}
+    return tuple({"id": t.id, "description": overrides.get(t.id, t.description)} for t in types)
+
+
+# --- Jeu R (story 1-13, D6) ---------------------------------------------------------------
+# `R_CORPUS_DATE` : date d'extraction des vraies (S5), posée par le commit « jeu R figé ». Tant
+# qu'elle vaut None, le prompt de R n'existe pas et `nnww session --task legal_r` est refusé.
+R_CORPUS_DATE: date | None = None
+R_CORPUS_PENDING = "(date d'arrêt du corpus non fixée)"
+
+
+def r_corpus_text(day: date | None = R_CORPUS_DATE) -> str:
+    return format_date(day.day, day.month, day.year) if day is not None else R_CORPUS_PENDING
+
+
+HEAD_R = (
+    "Chaque exemple est une référence de décision de justice française : Cour de cassation ou "
+    "Conseil d'État. Toutes sont écrites sous une seule forme, « juridiction et formation, date, "
+    "n° numéro », par exemple « Cass. civ. 1re, 12 mars 2015, n° 13-27.123 » ou « CE, Sect., "
+    "12 mars 2015, n° 381234 ». Au Conseil d'État, la formation peut aussi être des chambres "
+    "réunies (« CE, 3e et 8e ch. réunies ») ou le juge des référés (« CE, juge des référés »). "
+    "La date s'écrit jour, mois en lettres, année, avec « 1er » pour le premier du mois. Le "
+    "numéro a la forme AA-NN.NNN à la Cour de cassation (AA : deux derniers chiffres de l'année "
+    "d'enregistrement du pourvoi), six chiffres au Conseil d'État. Le corpus est arrêté au "
+    f"{r_corpus_text()}.\n\n"
+    "La moitié des références sont vraies, tirées des bases publiques ; l'autre moitié sont des "
+    "références citées par de petits modèles de langage et absentes de ces bases."
+)
+SENTENCE_R = (
+    "Une fausse peut présenter une ou plusieurs incohérences du vocabulaire ci-dessous, une "
+    "autre incohérence, ou aucune incohérence visible."
+)
+R_TYPE_OVERRIDES = (
+    ("t06", f"Décision future : date postérieure au {r_corpus_text()}, date d'arrêt du corpus."),
+)
 
 
 @dataclass(frozen=True)
@@ -64,14 +103,18 @@ class LegalTask:
     encoder_id: str = CHARS_ID
     prepared_encoder_id: str = FIELDS_ID
     n_prepared_inputs: int = encoders.N_FIELDS_V2
+    head: str = HEAD
+    # Descriptions remplacées par identifiant (paires, pour que la tâche reste hachable).
+    type_overrides: tuple[tuple[str, str], ...] = ()
 
     @property
     def description(self) -> str:
-        return f"{HEAD} {self.sentence}\n\n{TAIL}"
+        return f"{self.head} {self.sentence}\n\n{TAIL}"
 
     @property
     def vocabulary(self) -> list[dict]:
-        return list(_vocabulary(tuple(t for t in TYPES if t.id in self.visible)))
+        types = tuple(t for t in (*TYPES, *R_EXTRA_TYPES) if t.id in self.visible)
+        return list(_vocabulary(types, dict(self.type_overrides)))
 
     @property
     def class_ids(self) -> tuple[str, ...]:
@@ -98,3 +141,4 @@ class LegalTask:
 
 TASK_S = LegalTask("legal_s", SENTENCE_S, tuple(t.id for t in TYPES))
 TASK_S_RESERVED = LegalTask("legal_s_reserved", SENTENCE_RESERVED, KNOWN)
+TASK_R = LegalTask("legal_r", SENTENCE_R, R_VISIBLE, head=HEAD_R, type_overrides=R_TYPE_OVERRIDES)

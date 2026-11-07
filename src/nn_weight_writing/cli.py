@@ -188,6 +188,14 @@ def _session(args: argparse.Namespace) -> int:
         allowed = ", ".join(task.session_datasets)
         print(f"jeu de séance inconnu : {args.dataset} ; autorisés : {allowed}", file=sys.stderr)
         return 2
+    # --- 1-13 : prompt de R seulement après le commit « jeu R figé » (D6, S5) ---
+    if args.task == "legal_r":
+        from nn_weight_writing.tasks.legal.task import R_CORPUS_DATE
+
+        if R_CORPUS_DATE is None:
+            print("legal_r : R_CORPUS_DATE non fixée, jeu R pas encore figé", file=sys.stderr)
+            return 2
+    # --- fin 1-13 ---
     if not examples.is_file():
         print(f"exemples absents : {examples}", file=sys.stderr)
         return 2
@@ -416,7 +424,10 @@ def build_parser() -> argparse.ArgumentParser:
     datagen.set_defaults(handler=_datagen)
     train = sub.add_parser("train", help="témoin C : entraîne l'architecture de référence")
     train.add_argument(
-        "task", choices=["parity", "compare", "automaton", "legal_s", "legal_s_reserved"]
+        "task",
+        # --- 1-13 : legal_r (témoins C et F sur l'entraînement de R) ---
+        choices=["parity", "compare", "automaton", "legal_s", "legal_s_reserved", "legal_r"],
+        # --- fin 1-13 ---
     )
     train.add_argument("--prepared", action="store_true", help="témoin F : entrées préparées")
     train.add_argument("--data", required=True, help="data/<task>/<dataset>")

@@ -1,7 +1,7 @@
 ---
 story: "1-13"
 title: Jeu R et séances sur R
-status: spec (avant le code)
+status: review
 branch: feat/1-13-jeu-r
 ---
 
@@ -340,3 +340,28 @@ Tranchés le 2026-11-07 par l'orchestrateur (S3) : défauts retenus pour 1, 2, 5
 - **`baselines.curve.measure`** regroupe les fausses par types connus de S ; ses colonnes ne valent pas pour R. Seuls les `eval.json` de `nnww evaluate` comptent.
 - **Base de la branche** : dépend de la date de fusion de 1-12 (D1).
 - **Coût des agents** : estimation non mesurée ; à relever par `/agent-cost-kit:mesurer-couts` en fin de story.
+
+## Phase A — réalisation (2026-11-07)
+
+Code, tests et mesure du coût, sans lire `data/r/collecte/` ni `data/r/pre_etude/`, sans séance ni témoin. Grille figée de 1-12 fusionnée (`1a672a1`, merge commit) ; aucun module de 1-12 modifié.
+
+**Livré.** `datasets/legal_r/dataset.py` (sélection, revérification, appariement, découpage, écriture), `pool.py` (candidates du jour, point d'appel unique au normaliseur), `floor.py` (plancher de S1) ; `scripts/jeu_r.py` (`construire`, `plancher`, `mesurer-cout`) ; tâche `legal_r` (`HEAD_R`, `SENTENCE_R`, `R_CORPUS_DATE`, `x01`) ; `write_dataset(extra_files=…)` ; `legal_r` dans `nnww train` et garde de séance sur `R_CORPUS_DATE` (blocs `1-13` de `cli.py`) ; `[tasks.legal_r]` ; amendements de CAP-7, CAP-11, de la section R de `jeux-de-donnees.md` et d'AD-17 (S3, point 4).
+
+**Coût Judilibre mesuré** (`mesurer-cout`, 12 jours ouvrés tirés dans la fenêtre de la Cour de cassation, graine 0) : 15 requêtes réseau en tout (12 `/scan` du jour d'une page chacun, 3 `/search` d'une page), 0,30 s par requête, quota journalier restant 999 860. Projection pour 300 fausses, toutes de la Cour de cassation (borne haute) : 5,7 requêtes par fausse (4,7 jours essayés en moyenne, plus la recherche de la revérification), soit ~1 700 requêtes et ~9 min ; pire cas 300 × (15 + 1) = 4 800 requêtes, ~24 min. L'index du CE ne coûte aucune requête.
+
+**Écarts à la spec, décidés en phase A :**
+
+- Judilibre classe `other` l'essentiel des décisions récentes (2023 : 140 `other` sur 142 ; 2026 : 172 sur 177) : `type=arret` aurait vidé R après 2020. Tous les types sont gardés, comme à la vérification d'existence de 1-12 ; le type reste dans `origin`. Le repli prévu aux incertitudes (filtre en mémoire) est donc sans filtre.
+- `select_fakes` n'a pas de paramètre `generation_dates` : une fausse est future si la grille figée lui a trouvé R-C3 (comparaison faite par 1-12 à sa date de génération).
+- Pool par jour (S10) : `cc_day_candidates(client, day)` et `CeDays(index).candidates(day)` remplacent `cc_candidates(client, chamber, year)` et `ce_candidates(…)`. Jour visé, puis voisins de même type de jour dans la même année, dans la fenêtre et au plus `corpus_date`, 15 jours interrogés au plus (`MAX_DAY_TRIES`) ; sans vraie, la fausse est exclue (`no_real_in_stratum`), sans repli sur une autre année. Une date impossible vise le dernier jour du mois, type `ouvre`.
+- Classe d'écart d'année (S1) : un écart négatif (t01) va dans `0`, la classe la plus proche ; numéro du CE ou hors motif : `none`.
+- Formation « existante » = aucune règle de formation de la grille (R-O1, R-O2, R-O4, R-O5) ; sinon tirée parmi les formations existantes des fausses de même juridiction et période.
+- Découpage : les 20 paires de séance sont réparties entre strates au prorata (plus forts restes), puis réservé et entraînement alternent d'une strate à l'autre, réservé d'abord ; tailles exactes de D5.
+- Revérification : une `unverifiable` autre qu'`api_error` est exclue (`recheck_unverifiable`), comptée.
+- S7 : une fausse égale à un `raw` de S est exclue (`raw_in_s`) ; `--s-root` doit contenir des jeux sous `data/` et `heldout/` pour `legal_s` et `legal_s_reserved` (refus `s_missing` sinon).
+- `type_overrides` est une suite de paires (la tâche reste hachable) ; `R_CORPUS_DATE = None` jusqu'au commit « jeu R figé » : le prompt montre « (date d'arrêt du corpus non fixée) » et `nnww session --task legal_r` est refusé (code 2).
+- `swagger_sha256` : `--swagger` facultatif, aucun Swagger dans le dépôt (valeur nulle sinon).
+- Fixtures : écrites par `tests/legal_r_jeu_support.py` (règles fixées dans le code, aucune donnée réelle) plutôt que des fichiers sous `tests/fixtures/legal_r/jeu_r/` ; Perruche reprend la réponse enregistrée de 1-12.
+- `tests/test_boundary.py` réaligné : le nom de tâche `legal_r` est admis côté séance, jamais le paquet `datasets.legal_r`.
+
+**Reste pour la phase B.** Après la porte : `construire` (avec `--s-root` sur les jeux de S rassemblés et `--cache` sur le cache de 1-12), commit « jeu R figé » avec `R_CORPUS_DATE`, `plancher`, séances (D7, D8 amendé par S2 et S11), témoins C, F et « même réseau » (D9), évaluations native et croisée (D10), rassemblement et publication à blanc (D11), compte rendu `docs/experiences/1-13-jeu-r.md`. Points de vigilance : t12 (dimanches et fêtes) presque sans vraie de même type de jour, donc surtout exclu (`no_real_in_stratum`, à publier) ; une fausse future (R-C3) datée avant `corpus_date` n'est plus visiblement future dans la description de R (à compter) ; le numéro du CE n'a pas d'année, mais suit l'ordre d'enregistrement : un indice numéro contre année est possible et peut mériter un troisième plancher.

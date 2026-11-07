@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -147,5 +148,9 @@ def test_session_side_never_imports_legal_r():
         "nn_weight_writing.datasets.legal_r.grid",
         "nn_weight_writing.datasets.legal_r.judilibre",
     ]
+    # Story 1-13 : le nom de tâche `legal_r` est admis côté séance (`tasks/legal/`), jamais le
+    # paquet `datasets.legal_r` ni son chemin.
     for path in session_files():
-        assert "legal_r" not in path.read_text("utf-8"), path
+        text = path.read_text("utf-8")
+        assert "datasets.legal_r" not in text and "datasets/legal_r" not in text, path
+        assert not re.search(r"\bimport\s+legal_r\b|from\s+\S*datasets\S*\s+import", text), path

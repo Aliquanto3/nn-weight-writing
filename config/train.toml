@@ -32,3 +32,10 @@ n_values = [64, 256, 1024, 8192, 32768]
 hidden = [32]
 epochs = 100
 n_values = [64, 256, 1024, 8192, 32768]
+
+# R (1-13, D9) : architecture de S reprise, aucun réglage choisi sur R ; N_max (taille de
+# `data/legal_r/train`) passé à la commande, seulement les N ≤ N_max.
+[tasks.legal_r]
+hidden = [32]
+epochs = 100
+n_values = [64, 256]

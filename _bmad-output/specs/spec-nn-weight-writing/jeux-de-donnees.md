@@ -24,6 +24,7 @@ Mêmes données que S, mais l'agent ne connaît que 10 types d'erreurs ; les 5 a
 - Fausses références : hallucinations réelles de SLM, collectées via `slm-quality-bench`, chacune vérifiée inexistante.
 - Un normaliseur commun aux vraies et aux fausses, pour que le format ne trahisse pas la classe.
 - **Pré-étude** sur ~300 hallucinations : part des incohérentes (détectables sans base) contre les cohérentes (bon format, dates plausibles, décision inexistante), porte des 30 % (`methodes-et-lots.md`).
+- **Construction (1-13, R1 du constat 1-3).** Sources : Judilibre (`/scan` du jour) pour la Cour de cassation, open data du Conseil d'État (index de 1-12) ; cours d'appel hors du champ. Champs publiés : `raw` (référence normalisée, 160 caractères au plus, sans nom), étiquette, type, et dans `sources.jsonl` la base, l'identifiant et les champs d'origine de chaque vraie (non-altération), le modèle de chaque fausse. Fenêtre : fausses datées dans la fenêtre de couverture de leur base, ou à date impossible ou future. Appariement : une vraie par fausse, même juridiction, même jour (ou jour voisin de même type de jour dans l'année), même formation si elle existe, même classe d'écart entre l'année de la décision et celle du numéro. Découpage par paire et par strate : séance de 20 paires, entraînement et réservé de même composition (pas d'entraînement sous 120 fausses, pas de jeu sous 80).
 
 ## Images (lot 2)
 

@@ -33,8 +33,15 @@ def write_dataset(
     version: int,
     seed: int,
     composition: dict | None = None,
+    extra_files: dict[str, bytes] | None = None,
 ) -> Path:
-    """Écrit le jeu dans un dossier neuf ou vide ; `dataset.json` porte les sha256 des fichiers."""
+    """Écrit le jeu dans un dossier neuf ou vide ; `dataset.json` porte les sha256 des fichiers.
+
+    `extra_files` : fichiers compagnons (par exemple `sources.jsonl` de R), écrits et empreintés
+    dans `files` comme les deux autres."""
+    for name in extra_files or {}:
+        if name in {EXAMPLES_FILE, LABELS_FILE, META_FILE} or Path(name).name != name:
+            raise ValueError(f"fichier compagnon refusé : {name!r}")
     directory = Path(directory)
     if directory.exists() and any(directory.iterdir()):
         raise FileExistsError(f"jeu déjà présent : {directory}")
@@ -43,12 +50,16 @@ def write_dataset(
     labels = _jsonl([{"id": r.id, "label": r.label, "type_id": r.type_id} for r in rows])
     atomic_write_bytes(directory / EXAMPLES_FILE, examples)
     atomic_write_bytes(directory / LABELS_FILE, labels)
+    files = {EXAMPLES_FILE: sha256_bytes(examples), LABELS_FILE: sha256_bytes(labels)}
+    for name, data in (extra_files or {}).items():
+        atomic_write_bytes(directory / name, data)
+        files[name] = sha256_bytes(data)
     meta = {
         "generator": generator,
         "version": version,
         "seed": seed,
         "n": len(rows),
-        "files": {EXAMPLES_FILE: sha256_bytes(examples), LABELS_FILE: sha256_bytes(labels)},
+        "files": files,
     }
     if composition is not None:
         meta["composition"] = composition
