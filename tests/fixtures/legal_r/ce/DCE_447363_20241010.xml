@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="validation-document.xsd">
+<Donnees_Techniques>
+<Identification>DCE_447363_20241010.xml</Identification>
+<Date_Mise_Jour>2024-10-12</Date_Mise_Jour>
+</Donnees_Techniques>
+<Dossier>
+<Code_Juridiction>CE</Code_Juridiction>
+<Numero_Dossier>447363</Numero_Dossier>
+<Date_Lecture>2024-10-10</Date_Lecture>
+<Numero_ECLI>ECLI:FR:CECHS:2024:447363.20241010</Numero_ECLI>
+<Type_Decision>Décision</Type_Decision>
+<Code_Publication>C</Code_Publication>
+</Dossier>
+<Audience>
+<Formation_Jugement> 3ème chambre jugeant seule</Formation_Jugement>
+</Audience>
+<Decision>
+<Texte_Integral>TEXTE-INTEGRAL-CE-SECRET deuxième décision</Texte_Integral>
+</Decision>
+</Document>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Document xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="validation-document.xsd">
+<Donnees_Techniques>
+<Identification>DCE_428409_20200710.xml</Identification>
+<Date_Mise_Jour>2021-10-01</Date_Mise_Jour>
+</Donnees_Techniques>
+<Dossier>
+<Code_Juridiction>CE</Code_Juridiction>
+<Nom_Juridiction>Section du Contentieux </Nom_Juridiction>
+<Numero_Dossier>428409</Numero_Dossier>
+<Date_Lecture>2020-07-10</Date_Lecture>
+<Numero_ECLI>ECLI:FR:CECHR:2020:428409.20200710</Numero_ECLI>
+<Avocat_Requerant>SCP FICTIVE</Avocat_Requerant>
+<Type_Decision>Décision</Type_Decision>
+<Code_Publication>B</Code_Publication>
+<Solution>Rejet</Solution>
+</Dossier>
+<Audience>
+<Date_Audience>2020-06-24</Date_Audience>
+<Formation_Jugement>3ème et 8ème chambres réunies</Formation_Jugement>
+</Audience>
+<Decision>
+<Texte_Integral>TEXTE-INTEGRAL-CE-SECRET Vu la procédure suivante : M. Dupont a demandé...</Texte_Integral>
+</Decision>
+</Document>

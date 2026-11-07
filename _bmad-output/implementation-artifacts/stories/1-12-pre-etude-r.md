@@ -1,7 +1,7 @@
 ---
 story: "1-12"
 title: Pré-étude R et porte des 30 %
-status: ready-for-dev
+status: review
 branch: feat/1-12-pre-etude-r
 ---
 
@@ -376,6 +376,31 @@ Décisions de l'orchestrateur du 2026-11-07, prises avant le gel de la grille et
 - **P10 — contrat avec 1-13.** Le contrat de D8 liste aussi `incoherences`, `RULES`, `GRID_VERSION`, `load_r_facts` et `r_facts_sha256` (dont `disabled_rules`), et `read_collection`. Le refus de `interne/`, `collecte/` et `cache/` par `nnww publish` revient à 1-14a ; 1-12 n'implémente pas `publish`.
 - **P11 — spécificité de toute règle mesurable.** Le seuil de 0,5 % sur les vraies vaut pour toute règle qui peut se mesurer sur des références réelles, pas seulement pour R-E2, R-E4 et R-E5 : `mesurer-base` passe toutes les règles sur toutes les vraies. Une règle sans aucun contrôle sur le réel est retirée ou justifiée par écrit dans la spec avant le gel.
 - **P12 — emplacement de la décision.** La décision va dans `config/r_gate.toml`, pas dans `protocol.toml`. La table « Capability → Architecture » du spine est amendée dans la PR de 1-12. Règle le point 3 des « Points qui reviennent à Anaël ».
+
+## Phase A : écarts consignés et justification de P11 (2026-11-07)
+
+Décidés en phase A, sur la base réelle seule, sans avoir lu `data/r/collecte/`. Faits mesurés : `docs/experiences/1-12-pre-etude-r.md` et `r_facts.toml`.
+
+**Écarts à la spec.**
+
+- **E1 — échantillons.** `/scan` en 12 lots mensuels de 84 par année (1 008), et non un lot de 1 000 : trié par date décroissante, un lot unique ne prenait que la fin de l'année. Cour de cassation : 3 862 décisions (des mois en ont moins de 84) ; cours d'appel : 2 016.
+- **E2 — R-E5.** La chambre mixte et l'assemblée plénière (`series_exempt` de `facts.toml`, qui jugent des pourvois civils comme pénaux) sont hors de la table préfixe ↔ chambre et de la règle. Avec elles, le préfixe `CR` d'une décision d'assemblée plénière (1 sur 2) faisait tomber l'adoption à 83 %. Sans elles : 2 502 ECLI, 100 %, règle adoptée.
+- **E3 — extracteur, ajouts au rappel.** Ancres secondaires de chambre abrégée en tête (`Civ.`, `Crim.`, `Ass. plén.`, `Ch. mixte`), hors de toute référence ouverte ; formation écrite juste avant « de la Cour de cassation » ou « du Conseil d'État » ; numéro nu de 6 chiffres dans une référence du CE (citation à la Lebon : « CE, Ass., 20 oct. 1989, Nicolo, 108243 ») ; une formation de plus ouvre une nouvelle référence quand la courante a déjà une date ou un numéro ; fin de phrase = ligne vide ou ponctuation suivie d'une majuscule hors abréviation (une ligne simple ne coupe pas : réponses structurées sur plusieurs lignes) ; un rang de chambre ne prend jamais le jour d'une date (« soc. 12 mars »).
+- **E4 — extracteur, garde-fous de spécificité.** Textes normatifs masqués (loi, décret, arrêté, directive, règlement, circulaire, ordonnance numérotée, avec leur numéro et leur date) ; un numéro a au moins 5 chiffres (écarte « Bull. civ. II, n° 45 ») ; une référence sans date, numéro ni ECLI n'est pas gardée.
+- **E5 — R-C1** couvre aussi un mois hors de [1, 12] et un jour nul (date numérique impossible, « 12/13/2015 »), même catégorie, même type t02.
+- **E6 — domaine M.** R-E2, R-E4 et R-E5 (domaine « mesuré ») jouent à toute date.
+- **E7 — formations réunies de plus de deux chambres** : `3e, 8e, 9e et 10e ch. réunies` (3 décisions de l'index). Deux rangs : `{k}e et {m}e ch. réunies`, comme D3.
+- **E8 — index du CE.** 63 archives (`CE_202109` à `CE_202611`), 119,6 Mo, 40 134 décisions. XML à préfixe `xsi` non lié (janvier 2024) lus par un repli à balises. L'index est construit dans `data/r/ce_index/` du worktree (hors commit) ; la phase B le reconstruit ou le passe par `--ce-index`, et son sha256 est consigné par `classer`.
+- **E9 — verdict du contrôle (P1).** Fichier JSON passé à `porte --verdict` : `date` (AAAA-MM-JJ), `classement_sha256`, `verdict` (`accepte` ou `echec`), `tour` (0 ou 1), `fausses_absences` (`tirees`, `trouvees`). `porte` refuse (code 2) sans verdict, avec un autre sha256, un verdict non daté, un échec au tour 0, ou une seconde fois.
+- **E10 — `classer` n'écrit ni n'affiche aucun compte par classe** (P1 strict) : entonnoir (générations, références, unités) et taux d'`api_error` seulement. Les comptes par classe viennent avec `porte`.
+- **E11 — rappel (P6)** tiré parmi les vraies datées dans la fenêtre de leur juridiction, pour `cc` et `ce` seulement (P5).
+- **E12 — conséquence de P2 pour 1-13.** Deux malformations de t10 dans S (point ou tiret retiré d'un numéro de la Cour de cassation) sont canonisées par le normaliseur de R : elles n'y sont plus incohérentes. `test_grid_matches_violations` le vérifie explicitement.
+- **E13 — tests.** `scripts/pre_etude_r.py` a un transport injectable (`FETCH`, frontière réseau) et une option cachée `--depot` (dépôt git du contrôle de la grille figée), pour les tests de bout en bout. Doubles partagés : `tests/legal_r_support.py`.
+
+**Justification de P11.** Les 21 règles ont tourné sur les 46 012 vraies (Cour de cassation 3 862, cours d'appel 2 016, Conseil d'État 40 134) : aucune ne dépasse 0,5 %, aucune n'est désactivée ni retirée. Faux positifs résiduels : 0,026 %, 0 et 0,117 %. Deux cas sans contrôle sur le réel, justifiés et gardés :
+
+- R-E1, R-E2 et R-E3 pour les cours d'appel : Judilibre ne leur donne aucun ECLI (0 sur 2 016). R-E1 et R-E3 sont des définitions de la norme ECLI (structure ; année = année de la décision), contrôlées sur 40 810 ECLI de la Cour de cassation et du CE ; les cours d'appel sont hors de p (P5).
+- R-C3 (date postérieure à la génération) ne peut pas se produire sur une vraie : c'est une impossibilité logique, sans fait mesuré.
 
 ## Critères d'acceptation
 

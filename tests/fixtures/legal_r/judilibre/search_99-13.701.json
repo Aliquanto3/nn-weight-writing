@@ -1,0 +1,3 @@
+{"page": 0, "page_size": 50, "query": {"query": "99-13.701"}, "total": 1, "previous_page": null, "next_page": null, "took": 43, "max_score": 0, "relaxed": false, "searchQuery": "{}", "results": [
+ {"score": 0, "highlights": {"text": ["SURLIGNAGE-SECRET"]}, "id": "60793b359ba5988459c3c363", "jurisdiction": "cc", "chamber": "pl", "number": "99-13.701", "numbers": ["99-13.701"], "publication": ["b"], "decision_date": "2000-11-17", "solution": "cassation", "type": "arret", "summary": "résumé réduit", "themes": ["faute"], "files": [], "titlesAndSummaries": [], "particularInterest": false}
+]}

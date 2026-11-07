@@ -1,0 +1,458 @@
+"""Extracteur de références dans un texte brut (story 1-12, D3), à base de motifs, sans modèle.
+
+Une référence s'ouvre à une ancre (juridiction, ECLI, ou numéro sans juridiction devant lui) et
+va jusqu'à l'ancre suivante, la fin de phrase ou 200 caractères. Seul `raw` porte du texte cité ;
+les autres champs ne gardent que des segments reconnus (formation, siège) ou des entiers.
+"""
+
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass
+
+MAX_SPAN = 200
+MIN_NUMBER_DIGITS = 5
+_MONTHS = {
+    "janvier": 1,
+    "janv": 1,
+    "jan": 1,
+    "fevrier": 2,
+    "fevr": 2,
+    "fev": 2,
+    "mars": 3,
+    "avril": 4,
+    "avr": 4,
+    "mai": 5,
+    "juin": 6,
+    "juillet": 7,
+    "juil": 7,
+    "aout": 8,
+    "septembre": 9,
+    "sept": 9,
+    "octobre": 10,
+    "oct": 10,
+    "novembre": 11,
+    "nov": 11,
+    "decembre": 12,
+    "dec": 12,
+}
+_ACCENTS = str.maketrans("éèêëàâäîïôöûüùçÉÈÊÀÂÎÔÛÇ", "eeeeaaaiioouuucEEEAAIOUC")
+_MONTH_FORMS = [*_MONTHS, "février", "févr", "fév", "août", "décembre", "déc"]
+_MONTH_RE = "|".join(sorted(_MONTH_FORMS, key=len, reverse=True))
+_UP = r"[A-ZÀ-ÖØ-Þ]"
+_NAME = rf"{_UP}[\w'’-]*(?:[ -](?:en|de|la|sur|lès|les|du)[ -]{_UP}[\w-]*|[ -]{_UP}[\w-]*)*"
+
+# Ancres de juridiction (D3, 1). L'ordre compte : la plus longue d'abord à même position.
+_OTHER = (
+    r"tribunal\w*(?:\s+(?:judiciaire|administratif|de\s+grande\s+instance|d'instance|de\s+"
+    r"commerce|correctionnel|des\s+conflits))?|\bTA\b|\bCAA\b|cour\s+administrative\s+d'appel|"
+    r"Conseil\s+constitutionnel|Cons\.\s*const\.|\bCEDH\b|Cour\s+europ[ée]enne|\bCJUE\b|\bCJCE\b|"
+    r"Cour\s+de\s+justice|\bTGI\b|\bTJ\b|conseil\s+de\s+prud'?hommes|cour\s+d'assises"
+)
+_ANCHORS = [
+    ("other", re.compile(_OTHER, re.IGNORECASE)),
+    ("cc", re.compile(r"Cour\s+de\s+cassation|\bCass\b\.?", re.IGNORECASE)),
+    ("ce", re.compile(r"(?i:Conseil\s+d'[ée]tat)|\bCE\b(?!\))|\bC\.\s?E\.")),
+    (
+        "ca",
+        re.compile(
+            rf"[Cc]our\s+d'appel\s+(?:de\s+|d'\s*|du\s+|des\s+)(?P<seat>{_NAME})|"
+            rf"\bCA\s+(?:de\s+|d'\s*)?(?P<seat2>{_NAME})"
+        ),
+    ),
+]
+# Ancres secondaires : n'ouvrent une référence que hors de toute référence ouverte.
+_CHAMBER_ANCHOR = re.compile(r"(?<![\w.])(?:Civ\.|Crim\.|Ass\.\s*plén\.|Ch\.\s*mixte)")
+_ECLI = re.compile(r"\bECLI:[A-Za-z]{2}:[A-Za-z0-9]+:\d{4}:[A-Za-z0-9.]+[A-Za-z0-9]", re.IGNORECASE)
+
+_DATE_TEXT = re.compile(
+    rf"\b(?P<d>\d{{1,2}}|1er|premier)\s*(?:er)?\s+(?P<m>{_MONTH_RE})\.?\s+(?P<y>\d{{4}})\b",
+    re.IGNORECASE,
+)
+_DATE_NUM = re.compile(r"\b(?P<d>\d{1,2})[/.](?P<m>\d{1,2})[/.](?P<y>\d{4})\b")
+_DATE_ISO = re.compile(r"\b(?P<y>\d{4})-(?P<m>\d{2})-(?P<d>\d{2})\b")
+
+_MARKER = re.compile(
+    r"(?:\bn[°º]s?|\bnos?\b\.?|\bnum[ée]ros?\b|\bpourvois?\b|\breq\.|\brequ[êe]tes?\b)"
+    r"[^\d\n]{0,25}?(?=\d)",
+    re.IGNORECASE,
+)
+_TOKEN = re.compile(r"\d+(?:(?:\s*[-./]\s*|\s)\d+)*")
+_BARE = re.compile(r"(?<![\d./-])(?:\d{2}-\d{2}\.\d{3}|\d{2}/\d{5})(?![\d./-]?\d)")
+_BARE_CE = re.compile(r"(?<![\d./-])\d{6}(?![\d./-]?\d)")
+# Numéros et dates d'un texte normatif (loi, décret…) : masqués avant l'extraction.
+_LAW = re.compile(
+    r"\b(?:loi|décret|decret|arrêté|arrete|directive|règlement|reglement|circulaire|"
+    r"ordonnance(?=\s+n[°º]\s*\d{2,4}-\d))s?\b"
+    r"(?:\s+(?:organique|constitutionnelle|délégué|d'exécution|\((?:CEE|CE|UE)\)))*"
+    r"(?:\s*(?:n[°º]\s*)?\d[\d\-/]*(?:/(?:CEE|CE|UE))?)?"
+    r"(?:\s+du\s+(?:\d{1,2}|1er)\s*(?:er)?\s+\w+\.?\s+\d{4})?",
+    re.IGNORECASE,
+)
+
+# Formations (segments reconnus seulement, D3 2).
+_ORD = r"(?:\b\d{1,2}(?!\d)\s*(?:re|ère|ere|er|e|ème|eme|nd|nde)?(?![a-zà-ÿ])|\bpremi[èe]re|\bdeuxi[èe]me|seconde|troisi[èe]me|quatri[èe]me|cinqui[èe]me|sixi[èe]me|septi[èe]me|huiti[èe]me|neuvi[èe]me|dixi[èe]me|onzi[èe]me|douzi[èe]me)"  # noqa: E501
+# Rang qui suit un nom de chambre : jamais le jour d'une date (« soc. 12 mars »).
+_ORD_AFTER = rf"(?:{_ORD})(?!\s*(?:er\s+)?(?:{_MONTH_RE})\b)(?![./-]\d)"
+_FORMATIONS = re.compile(
+    "|".join(
+        [
+            rf"{_ORD}\s*(?:et|/)\s*{_ORD}\s*(?:chambres?|ch\.|sous-sections?|sous-sect\.|ss-sect\.|SSR)(?:\s+r[ée]unies)?",  # noqa: E501
+            rf"{_ORD}\s*(?:chambre|ch\.)\s+(?:civile|commerciale|sociale|criminelle)",
+            rf"{_ORD}\s+civ\.?",
+            r"chambre\s+civile(?:\s*,?\s*" + _ORD_AFTER + r")?",
+            r"\bciv(?:\.|ile\b)(?:\s*,?\s*" + _ORD_AFTER + r")?",
+            r"chambre\s+commerciale(?:\s*,?\s*financi[èe]re\s+et\s+[ée]conomique)?(?:\s+"
+            + _ORD_AFTER
+            + r")?",  # noqa: E501
+            r"chambre\s+sociale(?:\s+" + _ORD_AFTER + r")?",
+            r"chambre\s+criminelle(?:\s+" + _ORD_AFTER + r")?",
+            r"\b(?:comm?|soc|crim)\.(?:\s*" + _ORD_AFTER + r"\b)?",
+            r"chambre\s+mixte|\bch\.\s*mix(?:te|\.)",
+            r"assembl[ée]e\s+pl[ée]ni[èe]re|\bass\.\s*pl[ée]n\.?|\bAP\b|\bpl[ée]n\.",
+            r"chambre\s+fiscale|chambre\s+des\s+requ[êe]tes|chambres\s+r[ée]unies|\bch\.\s*r[ée]un\.",
+            r"assembl[ée]e\s+du\s+contentieux|\bAss\.|\bAssembl[ée]e\b",
+            r"(?<!sous-)\bsection\s+du\s+contentieux|(?<!sous-)\b[Ss]ect\.|(?<![-\w])Section\b",
+            rf"{_ORD}\s*(?:chambres?|ch\.|sous-sections?|sous-sect\.|ss-sect\.|SSR|SSJS)",
+            rf"(?:chambre|sous-section)\s+{_ORD_AFTER}\b",
+            r"juge\s+des\s+r[ée]f[ée]r[ée]s|\br[ée]f[ée]r[ée]\b|\bord\.\s*r[ée]f\.",
+        ]
+    ),
+    re.IGNORECASE,
+)
+_ABBREVIATIONS = {
+    "cass",
+    "civ",
+    "crim",
+    "soc",
+    "com",
+    "comm",
+    "plén",
+    "plen",
+    "ass",
+    "sect",
+    "req",
+    "ch",
+    "réun",
+    "reun",
+    "mix",
+    "ord",
+    "réf",
+    "ref",
+    "n",
+    "no",
+    "art",
+    "al",
+    "bull",
+    "jur",
+    "c",
+    "e",
+    "ca",
+    "ce",
+    "janv",
+    "févr",
+    "fevr",
+    "fév",
+    "avr",
+    "juil",
+    "sept",
+    "oct",
+    "nov",
+    "déc",
+    "dec",
+    "ss",
+    "sous-sect",
+    "ss-sect",
+    "const",
+    "cons",
+    "min",
+    "préc",
+    "op",
+    "cit",
+    "ibid",
+    "v",
+    "cf",
+    "p",
+    "pp",
+    "éd",
+    "ed",
+}
+
+
+@dataclass(frozen=True)
+class ExtractedRef:
+    """Une référence extraite. Seul `raw` porte du texte cité, jamais publié (D8)."""
+
+    jurisdiction: str | None
+    formation_text: str | None
+    seat_text: str | None
+    day: int | None
+    month: int | None
+    year: int | None
+    number_text: str | None
+    ecli: str | None
+    raw: str
+    start: int
+    end: int
+
+
+def _clean(text: str) -> str:
+    """Espaces insécables, apostrophes et marques de mise en forme : même longueur."""
+    out = text
+    for ch in "    ":
+        out = out.replace(ch, " ")
+    out = out.replace("’", "'").replace("ʼ", "'")
+    for ch in "*`_#|>":
+        out = out.replace(ch, " ")
+    return out
+
+
+def _mask(text: str, pattern: re.Pattern) -> str:
+    return pattern.sub(lambda m: " " * len(m.group(0)), text)
+
+
+def _sentence_ends(text: str) -> list[int]:
+    """Positions de fin de phrase : ligne vide, ou `.!?` suivi d'une majuscule hors abréviation."""
+    ends = [m.start() for m in re.finditer(r"\n\s*\n", text)]
+    for m in re.finditer(r"[.!?](?=\s+[A-ZÀ-Þ(])", text):
+        if text[m.start()] == ".":
+            word = re.search(r"([\wÀ-ÿ-]+)$", text[max(0, m.start() - 20) : m.start()])
+            if word and (word.group(1).lower() in _ABBREVIATIONS or len(word.group(1)) == 1):
+                continue
+        ends.append(m.start() + 1)
+    return sorted(ends)
+
+
+def _ecli_jurisdiction(ecli: str) -> str | None:
+    parts = ecli.upper().split(":")
+    if len(parts) < 3 or parts[1] != "FR":
+        return "other"
+    code = parts[2]
+    if code == "CCASS":
+        return "cc"
+    if code.startswith("CE"):
+        return "ce"
+    if code.startswith("CA") and not code.startswith("CAA"):
+        return "ca"
+    return "other"
+
+
+@dataclass
+class _Token:
+    kind: str  # "date", "number", "ecli", "formation"
+    start: int
+    end: int
+    value: object
+
+
+def _date_value(match: re.Match) -> tuple[int, int, int]:
+    d = match["d"].lower()
+    day = 1 if d in {"1er", "premier"} else int(d)
+    month_text = match["m"].lower().translate(_ACCENTS)
+    month = _MONTHS[month_text] if month_text in _MONTHS else int(month_text)
+    return day, month, int(match["y"])
+
+
+def _numbers(text: str, segments_ce: list[tuple[int, int]]) -> list[_Token]:
+    tokens: list[_Token] = []
+    taken: list[tuple[int, int]] = []
+    for marker in _MARKER.finditer(text):
+        token = _TOKEN.match(text, marker.end())
+        if not token or any(a <= token.start() < b for a, b in taken):
+            continue
+        value = token.group(0)
+        rest = text[token.end() :]
+        # Un jour suivi d'un mois n'appartient pas au numéro (« n° 428409 - 10 juillet 2020 »).
+        groups = re.split(r"(\s*[-./]\s*|\s)", value)
+        if len(groups) >= 3 and re.match(rf"\s*(?:er\s+)?(?:{_MONTH_RE})\b", rest, re.I):
+            value = "".join(groups[:-2])
+        trailing_date = re.search(r"\s\d{1,2}[/.]\d{1,2}[/.]\d{4}$", value)
+        if trailing_date:
+            value = value[: trailing_date.start()]
+        value = value.strip()
+        if sum(c.isdigit() for c in value) < MIN_NUMBER_DIGITS:
+            continue
+        start = token.start()
+        tokens.append(_Token("number", start, start + len(value), value))
+        taken.append((start, start + len(value)))
+    for pattern, ce_only in ((_BARE, False), (_BARE_CE, True)):
+        for match in pattern.finditer(text):
+            if any(a <= match.start() < b for a, b in taken):
+                continue
+            if ce_only and not any(a <= match.start() < b for a, b in segments_ce):
+                continue
+            tokens.append(_Token("number", match.start(), match.end(), match.group(0)))
+            taken.append((match.start(), match.end()))
+    return tokens
+
+
+def _dates(text: str) -> list[_Token]:
+    tokens: list[_Token] = []
+    for pattern in (_DATE_TEXT, _DATE_NUM, _DATE_ISO):
+        for match in pattern.finditer(text):
+            if any(t.start <= match.start() < t.end for t in tokens):
+                continue
+            tokens.append(_Token("date", match.start(), match.end(), _date_value(match)))
+    return tokens
+
+
+def _anchors(text: str) -> list[tuple[int, int, str, str | None]]:
+    """Ancres primaires : (début, fin, juridiction, siège)."""
+    found: list[tuple[int, int, str, str | None]] = []
+    for jurisdiction, pattern in _ANCHORS:
+        for match in pattern.finditer(text):
+            if any(a <= match.start() < b for a, b, _, _ in found):
+                continue
+            seat = None
+            if jurisdiction == "ca":
+                seat = match.group("seat") or match.group("seat2")
+            found.append((match.start(), match.end(), jurisdiction, seat))
+    found.sort()
+    return found
+
+
+def _formation_prefix(text: str, start: int, floor: int) -> int:
+    """Début d'une formation écrite juste avant « de la Cour de cassation » ou « du Conseil »."""
+    window = text[max(floor, start - 80) : start]
+    if not re.search(r"(?:de\s+la|du|de\s+l')\s*$", window, re.IGNORECASE):
+        return start
+    best = start
+    offset = max(floor, start - 80)
+    for match in _FORMATIONS.finditer(window):
+        best = min(best, offset + match.start())
+        break
+    return best
+
+
+def extract_references(text: str) -> list[ExtractedRef]:
+    if not text:
+        return []
+    clean = _mask(_clean(text), _LAW)
+    ends = _sentence_ends(clean)
+    anchors = _anchors(clean)
+    primary_starts = [a[0] for a in anchors]
+
+    def segment_end(start: int) -> int:
+        limit = start + MAX_SPAN
+        nxt = [p for p in primary_starts if p > start]
+        if nxt:
+            limit = min(limit, nxt[0])
+        after = [e for e in ends if e > start]
+        if after:
+            limit = min(limit, after[0])
+        return min(limit, len(clean))
+
+    segments: list[dict] = []
+    floor = 0
+    for a_start, a_end, jurisdiction, seat in anchors:
+        start = a_start
+        if jurisdiction in {"cc", "ce"}:
+            start = _formation_prefix(clean, a_start, floor)
+        segments.append(
+            {"start": start, "body": a_end, "end": segment_end(a_start), "j": jurisdiction}
+        )
+        segments[-1]["seat"] = seat
+        floor = segments[-1]["end"]
+
+    def inside(pos: int) -> bool:
+        return any(s["start"] <= pos < s["end"] for s in segments)
+
+    # Ancres secondaires : chambre abrégée, ECLI, numéro sans juridiction.
+    secondary: list[tuple[int, str]] = []
+    for match in _CHAMBER_ANCHOR.finditer(clean):
+        secondary.append((match.start(), "cc"))
+    ecli_tokens = [
+        _Token("ecli", m.start(), m.end(), m.group(0).upper()) for m in _ECLI.finditer(clean)
+    ]
+    for tok in ecli_tokens:
+        secondary.append((tok.start, _ecli_jurisdiction(tok.value) or "other"))
+    ce_spans = [(s["start"], s["end"]) for s in segments if s["j"] == "ce"]
+    number_tokens = _numbers(clean, ce_spans)
+    for tok in number_tokens:
+        secondary.append((tok.start, None))
+    for pos, jurisdiction in sorted(secondary, key=lambda x: x[0]):
+        if inside(pos):
+            continue
+        segments.append(
+            {"start": pos, "body": pos, "end": segment_end(pos), "j": jurisdiction, "seat": None}
+        )
+    segments.sort(key=lambda s: s["start"])
+    ce_spans = [(s["start"], s["end"]) for s in segments if s["j"] == "ce"]
+    number_tokens = _numbers(clean, ce_spans)
+    date_tokens = _dates(clean)
+    formation_tokens = [
+        _Token("formation", m.start(), m.end(), m.group(0).strip())
+        for m in _FORMATIONS.finditer(clean)
+    ]
+    out: list[ExtractedRef] = []
+    for seg in segments:
+        out.extend(
+            _parse_segment(text, seg, number_tokens, date_tokens, ecli_tokens, formation_tokens)
+        )
+    return out
+
+
+def _parse_segment(text, seg, numbers, dates, eclis, formations) -> list[ExtractedRef]:
+    start, end, jurisdiction = seg["start"], seg["end"], seg["j"]
+    tokens = [
+        t
+        for t in (*numbers, *dates, *eclis, *formations)
+        if start <= t.start < end and not (seg["body"] > t.start and t.kind != "formation")
+    ]
+    tokens.sort(key=lambda t: (t.start, t.kind))
+    # Un jeton inclus dans un autre (date dans un ECLI, formation dans une date) est écarté.
+    kept: list[_Token] = []
+    for tok in tokens:
+        if any(k.start <= tok.start and tok.end <= k.end and k is not tok for k in kept):
+            continue
+        if tok.kind == "formation" and any(
+            t.kind != "formation" and t.start <= tok.start < t.end for t in tokens
+        ):
+            continue
+        kept.append(tok)
+    refs: list[dict] = []
+    current: dict = {"start": start}
+
+    def close(at: int) -> None:
+        current["end"] = at
+        refs.append(dict(current))
+
+    for tok in kept:
+        slot = {"date": "date", "number": "number", "ecli": "ecli", "formation": "formation"}[
+            tok.kind
+        ]
+        if slot in current:
+            # Une formation de plus n'ouvre une référence que si la courante a date ou numéro.
+            if slot == "formation" and "date" not in current and "number" not in current:
+                continue
+            close(tok.start)
+            current.clear()
+            current["start"] = tok.start
+        current[slot] = tok.value
+        current["last"] = tok.end
+    close(current.get("last", end))
+    out = []
+    for ref in refs:
+        if not any(k in ref for k in ("date", "number", "ecli")):
+            continue
+        j = jurisdiction
+        if j is None and "ecli" in ref:
+            j = _ecli_jurisdiction(ref["ecli"])
+        day, month, year = ref.get("date", (None, None, None))
+        r_start, r_end = ref["start"], max(ref.get("end", end), ref["start"])
+        out.append(
+            ExtractedRef(
+                jurisdiction=j,
+                formation_text=ref.get("formation"),
+                seat_text=seg["seat"] if j == "ca" else None,
+                day=day,
+                month=month,
+                year=year,
+                number_text=ref.get("number"),
+                ecli=ref.get("ecli"),
+                raw=text[r_start:r_end],
+                start=r_start,
+                end=r_end,
+            )
+        )
+    return out

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Document xsi:noNamespaceSchemaLocation="validation-document.xsd">
+<Donnees_Techniques>
+<Date_Mise_Jour>2024-01-20</Date_Mise_Jour>
+</Donnees_Techniques>
+<Dossier>
+<Numero_Dossier>490001</Numero_Dossier>
+<Date_Lecture>2024-01-15</Date_Lecture>
+<Numero_ECLI>ECLI:FR:CEORD:2024:490001.20240115</Numero_ECLI>
+<Type_Decision>Ordonnance</Type_Decision>
+<Code_Publication>C</Code_Publication>
+</Dossier>
+<Audience>
+<Formation_Jugement>Juge des référés</Formation_Jugement>
+</Audience>
+<Decision>
+<Texte_Integral>TEXTE-INTEGRAL-CE-SECRET préfixe xsi non déclaré, comme en janvier 2024</Texte_Integral>
+</Decision>
+</Document>

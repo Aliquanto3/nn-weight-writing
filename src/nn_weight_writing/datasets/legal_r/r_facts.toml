@@ -1,0 +1,51 @@
+# Faits propres à R (story 1-12, D2 et D4), au format de `facts.toml`.
+#
+# Chaque section porte `status` et `source` ("primary", "sample", "convention", "unverified").
+# Le chargeur refuse une section "unverified". Les sections mesurées sont réécrites par
+# `scripts/pre_etude_r.py mesurer-base` (phase A, base réelle seule) ; `seats` est recopiée telle
+# quelle.
+
+schema = 1
+checked = "2026-11-07"
+
+[seats]
+status = "primary"
+source = "API Judilibre, /taxonomy?id=location&context_value=ca (2026-11-07) : 36 codes ; alias usuels d'après les noms de la taxonomie"
+aliases = { "aix" = "Aix-en-Provence", "aix en provence" = "Aix-en-Provence", "saint denis" = "Saint-Denis de la Réunion", "st denis" = "Saint-Denis de la Réunion", "la reunion" = "Saint-Denis de la Réunion", "reunion" = "Saint-Denis de la Réunion", "saint denis de la reunion" = "Saint-Denis de la Réunion", "fort de france" = "Fort-de-France", "basse terre" = "Basse-Terre" }
+location_codes = { ca_agen = "Agen", ca_aix_provence = "Aix-en-Provence", ca_amiens = "Amiens", ca_angers = "Angers", ca_basse_terre = "Basse-Terre", ca_bastia = "Bastia", ca_besancon = "Besançon", ca_bordeaux = "Bordeaux", ca_bourges = "Bourges", ca_caen = "Caen", ca_cayenne = "Cayenne", ca_chambery = "Chambéry", ca_colmar = "Colmar", ca_dijon = "Dijon", ca_douai = "Douai", ca_fort_de_france = "Fort-de-France", ca_grenoble = "Grenoble", ca_limoges = "Limoges", ca_lyon = "Lyon", ca_metz = "Metz", ca_montpellier = "Montpellier", ca_nancy = "Nancy", ca_nimes = "Nîmes", ca_noumea = "Nouméa", ca_orleans = "Orléans", ca_papeete = "Papeete", ca_paris = "Paris", ca_pau = "Pau", ca_poitiers = "Poitiers", ca_reims = "Reims", ca_rennes = "Rennes", ca_riom = "Riom", ca_rouen = "Rouen", ca_st_denis_reunion = "Saint-Denis de la Réunion", ca_toulouse = "Toulouse", ca_versailles = "Versailles" }
+
+[ecli]
+status = "sample"
+source = "mesurer-base du 2026-11-07 : /scan abrégé cc [2005, 2012, 2019, 2024] et ca [2023, 2025], index CE complet ; seuil d'adoption 99 %"
+adopted = { "R-E2" = true, "R-E4" = true, "R-E5" = true }
+share = { "R-E2" = 1.0, "R-E4" = 0.999974, "R-E5" = 1.0 }
+n = { "R-E2" = 40810, "R-E4" = 37889, "R-E5" = 2502 }
+codes = { "cc" = ["CCASS"], "ca" = [], "ce" = ["CEASS", "CECHR", "CECHS", "CEFSP", "CEORD", "CESEC", "INCONNU"] }
+code_counts = { "cc" = { "CCASS" = 2921 }, "ca" = {}, "ce" = { "CEASS" = 12, "CECHR" = 4653, "CECHS" = 29903, "CEFSP" = 319, "CEORD" = 2762, "CESEC" = 234, "INCONNU" = 6 } }
+cc_prefixes = { "civ. 1re" = ["C1"], "civ. 2e" = ["C2"], "civ. 3e" = ["C3"], "com." = ["CO"], "crim." = ["CR"], "soc." = ["SO"] }
+
+[coverage]
+status = "sample"
+source = "mesurer-base du 2026-11-07 : /stats cc (keys=year) et ca, index CE (D5)"
+cc = { "start" = "1989-01-01", "end" = "2026-08-07", "basis" = "/stats?keys=year, 50 % de la médiane 2022-2025" }
+ca = { "start" = "2022-04-15", "end" = "2026-07-31", "basis" = "diffusion systématique (1-3)" }
+ce = { "start" = "2021-09-30", "end" = "2026-10-07", "basis" = "open data du CE" }
+
+[disabled_rules]
+status = "sample"
+source = "mesurer-base du 2026-11-07 : règle qui signale plus de 0,5 % des vraies d'une juridiction (taux mesuré)"
+cc = {}
+ce = {}
+ca = {}
+
+[specificity]
+status = "sample"
+source = "mesurer-base du 2026-11-07 : toutes les règles sur toutes les vraies (P11)"
+n = { "cc" = 3862, "ca" = 2016, "ce" = 40134 }
+residual_false_positive_rate = { "cc" = 0.000259, "ca" = 0.0, "ce" = 0.001171 }
+
+[recall]
+status = "sample"
+source = "mesurer-base du 2026-11-07 : 60 vraies par juridiction, graine [0, 5], au moins 57 retrouvées (P6)"
+cc = { "drawn" = 60, "found" = 60, "reliable" = true }
+ce = { "drawn" = 60, "found" = 60, "reliable" = true }

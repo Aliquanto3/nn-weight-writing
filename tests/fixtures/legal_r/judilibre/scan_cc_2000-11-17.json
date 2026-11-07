@@ -1,0 +1,4 @@
+{"total": 2, "previous_batch": null, "next_batch": null, "took": 8, "date": "2026-11-07T06:43:15.642Z", "query": {}, "searchQuery": "{}", "results": [
+ {"id": "60793b359ba5988459c3c363", "jurisdiction": "cc", "chamber": "pl", "number": "99-13.701", "numbers": ["99-13.701"], "publication": ["b"], "decision_date": "2000-11-17", "solution": "cassation", "type": "arret", "summary": "Dès lors que les fautes commises par un médecin (résumé réduit pour le test)", "themes": ["responsabilité contractuelle"], "text": "TEXTE-INTEGRAL-SECRET", "zones": {"motivations": [{"start": 0, "end": 10}]}, "text_highlight": {"text": ["SURLIGNAGE-SECRET"]}, "files": [], "titlesAndSummaries": [], "particularInterest": false},
+ {"id": "fixture-cc-0002", "jurisdiction": "cc", "chamber": "civ1", "number": "98-10.001", "numbers": ["98-10.001", "98-10.002"], "publication": ["n"], "decision_date": "2000-11-17", "type": "arret", "text": "TEXTE-INTEGRAL-SECRET", "zones": {}}
+]}
