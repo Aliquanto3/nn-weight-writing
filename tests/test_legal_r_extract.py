@@ -342,3 +342,125 @@ def test_single_word_refere_is_not_a_formation():
     assert ref.formation_text is None
     (judge,) = extract_references("CE, juge des référés, 7 mars 2021, n° 445567")
     assert judge.formation_text == "juge des référés"
+
+
+# --- Revue du tour de correction (E15, passe 1) : formes écrites à la main ---
+
+
+def _short(refs: list[ExtractedRef]) -> list[tuple]:
+    return [(r.jurisdiction, r.seat_text, (r.day, r.month, r.year), r.number_text) for r in refs]
+
+
+def test_bare_number_before_anchor_with_its_own_number_stays_apart():
+    text = "Décision n° 13-27.123 du 4 mai 2011, Cour d'appel de Paris, n° 10/01234."
+    assert _short(extract_references(text)) == [
+        (None, None, (4, 5, 2011), "13-27.123"),
+        ("ca", "Paris", (None, None, None), "10/01234"),
+    ]
+
+
+def test_semicolon_does_not_link_a_number_to_the_next_anchor():
+    text = "n° 13-27.123 ; arrêt du 12 mars 2015, Cour de cassation, n° 14-11.222."
+    assert _short(extract_references(text)) == [
+        (None, None, (None, None, None), "13-27.123"),
+        ("cc", None, (12, 3, 2015), "14-11.222"),
+    ]
+
+
+def test_date_before_anchor_is_read_once():
+    text = "n° 13-27.123 et l'arrêt du 12 mars 2015, Cour de cassation, chambre sociale."
+    assert _short(extract_references(text)) == [
+        (None, None, (None, None, None), "13-27.123"),
+        ("cc", None, (12, 3, 2015), None),
+    ]
+
+
+@pytest.mark.parametrize(
+    "court",
+    [
+        "Juge aux affaires familiales de Nantes",
+        "Le juge de l'exécution de Lyon",
+        "Chambre de l'instruction de Riom",
+        "Cour de Riom",
+        "\nCour d'appel :\nArrêt",
+    ],
+)
+def test_unanchored_court_after_header_stops_inheritance(court):
+    text = f"Cour de cassation :\n{court}, 5 mars 2009, n° 13/00012"
+    assert [r.jurisdiction for r in extract_references(text)] == [None]
+
+
+def test_court_named_in_the_narrative_does_not_cut():
+    text = (
+        "La Cour de cassation a jugé que la cour d'appel avait violé la loi "
+        "(arrêt du 12 mars 2018, n° 17-11.001)."
+    )
+    assert _short(extract_references(text)) == [("cc", None, (12, 3, 2018), "17-11.001")]
+
+
+def test_chamber_of_a_court_of_appeal_keeps_its_court():
+    text = "Cour d'appel de Paris, chambre de l'instruction, 4 mai 2011, n° 10/01234"
+    assert _short(extract_references(text)) == [("ca", "Paris", (4, 5, 2011), "10/01234")]
+
+
+def test_two_anchors_in_a_row_header_inherits_the_last():
+    text = "Cour de cassation :\nConseil d'État :\n\nArrêt n° 412345\nDate : 15 mars 2020"
+    assert _short(extract_references(text)) == [("ce", None, (15, 3, 2020), "412345")]
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        "Cass. civ. 1re, n° 14-11.222 ; Cass. soc., n° 14-11.222",
+        "CA Paris, n° 10/01234 ; CA Lyon, n° 10/01234.",
+    ],
+)
+def test_same_number_other_formation_or_seat_is_another_reference(text):
+    assert len(extract_references(text)) == 2
+
+
+def test_date_that_would_open_a_second_reference_goes_to_the_next_anchor():
+    text = (
+        "Arrêt du 12 mars 2015, Cour de cassation, 2e chambre civile, n° 14-11.222, et l'arrêt "
+        "du 27 avril 2016, Cour de cassation, n° 15-12.333."
+    )
+    assert _short(extract_references(text)) == [
+        ("cc", None, (12, 3, 2015), "14-11.222"),
+        ("cc", None, (27, 4, 2016), "15-12.333"),
+    ]
+    other = (
+        "Cass. civ. 1re, 12 mars 2015, n° 13-27.123, et le 4 mai 2011, Conseil d'État, n° 345678."
+    )
+    assert _short(extract_references(other))[1] == ("ce", None, (4, 5, 2011), "345678")
+
+
+def test_date_of_the_previous_reference_is_not_taken_by_the_next_anchor():
+    text = "Cass. soc., n° 13-27.123, 12 mars 2015, Conseil d'État, 4 mai 2011, n° 345678."
+    assert _short(extract_references(text)) == [
+        ("cc", None, (12, 3, 2015), "13-27.123"),
+        ("ce", None, (4, 5, 2011), "345678"),
+    ]
+    alone = "La Cour de cassation, dans son arrêt du 12 mars 2015, le Conseil d'État, n° 345678."
+    assert _short(extract_references(alone))[0] == ("cc", None, (12, 3, 2015), None)
+
+
+def test_other_superscript_letters_are_folded():
+    text = "Cour de cassation, 2ⁿᵈ chambre, 12 mars 2005, n° 03-11.111"
+    (ref,) = extract_references(text)
+    assert ref.formation_text == "2nd chambre"
+    assert ref.raw == text[ref.start : ref.end]
+
+
+def test_date_after_an_unanchored_court_is_not_prefixed_to_the_next_anchor():
+    text = "Cass. soc., n° 13-27.123, juge des enfants, 4 mai 2011, Conseil d'État, n° 345678."
+    assert _short(extract_references(text)) == [
+        ("cc", None, (None, None, None), "13-27.123"),
+        ("ce", None, (None, None, None), "345678"),
+    ]
+
+
+def test_chamber_header_of_a_court_of_appeal_keeps_inheritance():
+    text = (
+        "Cour d'appel de Paris :\nChambre de l'instruction\n\nArrêt n° 10/01234\nDate : 4 mai 2011"
+    )
+    assert _short(extract_references(text)) == [("ca", "Paris", (4, 5, 2011), "10/01234")]
