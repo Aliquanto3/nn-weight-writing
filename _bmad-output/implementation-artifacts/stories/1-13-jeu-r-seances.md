@@ -394,3 +394,12 @@ Correctifs de la passe 1 seuls (diff `ba67579..28be85e`), sans rebase.
 - **Rejeté** : plancher `ce_number` : droite ajustée sur les vraies du CE de l'entraînement seul, standardisation sur l'entraînement, évaluation sur le réservé. Vérifié sans erreur : entraînement sans CE, une seule date, réservé sans CE, date impossible, numéro non entier (accuracy 0,5 ou valeur définie).
 - **Rejeté** : borne de S8 par jeu correcte ; test d'import en sous-processus 0,19 s, `-I` et `sys.executable`, portable.
 - Tests ciblés (140) et ruff verts.
+
+## Phase B — arrêt au seuil de 80 fausses (2026-11-07)
+
+`origin/main` (890e19a, porte de 1-12) fusionné sans conflit (`24c0073`). `construire` lit le classement du tour 1 (sha256 `527869b5…62de`, égal à `config/r_gate.toml`), `--s-root` sur les jeux de S rassemblés, `--cache` sur le cache de 1-12.
+
+- **Correctif** (`2937aff`) : le recalcul de la `canonical` sur le seul passage de `interne/extraction.jsonl` échouait (`normalizer_mismatch`, r-u00365) : l'extracteur du tour 1 hérite la juridiction d'une ancre hors du passage. Le recalcul reprend la juridiction du classement pour une référence sans juridiction (12 unités) ; un passage sans référence complète est exclu (`span_context`, 3 unités) ; une référence complète de clé différente reste refusée. Test `test_inherited_jurisdiction_and_span_context`.
+- **Refus `too_few_fakes`** : 66 fausses (< 80), rien d'écrit. Entonnoir : 1 099 unités ; `not_in_gate` 662, `not_d1` 277, `span_context` 3, `before_window` 4 (CE), `number_repeated` 13 → 140 retenues (c00 81, t10 29, t05 18, t12 5, t01 2, t03 2, t08, t11, t14 1) ; revérification : 0 trouvée ; `no_real_in_stratum` 74 (cc 70, ce 4 ; t10 27, c00 21, t05 16, t12 5, t01 2, t03, t08, t11 1) → **F = 66, dont 60 `c00`** (p_R ≈ 0,09 contre p_d1 = 0,675).
+- **Cause** : l'appariement de S1 et S6 (jour du même type ± 15 jours, formation, classe d'écart d'année du numéro). Un numéro malformé (t10) a la classe `none`, qu'aucune vraie de la Cour de cassation n'a : toutes les t10 tombent ; t05 et t12 aussi presque toutes. R ne garderait que des cohérentes absentes.
+- **Décision qui revient à Anaël** (point 6) : par exemple ne pas apparier sur l'écart quand la fausse est `none` (ou sur la formation quand elle est tirée), élargir les jours essayés, ou accepter un R de cohérentes absentes sous le seuil. Aucune séance, aucun témoin, aucune évaluation lancés.
