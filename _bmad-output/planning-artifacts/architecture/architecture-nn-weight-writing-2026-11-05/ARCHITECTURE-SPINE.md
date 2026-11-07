@@ -64,11 +64,14 @@ graph TD
   baselines --> journal
   report --> journal
   report --> budget
+  report --> config
+  report --> evaluation.schema
   datasets --> tasks
   publish --> journal
+  publish --> evaluation.schema
 ```
 
-Les flèches sont les seules dépendances permises. `cli` n'importe `baselines` (donc `torch`) qu'à l'intérieur du gestionnaire de `nnww train`.
+Les flèches sont les seules dépendances permises. `cli` n'importe `baselines` (donc `torch`) qu'à l'intérieur du gestionnaire de `nnww train`. `evaluation.schema` désigne ce seul module (dataclasses et constantes de noms de fichiers), pas le reste d'`evaluation` (amendement 1-14 : producteurs et lecteurs importent le même module). `report → config` sert au plafond du lot (`load_protocol`) ; `publish` ne lit pas la configuration, `cli` lui passe `r_republish` et `r_tasks`.
 
 ### AD-1 — Frontière de confiance vérifiée par un test
 
@@ -297,12 +300,17 @@ Les flèches sont les seules dépendances permises. `cli` n'importe `baselines` 
 - **Binds:** CAP-13, CAP-14
 - **Prevents:** une clé d'API, un exemple réservé ou une référence Judilibre non republiable dans une release.
 - **Rule :**
-  - **Assemblage.** `nnww publish <lot>` assemble `runs-lot<N>.tar.gz`. L'archive contient les journaux, `frozen/`, `eval.json` et `run.json` ; elle exclut `bundle/`, `data/` et `heldout/`, que les graines suffisent à régénérer.
-  - **Refus.** La commande refuse l'archive :
+  - **Assemblage.** `nnww publish <lot>` assemble `runs-lot<N>.tar.gz`, par liste blanche : pour une séance `journal.jsonl`, `system_prompt.md`, `frozen/`, `eval.json`, `eval-cross-*.json` ; pour un témoin `run.json`, `frozen/`, `eval*.json`. Elle exclut `bundle/`, `data/` et `heldout/`, que les graines suffisent à régénérer. Archives reproductibles (membres triés, `mtime = 0`, uid et gid nuls, gzip à `mtime = 0`).
+  - **Archive de R (R2 du constat 1-3, amendement 1-14 Q1).** Le jeu R ne se régénère pas par graine : si `r_republish = true` et qu'un jeu d'une tâche de `r_tasks` (`config/publish.toml`, `["legal_r"]`) existe sous `data/` ou `heldout/`, `nnww publish` assemble aussi `r-lot<N>.tar.gz` : `examples.jsonl`, `labels.jsonl`, `dataset.json` (daté par `extraction_date`) et `sources.jsonl` de chaque jeu, réservé compris (réévaluation par un tiers). Aucun texte au-delà de la référence normalisée, ni nom. Un lot ultérieur qui voudrait un R réservé le retire de l'archive.
+  - **Refus.** Tous les contrôles tournent avant toute écriture, sur chaque fichier de chaque archive ; la commande refuse l'archive :
     - si un fichier contient un motif de clé (`sk-ant-`, `sk-or-`, `Bearer `) ;
+    - si un fichier contient la valeur d'une variable de secret de l'environnement ou du `.env` (R6) : `JUDILIBRE_KEY_ID`, `PISTE_CLIENT_ID`, `PISTE_CLIENT_SECRET`, `OPENROUTER_API_KEY`, `ANTHROPIC_API_KEY`, `CLAUDE_CODE_OAUTH_TOKEN` et tout nom en `_KEY`, `_SECRET`, `_TOKEN` ; le message nomme la variable, jamais la valeur ;
     - si un artefact de R est présent sans `r_republish = true` dans `config/publish.toml` (constat 1-3) ;
-    - si un `raw` réservé y figure.
-  - **Empreintes.** Elle écrit `SHA256SUMS`. Le rapport cite les `tree_sha256`.
+    - si un `raw` réservé (12 caractères au moins) figure dans l'archive des runs, recherche normalisée (chaînes JSON décodées récursivement, échappements décodés, casse et blancs normalisés) ;
+    - si un JSON porte une clé `text`, `zones` ou `text_highlight` (hors bloc de message `{"type": "text"}` dans un journal), si un `raw` porte un motif de nom de partie ou dépasse 160 caractères, si `sources.jsonl` ne tient pas la condition 3, ou si `NOTICE` n'a pas l'attribution, l'URL de la licence et la date d'extraction (condition 2) ;
+    - si un chemin passe par `interne/`, `collecte/`, `cache/` ou par la collecte brute de 1-12a (`data/r/collecte/`, `collecte.jsonl`, `pilote.jsonl`).
+  - **Sorties publiées hors archive.** `nnww publish --check PATH...` applique les mêmes contrôles au tableau, au fichier de décisions, au rapport, aux notes de release et au billet ; `nnww table` l'appelle sur ce qu'il écrit.
+  - **Empreintes.** Elle écrit `SHA256SUMS` (dans chaque archive et à côté des archives). Le rapport cite les `tree_sha256`.
 
 ### AD-19 — Interdit statistique : prévention partielle et audit publié
 
@@ -323,7 +331,7 @@ Les flèches sont les seules dépendances permises. `cli` n'importe `baselines` 
 | --- | --- |
 | Langues | Identifiants, clés JSON et noms de fichiers en anglais ; docs, messages de commit et rapports en français. |
 | CLI | Un seul point d'entrée `nnww` (argparse), avec les sous-commandes `datagen`, `session`, `evaluate`, `train`, `table`, `ledger`, `publish`. |
-| Configuration | TOML sous `config/` : `models.toml` (modèle → pilote, fournisseur, identifiant), `pricing.toml`, `protocol.toml` (passes, tours, tentatives, portes, plafonds), `train.toml`, `publish.toml`. Secrets en variables d'environnement seulement (`ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`). |
+| Configuration | TOML sous `config/` : `models.toml` (modèle → pilote, fournisseur, identifiant), `pricing.toml`, `protocol.toml` (passes, tours, tentatives, portes, plafonds), `train.toml`, `publish.toml`. Secrets en variables d'environnement ou dans un `.env` non commité seulement (`ANTHROPIC_API_KEY`, `OPENROUTER_API_KEY`, `JUDILIBRE_KEY_ID`, et `PISTE_CLIENT_ID`, `PISTE_CLIENT_SECRET` pour le repli OAuth : R6 du constat 1-3). |
 | Schémas partagés | Événements dans `journal/schema.py` ; manifeste dans `network/manifest.schema.json` ; `eval.json` et `run.json` dans `evaluation/schema.py`. Producteurs et lecteurs importent le même module. |
 | Dates et argent | Horodatage UTC ISO 8601 avec `Z` ; montants en dollars, `float` arrondi à 6 décimales. |
 | Refus | Codes énumérés dans `session/refusals.py` ; l'outil renvoie `{"refused": "<code>", "detail": "..."}` et le service écrit un événement `refusal` avec le même code. |
