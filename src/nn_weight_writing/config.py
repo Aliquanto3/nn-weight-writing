@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -163,3 +164,30 @@ def load_pricing(path: Path | None = None) -> dict[str, Price]:
             raise ValueError(f"pricing.toml : {model_id} : date et source obligatoires")
         prices[model_id] = Price(**values, date=str(entry["date"]), source=entry["source"])
     return prices
+
+
+# --- publish (story 1-14 : AD-18, constat 1-3) --------------------------------------------------
+
+PUBLISH_PATH = CONFIG_DIR / "publish.toml"
+_TASK_NAME = re.compile(r"[a-z0-9_]+")
+
+
+@dataclass(frozen=True)
+class PublishConfig:
+    r_republish: bool
+    r_tasks: tuple[str, ...]
+
+
+def load_publish(path: Path | None = None) -> PublishConfig:
+    """`r_republish` vaut `true` seulement s'il est le booléen `true` ; `r_tasks` est une liste
+    de noms de tâche valides, obligatoire."""
+    data = tomllib.loads((path or PUBLISH_PATH).read_text("utf-8"))
+    tasks = data.get("r_tasks")
+    if not isinstance(tasks, list) or not all(
+        isinstance(t, str) and _TASK_NAME.fullmatch(t) for t in tasks
+    ):
+        raise ValueError("publish.toml : r_tasks doit être une liste de noms de tâche")
+    return PublishConfig(r_republish=data.get("r_republish") is True, r_tasks=tuple(tasks))
+
+
+# --- fin du bloc publish -------------------------------------------------------------------------

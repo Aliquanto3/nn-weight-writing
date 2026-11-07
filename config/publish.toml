@@ -7,3 +7,7 @@
 # docs/verifications/1-3-judilibre-hallucinations.md. Les conditions 1 à 4 restent à tenir
 # par le jeu R lui-même (1-13) et sont contrôlées par nnww publish (1-14).
 r_republish = true
+
+# Tâches du jeu R (story 1-13) : leurs séances, témoins, évaluations croisées et jeux sont des
+# artefacts de R au sens d'AD-18.
+r_tasks = ["legal_r"]
