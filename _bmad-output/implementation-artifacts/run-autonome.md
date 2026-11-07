@@ -412,3 +412,10 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-07 18:19 · 1.13 · fusion · #31 fusionnée, MERGED vérifié · 08b9ff8
 - 2026-11-07 18:20 · 1.14b · dev · lancé (dev-story Opus, worktree 1-14b) : rassemblement, jugements, table --strict, NOTICE, publish, rapport, version 0.1.0, PR ; tag, release et topic laissés à l'orchestrateur après accord d'Anaël (point 5 de la spec) · 08b9ff8
 - 2026-11-07 18:20 · 1.14b · décision · Anaël : l'orchestrateur crée le tag v0.1.0, la release GitHub avec les assets (sha256 vérifiés après envoi) et passe le topic status-dev → status-test, après CI verte et fusion de la PR de 1-14b · —
+- 2026-11-07 18:36 · 1.14b · dev · fini : table --lot 1 --strict vert (87 séances, 144 témoins), évaluations croisées vers R (98 réseaux de S, 74 de S-réservé), publish réel (runs-lot1 742fdad1…, r-lot1 a69088a1…), publish --check sans refus sur 20 fichiers, rapport-lot1.md, NOTICE, version 0.1.0 ; correctif report/table.py (décisions des témoins par chemin, l'annexe fields@1 était sans effet) ; CI verte trois OS (PR #33) · 6337931
+- 2026-11-07 18:36 · 1.14b · décision · fragment_overlap maintenues : Fable A-programme 10⁵ S t1 et Sonnet A-programme 10⁵ S-réservé t2 (noms de chambre seuls, 3 littéraux), Sonnet B R t2 et t3 (vocabulaire de format) · 6337931
+- 2026-11-07 18:36 · 1.14b · décision · MiMo B R t2 (alerte D8, c00 13/48) maintenue : heuristique générique sur les numéros d'allure fabriquée, sans référence recopiée, 10 vraies manquées · 6337931
+- 2026-11-07 18:36 · 1.14b · décision · A-programme 10⁴ MiMo t1 : l'essai de l'étape 3 compte pour la tentative 1 (confirmé) · 6337931
+- 2026-11-07 18:36 · 1.14b · décision · annexes : MiMo étapes 1 et 2 (groupes d4523fc4, a52ba2e6, et 8e081aa1 non listé par la spec), F legal.fields@1, séances jouet de 1-8 · 6337931
+- 2026-11-07 18:36 · 1.14b · attente humaine · classement de 1-12 non mis en asset : publish --check le refuse (87 reserved_example, fausses du réservé de R) ; publication laissée à Anaël (point 7), release faite sans lui · 6337931
+- 2026-11-07 18:36 · 1.14b · second-avis · lancé sur 08b9ff8..6337931 · 6337931
