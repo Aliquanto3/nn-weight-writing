@@ -20,7 +20,7 @@ SECRET_PATTERNS = (
     re.compile(r"(?i)\b(x-api-key|authorization)\s*[:=]\s*\S+"),
     re.compile(r"(?i)\bbearer\s+[A-Za-z0-9._\-]{8,}"),
 )
-SECRET_ENV_VARS = ("ANTHROPIC_API_KEY", "OPENROUTER_API_KEY")
+SECRET_ENV_VARS = ("ANTHROPIC_API_KEY", "OPENROUTER_API_KEY", "JUDILIBRE_KEY_ID")
 REDACTED = "[secret masqué]"
 
 

@@ -133,3 +133,19 @@ def test_importing_cli_and_the_session_side_does_not_load_torch():
     )
     result = subprocess.run([sys.executable, "-I", "-c", code], capture_output=True, text=True)
     assert result.returncode == 0, result.stderr
+
+
+def test_session_side_never_imports_legal_r():
+    """Story 1-12 : `datasets.legal_r` (pré-étude R) reste côté évaluateur."""
+    source = (
+        "from nn_weight_writing.datasets.legal_r import grid\n"
+        "import nn_weight_writing.datasets.legal_r.judilibre\n"
+    )
+    found = forbidden_imports(source, Path("session/fake.py"))
+    assert found == [
+        "nn_weight_writing.datasets.legal_r",
+        "nn_weight_writing.datasets.legal_r.grid",
+        "nn_weight_writing.datasets.legal_r.judilibre",
+    ]
+    for path in session_files():
+        assert "legal_r" not in path.read_text("utf-8"), path

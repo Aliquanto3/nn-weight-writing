@@ -1,0 +1,4 @@
+{"total": 3, "previous_batch": null, "next_batch": "jurisdiction=cc&date_start=2019-03-14&date_end=2019-03-14&date_type=creation&abridged=true&batch_size=1000&searchAfter=0%261552521600000%265fca7615c561ac6356f0388a", "took": 12, "date": "2026-11-07T06:43:24.925Z", "results": [
+ {"id": "5fca7615c561ac6356f0388b", "jurisdiction": "cc", "chamber": "civ2", "number": "18-12.821", "numbers": ["18-12.821"], "ecli": "ECLI:FR:CCASS:2019:C200327", "formation": "frh", "publication": ["n"], "decision_date": "2019-03-14", "type": "other"},
+ {"id": "5fca7615c561ac6356f0388a", "jurisdiction": "cc", "chamber": "civ2", "number": "18-11.127", "numbers": ["18-11.127"], "ecli": "ECLI:FR:CCASS:2019:C200326", "formation": "frh", "publication": ["n"], "decision_date": "2019-03-14", "type": "other"}
+]}

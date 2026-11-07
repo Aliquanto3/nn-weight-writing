@@ -1,0 +1,6 @@
+{"query": {"jurisdiction": ["cc"], "keys": ["year"]}, "results": {"min_decision_date": "1860-08-01", "max_decision_date": "2026-11-05", "total_decisions": 569932, "aggregated_data": [
+ {"key": {"year": "1987"}, "decisions_count": 6593}, {"key": {"year": "1988"}, "decisions_count": 7525}, {"key": {"year": "1989"}, "decisions_count": 14798},
+ {"key": {"year": "1990"}, "decisions_count": 13629}, {"key": {"year": "2000"}, "decisions_count": 17112}, {"key": {"year": "2008"}, "decisions_count": 8264},
+ {"key": {"year": "2022"}, "decisions_count": 16231}, {"key": {"year": "2023"}, "decisions_count": 17236}, {"key": {"year": "2024"}, "decisions_count": 16351},
+ {"key": {"year": "2025"}, "decisions_count": 16277}, {"key": {"year": "2026"}, "decisions_count": 13312}
+]}}

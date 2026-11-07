@@ -1,0 +1,4 @@
+{"page": 0, "page_size": 50, "query": {"query": "99-99.999"}, "total": 2, "previous_page": null, "next_page": null, "took": 21, "max_score": 0, "relaxed": true, "searchQuery": "{}", "results": [
+ {"score": 0, "highlights": {}, "id": "fixture-relaxed-1", "jurisdiction": "cc", "chamber": "civ2", "number": "99-99.998", "numbers": ["99-99.998"], "decision_date": "2001-03-01", "type": "arret"},
+ {"score": 0, "highlights": {}, "id": "fixture-relaxed-2", "jurisdiction": "cc", "chamber": "soc", "number": "98-99.999", "numbers": ["98-99.999"], "decision_date": "1999-06-01", "type": "arret"}
+]}
