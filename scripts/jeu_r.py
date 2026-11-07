@@ -253,7 +253,9 @@ def _construire(args) -> int:
     forbidden, s_files = s_raws(Path(args.s_root or args.root))
     win = windows()
     extraction = read_jsonl(pre / "interne" / "extraction.jsonl")
-    selection = select_fakes(rows, extraction=extraction, windows=win, s_raws=forbidden)
+    selection = select_fakes(
+        rows, extraction=extraction, windows=win, s_raws=forbidden, corpus_date=corpus_date
+    )
     index = CeIndex.load(Path(args.ce_index) / "index.jsonl")
     client = make_client(args)
     found = recheck_fakes(selection, client=client, ce_index=index, windows=win, today=corpus_date)
@@ -387,7 +389,8 @@ def cmd_plancher(args) -> int:
     result["eval_sha256"] = sha256_file(held / "dataset.json")
     write_json(root / OUT / "plancher.json", result)
     print(
-        f"plancher d'indice : écart {result['year_gap']:.3f}, longueur {result['raw_length']:.3f}"
+        f"plancher d'indice : écart {result['year_gap']:.3f}, longueur {result['raw_length']:.3f}, "
+        f"numéro du CE {result['ce_number']:.3f}"
     )
     return 0
 

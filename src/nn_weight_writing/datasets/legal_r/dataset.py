@@ -59,7 +59,9 @@ EXCLUSIONS = (
     "not_d1",
     "before_window",
     "after_window_not_future",
+    "future_not_visible",
     "raw_in_s",
+    "number_repeated",
     "found_at_build",
     "recheck_unverifiable",
     "no_real_in_stratum",
@@ -195,6 +197,14 @@ def _before(row: Mapping, window: CoverageWindow) -> bool:
         return (row["year"], row["month"]) < (window.start.year, window.start.month)
 
 
+def _after(fake: FakeRow, day: date) -> bool:
+    """Date de la fausse postérieure à `day` (année et mois pour une date impossible)."""
+    valid = fake.valid_date
+    if valid is not None:
+        return valid > day
+    return (fake.year, fake.month) > (day.year, day.month)
+
+
 def _canonical_citations(extraction: Iterable[Mapping]) -> dict[str, Mapping]:
     """Première ligne de chaque unité : citation canonique (ordre de D3 de 1-12)."""
     out: dict[str, Mapping] = {}
@@ -221,9 +231,18 @@ def select_fakes(
     extraction: Iterable[Mapping],
     windows: Mapping[str, CoverageWindow],
     s_raws: frozenset[str] | set[str] = frozenset(),
+    corpus_date: date | None = None,
 ) -> Selection:
-    """Fausses admises (D2, S7) ; `RBuildError("normalizer_mismatch")` si le recalcul diffère."""
+    """Fausses admises (D2, S7) ; `RBuildError("normalizer_mismatch")` si le recalcul diffère.
+
+    Avec `corpus_date` (S5), une fausse R-C3 (future à sa date de génération) dont la date n'est
+    pas postérieure à `corpus_date` est exclue (`future_not_visible`) : la description de R date
+    t06 par `corpus_date`, elle ne serait ni future ni vérifiée. Une fausse dont le numéro est
+    celui d'une fausse déjà retenue (ordre des `unit_id`) est exclue (`number_repeated`) : aucun
+    numéro n'est commun à deux jeux de R (D5).
+    """
     citations = _canonical_citations(extraction)
+    numbers: set[tuple[str, str]] = set()
     excluded = dict.fromkeys(EXCLUSIONS, 0)
     before: Counter = Counter()
     fakes: list[FakeRow] = []
@@ -268,12 +287,19 @@ def select_fakes(
             partial_match=row.get("partial_match"),
         )
         valid = fake.valid_date
+        if fake.future and corpus_date is not None and not _after(fake, corpus_date):
+            excluded["future_not_visible"] += 1
+            continue
         if valid is not None and valid > window.end and not fake.future:
             excluded["after_window_not_future"] += 1
             continue
         if canonical in s_raws:
             excluded["raw_in_s"] += 1
             continue
+        if (fake.jurisdiction, fake.number) in numbers:
+            excluded["number_repeated"] += 1
+            continue
+        numbers.add((fake.jurisdiction, fake.number))
         fakes.append(fake)
     return Selection(fakes, excluded, dict(sorted(before.items())))
 
@@ -380,6 +406,7 @@ def match_reals(
     ordered = sorted(fakes, key=lambda f: f.unit_id)
     fake_numbers = {(f.jurisdiction, f.number) for f in ordered}
     used = set(forbidden_raws) | {f.raw for f in ordered}
+    used_numbers: set[tuple[str, str]] = set()  # numéros des vraies déjà tirées (D5)
     years_by_jur: dict[str, list[int]] = {}
     for f in ordered:
         if not f.future:
@@ -419,6 +446,7 @@ def match_reals(
                     and year_gap_class(c.jurisdiction, c.day.year, c.number) == gap
                     and c.raw not in used
                     and not any((c.jurisdiction, n) in fake_numbers for n in c.numbers)
+                    and not any((c.jurisdiction, n) in used_numbers for n in c.numbers)
                 ),
                 key=lambda c: (c.raw, c.source_id),
             )
@@ -432,6 +460,7 @@ def match_reals(
         if chosen.day > corpus_date:
             raise RBuildError("real_after_corpus_date", f"{chosen.source_id} : {chosen.day}")
         used.add(chosen.raw)
+        used_numbers.update((chosen.jurisdiction, n) for n in chosen.numbers)
         pairs.append(Pair(fake, chosen, notes))
     return pairs, unmatched
 

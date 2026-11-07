@@ -42,7 +42,12 @@ from nn_weight_writing.datasets.legal_r.normalize import (
     fields_from_judilibre,
     normalize,
 )
-from nn_weight_writing.datasets.legal_r.pool import CeDays, cc_day_candidates, reference_of
+from nn_weight_writing.datasets.legal_r.pool import (
+    CeDays,
+    RealCandidate,
+    cc_day_candidates,
+    reference_of,
+)
 from nn_weight_writing.publish.checks import check_content, check_sources, extraction_date
 from nn_weight_writing.tasks.legal.reference import format_reference, parse_reference
 
@@ -53,6 +58,9 @@ WINDOWS = {
 }
 CORPUS = date(2026, 11, 7)
 PERRUCHE = "Cass. ass. plén., 17 novembre 2000, n° 99-13.701"
+MONTHS = (
+    "janvier février mars avril mai juin juillet août septembre octobre novembre décembre".split()
+)
 
 
 @pytest.fixture(scope="module")
@@ -142,6 +150,45 @@ def test_select_fakes_gate_denominator_and_window():
     assert selection.before_window == {"cc": 1, "ce": 1}
     assert selection.fakes[0].raw == rows[0]["canonical"]  # jamais retouchée
     assert selection.fakes[0].model == "qwen3.5:2b"
+
+
+def test_future_not_visible_and_repeated_number_excluded():
+    """R-C3 datée avant `corpus_date` : plus future dans la description de R (S5) ; un numéro
+    déjà retenu n'est pas repris (aucun numéro commun à deux jeux, D5)."""
+    rows = [
+        classement_row("r-u00001", "ce", "6e ch.", 2026, 10, 2, "481001", "incoherent", ("R-C3",)),
+        classement_row(
+            "r-u00002", "cc", "civ. 2e", 2027, 5, 6, "26-10.002", "incoherent", ("R-C3",)
+        ),
+        classement_row("r-u00003", "cc", "soc.", 2012, 2, 14, "11-10.003", "coherent_absent"),
+        classement_row("r-u00004", "cc", "soc.", 2013, 2, 14, "11-10.003", "coherent_absent"),
+    ]
+    extraction = [extraction_row(r) for r in rows]
+    selection = select_fakes(rows, extraction=extraction, windows=WINDOWS, corpus_date=CORPUS)
+    assert [f.unit_id for f in selection.fakes] == ["r-u00002", "r-u00003"]
+    assert selection.excluded["future_not_visible"] == 1
+    assert selection.excluded["number_repeated"] == 1
+    # Sans `corpus_date`, la fausse R-C3 reste retenue (comportement de la grille seule).
+    loose = select_fakes(rows, extraction=extraction, windows=WINDOWS)
+    assert "r-u00001" in {f.unit_id for f in loose.fakes}
+
+
+def test_no_two_reals_share_a_number():
+    fakes = [fake(f"r-u{i:05d}", "cc", "civ. 1re", 2015, 3, 12) for i in range(1, 4)]
+    day = date(2015, 3, 12)
+
+    def pool(jurisdiction, d):
+        if d != day:
+            return []
+        same = [real("cc", "civ. 1re", day, "14-77.777", f"double-{k}") for k in range(3)]
+        return [
+            *(RealCandidate(**{**c.__dict__, "raw": c.raw + f" {k}"}) for k, c in enumerate(same)),
+            real("cc", "civ. 1re", day, "14-88.888", "seule"),
+        ]
+
+    pairs, unmatched = match_reals(fakes, pool, seed=0, windows=WINDOWS, corpus_date=CORPUS)
+    numbers = [n for p in pairs for n in p.real.numbers]
+    assert len(numbers) == len(set(numbers)) == 2 and len(unmatched) == 1
 
 
 def test_impossible_date_compared_on_year_and_month():
@@ -373,12 +420,10 @@ def _jsonl(path):
 
 def test_ids_prefix_and_shuffle(tmp_path):
     _, dirs = _write_all(tmp_path)
-    reference_runs = []
-    for k in range(20):  # permutations de graine fixée, même composition (S8)
-        order = np.random.default_rng([12345, k]).permutation(["real"] * 140 + ["fake"] * 140)
-        reference_runs.append(
-            max(len(m[0]) for m in re.finditer(r"(r+|f+)", "".join(c[0] for c in order)))
-        )
+
+    def longest_run(labels):
+        return max(len(m[0]) for m in re.finditer(r"(r+|f+)", "".join(c[0] for c in labels)))
+
     for split, directory in dirs.items():
         letter = {"session": "s", "train": "t", "eval": "e"}[split]
         examples = _jsonl(directory / "examples.jsonl")
@@ -390,8 +435,12 @@ def test_ids_prefix_and_shuffle(tmp_path):
         assert not any(e["id"].startswith("legal-") for e in examples)
         assert {"real", "fake"} <= set(labels[:4])
         assert labels != sorted(labels) and labels != sorted(labels, reverse=True)
-        longest = max(len(m[0]) for m in re.finditer(r"(r+|f+)", "".join(c[0] for c in labels)))
-        assert longest <= max(reference_runs)
+        half = len(labels) // 2  # permutations de graine fixée, même composition que ce jeu (S8)
+        bound = max(
+            longest_run(np.random.default_rng([12345, k]).permutation(["real", "fake"] * half))
+            for k in range(20)
+        )
+        assert longest_run(labels) <= bound
         assert labels.count("real") == labels.count("fake")
 
 
@@ -600,12 +649,29 @@ def test_floor_accuracies_exact():
     long_fake = [("Cass. civ. 1re, 12 mars 2015, n° 14-10.00" + str(i), "fake") for i in range(10)]
     short_real = [("CE, Sect., 1er mars 2023, n° 47000" + str(i), "real") for i in range(10)]
     result = floor_accuracies(long_fake + short_real, long_fake[:5] + short_real[:5])
-    assert result == {"year_gap": 1.0, "raw_length": 1.0}
-    same = [(r, "fake") for r, _ in short_real[:5]] + short_real[5:]
+    assert result == {"year_gap": 1.0, "raw_length": 1.0, "ce_number": 1.0}
+    same = [(r, "fake") for r, _ in short_real] + short_real
     # Indice nul : mêmes valeurs pour les deux classes, tout est prédit `real` (égalité).
-    assert floor_accuracies(same, same) == {"year_gap": 0.5, "raw_length": 0.5}
+    assert floor_accuracies(same, same) == {"year_gap": 0.5, "raw_length": 0.5, "ce_number": 0.5}
     with pytest.raises(ValueError, match="non vides"):
         floor_accuracies([], short_real)
+
+
+def test_floor_ce_number_reads_the_number_against_the_date():
+    """Vraies du CE : numéro croissant avec la date ; fausses : numéro sans rapport."""
+    rng = np.random.default_rng(0)
+    rows = []
+    for i in range(80):
+        y, m = 2022 + i % 4, 1 + i % 12
+        t = y + (m - 1) / 12
+        real_n = int(440000 + (t - 2021) * 25000)
+        fake_n = int(rng.choice([123456, 381234, 999999, 210000, 700000]))
+        for n, label in ((real_n, "real"), (fake_n, "fake")):
+            rows.append((f"CE, 6e ch., 1er {MONTHS[m - 1]} {y}, n° {n}", label))
+    train, held = rows[:80], rows[80:]  # paires entières, deux classes de chaque côté
+    result = floor_accuracies(train, held)
+    assert result["ce_number"] >= 0.9
+    assert result["year_gap"] == 0.5  # numéro du CE sans année : aucun indice d'écart
 
 
 def test_plancher_command(tmp_path, script):
@@ -617,7 +683,7 @@ def test_plancher_command(tmp_path, script):
     dirs["eval"].rename(root / "heldout" / "legal_r" / "eval")
     assert script.main(["plancher", "--root", str(root)]) == 0
     result = json.loads((root / "data" / "r" / "jeu_r" / "plancher.json").read_text("utf-8"))
-    assert 0.0 <= result["year_gap"] <= 1.0 and 0.0 <= result["raw_length"] <= 1.0
+    assert all(0.0 <= result[k] <= 1.0 for k in ("year_gap", "raw_length", "ce_number"))
     assert script.main(["plancher", "--root", str(tmp_path / "vide")]) == 2
 
 

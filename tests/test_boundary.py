@@ -130,6 +130,8 @@ def test_importing_cli_and_the_session_side_does_not_load_torch():
         "import nn_weight_writing.cli\n"
         "import nn_weight_writing.session.service, nn_weight_writing.sandbox.runner\n"
         "import nn_weight_writing.network, nn_weight_writing.tasks.toy\n"
+        "import nn_weight_writing.tasks.legal, nn_weight_writing.tasks.registry\n"
+        "assert not [m for m in sys.modules if m.startswith('nn_weight_writing.datasets')]\n"
         "sys.exit(1 if 'torch' in sys.modules else 0)\n"
     )
     result = subprocess.run([sys.executable, "-I", "-c", code], capture_output=True, text=True)
