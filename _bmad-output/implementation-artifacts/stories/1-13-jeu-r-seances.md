@@ -25,6 +25,24 @@ Références : SPEC.md (CAP-7, CAP-11, CAP-12) ; `jeux-de-donnees.md` (R) ; `met
 - Tailles des cases sur R (`protocole-ecriture.md`) : A-programme vers 10⁵, A-littéral vers 10⁴ (`--size-target 100000` et `10000`, fenêtre d'une demi-décade de 1-10a).
 - Encodeur de famille `legal.chars@1` (AD-4 amendé) et `legal.fields@2` pour F, communs à `legal_s`, `legal_s_reserved` et `legal_r`.
 
+## Décisions après second avis (S1 à S13)
+
+Prises par l'orchestrateur le 2026-11-07, **avant la porte de 1-12**, et non revues après. Elles priment sur les sections D1 à D12 et les critères ci-dessous là où elles les contredisent.
+
+- **S1 — Écart d'année du numéro.** Les vraies sont appariées aussi sur l'écart entre l'année de la décision et l'année du pourvoi ou de la requête lue dans le numéro (classes `0`, `1`, `2`, `3+`, et `none` pour un numéro sans année). La distribution de cet écart est publiée par classe (`dataset.json`, `year_gap`). Deux témoins triviaux sont entraînés sur l'entraînement de R et évalués sur son réservé : une régression logistique sur l'écart seul, une autre sur la longueur du `raw` seule ; leurs exactitudes réservées sont publiées comme **plancher d'indice** (une méthode qui ne fait pas mieux n'a rien appris au-delà de ces indices).
+- **S2 — Trois tentatives par case dans les deux issues.** Comme au lot 1 (`methodes-et-lots.md`) : la colonne « mesure de plafond » de D8 passe de 3 à **9 séances Sonnet** (graines 0, 1, 2). Seule la lecture change entre les issues.
+- **S3 — Points d'Anaël tranchés maintenant.** (1) incohérentes datées avant la fenêtre de couverture exclues (défaut) ; (2) MiMo en B seulement, plafond 2 $ facturés ; (3) 3 tentatives (S2) ; (4) amendements de CAP-7, CAP-11, de la section R de `jeux-de-donnees.md` et d'AD-17 rédigés dans la PR de cette story ; (5) vocabulaire et description de R de D6 ; (6) seuil d'arrêt à 80 fausses.
+- **S4 — R4.** La porte sur p_d1 est déjà amendée dans `methodes-et-lots.md` par la PR d'état de l'orchestrateur : cette story la cite et ne la réécrit pas.
+- **S5 — `corpus_date`.** `corpus_date` = date d'extraction des vraies (jour du tirage Judilibre et de l'index du CE), et non plus la date la plus ancienne de la collecte (D6 remplacé sur ce point). Garde et test : aucune vraie postérieure à `corpus_date` ; une fausse postérieure reste une date future (incohérente).
+- **S6 — Type de jour.** Les vraies sont aussi appariées sur le type de jour de la date (`ouvre`, `samedi`, `dimanche_ou_ferie`). Une fausse sans vraie possible dans sa strate est exclue (`no_real_in_stratum`) et comptée dans l'entonnoir publié.
+- **S7 — Aucun `raw` partagé avec S.** Aucun `raw` de R, vrai ou faux, n'égale un `raw` de S ou de S-réservé : garde sur les deux classes (une fausse égale est exclue, `raw_in_s`), test.
+- **S8 — Mélange réel.** AC8 est renforcé par un test de mélange réel : l'ordre des classes n'est pas trié et la plus longue suite d'une même classe ne dépasse pas celle d'une permutation de graine fixée de même composition (borne calculée dans le test), en plus du critère des 4 premiers.
+- **S9 — « Serrée ».** Au sens de `methodes-et-lots.md` amendé ; D8 ne dépend que de la décision (comparatif ou plafond), « serrée » ne change que le rapport.
+- **S10 — Tirage par `/scan` du jour.** Les vraies de la Cour de cassation sont tirées par `/scan` du **jour cité** de la fausse (`date_start = date_end`, comme 1-12), plutôt que par chambre × année ; si le jour n'offre aucune vraie de la strate, les jours voisins de même type de jour dans la même année sont essayés dans un ordre fixé (écart journalisé). Coût mesuré en phase A sur un échantillon et projeté pour 300 fausses ; arrêt propre (code 3, rien d'écrit) et reprise par le cache si le quota tombe.
+- **S11 — Arrêt de MiMo.** MiMo est arrêté sur R après trois séances de suite finies en troncature (comptées entre tentatives), consigné.
+- **S12 — Non-altération (CRPA L. 322-1).** Les vraies gardent dans `sources.jsonl` leur numéro et leurs champs d'origine (`origin` : juridiction, chambre ou formation, date, numéro tels que la base les donne, sans texte ni nom) ; le `raw` n'en est qu'une mise en forme.
+- **S13 — Vigilance de la revue de 1-12.** Le numéro nu du CE n'est reconnu qu'après une ponctuation ; aucune conséquence pour 1-13, qui part du classement.
+
 ## D1 — Phases et garde-fous
 
 La story se déroule en deux phases sur `feat/1-13-jeu-r`.
@@ -158,7 +176,7 @@ Tout ce qui précède est commun aux deux issues : même jeu R, même descriptio
 
 | | **Comparatif** (p_d1 ≥ 30 %) | **Mesure de plafond** (p_d1 < 30 %) |
 |---|---|---|
-| Sonnet 5.5 | B, A-programme 10⁵, A-littéral 10⁴ : **3 tentatives** (graines 0, 1, 2), 9 séances | mêmes cases, **1 tentative** (graine 0), 3 séances |
+| Sonnet 5.5 | B, A-programme 10⁵, A-littéral 10⁴ : **3 tentatives** (graines 0, 1, 2), 9 séances | mêmes cases, **3 tentatives** (graines 0, 1, 2), 9 séances (S2) |
 | MiMo | B, 3 tentatives (si point 2 accepté) | aucune séance |
 | Témoins | identiques (D9) | identiques (D9) |
 | S → R | identique (D10) | identique (D10) |
@@ -301,6 +319,8 @@ Lot 1 : 1,27 $ facturés au registre avant 1-13 (78 clôtures) ; après 1-13, au
 - R en cours d'appel ; R réservé non publié (lot ultérieur).
 
 ## Points qui reviennent à Anaël
+
+Tranchés le 2026-11-07 par l'orchestrateur (S3) : défauts retenus pour 1, 2, 5 et 6, 3 tentatives pour 3, amendements rédigés dans la PR pour 4.
 
 1. **Fenêtre de R.** Par défaut, les incohérentes antérieures à la fenêtre sont exclues (sinon l'année trahit la classe) ; R ne mesure alors que des hallucinations datées dans la fenêtre. Option : les garder, avec des vraies de même année tirées de Judilibre avant 1989 et de JADE (1,2 Go) pour le Conseil d'État avant le 30 septembre 2021 ; leur absence ne serait établie que par l'incohérence.
 2. **MiMo sur R.** Par défaut, B seulement, 3 tentatives en comparatif, aucune en plafond, arrêt après trois troncatures. Option : aucune séance MiMo sur R.
