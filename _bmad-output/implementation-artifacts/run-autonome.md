@@ -392,3 +392,6 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-07 15:02 · 1.12 · CI · verte trois OS · bbc3b23
 - 2026-11-07 15:02 · 1.12 · fusion · #30 fusionnée (porte R : comparatif, p_d1 0,68, réserve forte) · 890e19a
 - 2026-11-07 15:02 · 1.13 · dev · lancé, phase B (dev-story Opus, worktree 1-13) : merge de main, construire, jeu R figé, plancher, séances comparatif (Sonnet 9, MiMo B 3), témoins, évaluations, rassemblement, publication à blanc · 890e19a
+- 2026-11-07 15:14 · 1.13 · dev · phase B : main fusionnée (24c0073) ; correctif hors plan à relire (2937aff : juridiction héritée reprise du classement, motif span_context) ; construire sur le classement du tour 1 : 1 099 unités → 140 après exclusions → **F = 66** après appariement (74 no_real_in_stratum : t10 27, c00 21, t05 16, t12 5…) ; 60 des 66 en c00, p_R ≈ 0,09 contre p_d1 0,675 ; rien écrit, 0 $ · 0fe12fd
+- 2026-11-07 15:14 · 1.13 · blocked · seuil de 80 fausses non atteint (point 6) : décision à Anaël ; cause : appariement sur la classe d'écart du numéro (none pour un numéro malformé, qu'aucune vraie n'a) et sur la formation, qui vide les incohérentes · 0fe12fd
+- 2026-11-07 15:14 · 1.13 · attente humaine · question posée à Anaël (relâcher l'appariement, accepter R sous le seuil, ou R hors lot 1) · 0fe12fd
