@@ -406,3 +406,7 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-07 16:38 · 1.13 · dev · jeu R figé (F = 107, corpus au 2026-11-07) ; séances Sonnet en cours (tentative 1 : B, A-programme, A-littéral) · 23bcf86
 - 2026-11-07 18:10 · 1.13 · dev · fini : 12 séances sur 12 gelées sans coupure (Sonnet B 0,724 ×3, A-programme 0,684–0,695, A-littéral 0,563–0,690, MiMo B 0,718–0,741 ; plafond 0,724) ; pas de C, F ni « même réseau » sur R (D5, D9) ; S → R : B 0,724, A-programme ~0,69, C/F 0,43–0,66 ; publication à blanc sans refus (3 refus r_attribution_missing avec NOTICE vide) ; facturé 0,456 $ (lot 1 : 1,730 $) ; alertes pour 1-14b : MiMo B t2 (13 c00 sur 48), fragment_overlap Sonnet B t2 et t3 · 1a0b916
 - 2026-11-07 18:10 · 1.13 · second-avis · lancé sur 23bcf86..1a0b916 (R_CORPUS_DATE, tests réalignés, compte rendu) ; plafond de 3 passes de reviewer atteint · 1a0b916
+- 2026-11-07 18:19 · 1.13 · second-avis · 0 high ; 2 medium (plafond MiMo cité sans sa source S3, « ni C ni F sur R » ambigu face au S → R), 2 low (found_at_build exactement 0, chemins Windows du poste) ; chiffres, ledger et tests revérifiés · 1a0b916
+- 2026-11-07 18:19 · 1.13 · review · plafond de 3 passes atteint : 2 medium et 1 low corrigés par l'orchestrateur (texte seul), chemins du poste laissés (déjà dans la spec de 1-14 sur main) · e1e142a
+- 2026-11-07 18:19 · 1.13 · CI · verte sur les trois OS (PR #31) · e1e142a
+- 2026-11-07 18:19 · 1.13 · fusion · #31 fusionnée, MERGED vérifié · 08b9ff8
