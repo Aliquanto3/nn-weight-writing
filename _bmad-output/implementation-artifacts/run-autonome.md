@@ -383,3 +383,12 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-07 14:47 · 1.12 · décision · porte R (une fois, 14:47) : p_d1 = 0,68 [0,63 ; 0,72] sur 437 → **comparatif**, non serrée ; réserve forte (contrôle de qualité en échec après le tour de correction, D7 : décision prise et notification à Anaël) ; p_window 0,59 [0,54 ; 0,64] ; cc 0,58 [0,52 ; 0,64], CE 0,86 ; sans une famille : 0,60 à 0,81 ; fausses absences 0/30 ; config/r_gate.toml écrit · ab8e60d
 - 2026-11-07 14:47 · 1.12 · attente humaine · notification à Anaël : réserve forte sur la porte (D7, second échec) ; le run continue sur « comparatif » · ab8e60d
 - 2026-11-07 14:48 · 1.12 · dev · lancé, clôture : p du tour 0 publié à part, compte rendu, r_gate.toml, fusion de main par merge commit et spine (dev-story Opus, worktree 1-12) · ab8e60d
+- 2026-11-07 14:54 · 1.12 · dev · clôture finie : p tour 0 = p_d1 = 0,653 [0,599 ; 0,703] sur 320 (publié à part) ; compte rendu et r_gate.toml commités (7c62ab0) ; biais de la réserve : exclues à tort plutôt incohérentes, p plutôt sous-estimé ; bascule seulement avec ≥ 547 cohérentes absentes de plus ; main fusionnée sans conflit (spine AD-18 + CAP-10 → r_gate.toml), publish.toml intact · 566cfb4
+- 2026-11-07 14:54 · 1.12 · second-avis · lancé sur le compte rendu (chiffres contre resume.json, fuites D8) · 566cfb4
+- 2026-11-07 14:57 · 1.12 · CI · rouge sur macOS seul : test_generer_consigne_erreur_500 (venu de 1-12a) instable, serveur de test sans Content-Length ; vert sur main à 47708ba · 566cfb4
+- 2026-11-07 14:57 · 1.12 · second-avis · compte rendu : chiffres, SHA et sha256 concordants, 547 exact ; 1 high (nom d'affaire publié, D8), 2 medium (même nom dans la spec ; direction du biais sur-affirmée), 4 low · 566cfb4
+- 2026-11-07 14:57 · 1.12 · dev · lancé, correctifs (test macOS, compte rendu) (dev-story Sonnet) · 566cfb4
+- 2026-11-07 15:02 · 1.12 · dev · correctifs : test macOS (Content-Length, lecture du corps robuste, 10/10), compte rendu (nom d'affaire retiré, direction du biais non établie, brut et net, R-H2 seule, définitions, CE non indépendant) · bbc3b23
+- 2026-11-07 15:02 · 1.12 · CI · verte trois OS · bbc3b23
+- 2026-11-07 15:02 · 1.12 · fusion · #30 fusionnée (porte R : comparatif, p_d1 0,68, réserve forte) · 890e19a
+- 2026-11-07 15:02 · 1.13 · dev · lancé, phase B (dev-story Opus, worktree 1-13) : merge de main, construire, jeu R figé, plancher, séances comparatif (Sonnet 9, MiMo B 3), témoins, évaluations, rassemblement, publication à blanc · 890e19a
