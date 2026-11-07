@@ -321,16 +321,16 @@ def test_match_reals_follows_fakes():
         assert year_gap_class(r.jurisdiction, r.day.year, r.number) == year_gap_class(
             f.jurisdiction, f.year, f.number
         )
-        if f.future:
-            assert r.day.year == pair.notes["year_drawn"] != f.year
-            assert r.day.year in {g.year for g in fakes if not g.future and g.jurisdiction == "cc"}
+        if f.future:  # A1 : année la plus proche dans la fenêtre, type de jour libre
+            assert r.day.year == pair.notes["year_nearest"] == 2026
+            assert pair.notes["unmatched_criteria"] == ["day_kind"]
         else:
             assert r.day.year == f.year
             assert day_kind(r.day) == day_kind(f.valid_date)
         if f.formation_exists:
             assert r.formation == f.formation
-        else:
-            assert r.formation == pair.notes["formation_drawn"] in {"civ. 1re", "soc.", "crim."}
+        else:  # A1 : formation libre (R-O1), juridiction gardée
+            assert pair.notes["unmatched_criteria"] == ["formation"]
         assert r.day <= CORPUS
     assert len({p.real.raw for p in pairs}) == 30
 
@@ -377,11 +377,71 @@ def test_neighbour_days_and_empty_stratum():
         [sunday, impossible], pool, seed=0, windows=WINDOWS, corpus_date=CORPUS
     )
     assert unmatched == ["r-u00001"]
-    sundays = [d for d in queried if d.year == 2015 and d.month <= 4 and d.weekday() == 6]
-    assert len([d for d in queried if day_kind(d) == "dimanche_ou_ferie"]) == 15
-    assert sundays and all(day_kind(d) != "ouvre" for d in queried[:15])
+    # A1 : t12, type de jour libre ; les 15 jours les plus proches, de tout type
+    assert sorted(queried[:15]) == [date(2015, 3, 8 + k) for k in range(15)]
+    assert {day_kind(d) for d in queried[:15]} == {"ouvre", "samedi", "dimanche_ou_ferie"}
     (pair,) = pairs
     assert pair.fake.unit_id == "r-u00002" and pair.notes["day_offset"] == -2  # 28 -> 26 février
+
+
+def _a1_pool(day_reals):
+    """Base en mémoire : `day_reals` = {jour: [(formation, numéro)]}."""
+
+    def pool(jurisdiction, day):
+        return [real("cc", f, day, n) for f, n in day_reals.get(day, [])]
+
+    return pool
+
+
+def test_a1_number_none_not_matched_on_gap():
+    malformed = fake("r-u00001", "cc", "soc.", 2015, 3, 12, "1410001", rules=("R-F1",))
+    assert year_gap_class("cc", 2015, malformed.number) == "none" and not malformed.match_gap
+    pool = _a1_pool({date(2015, 3, 12): [("soc.", "14-20.001")]})
+    (pair,), unmatched = match_reals([malformed], pool, seed=0, windows=WINDOWS, corpus_date=CORPUS)
+    assert unmatched == [] and pair.real.number == "14-20.001"
+    assert pair.notes["unmatched_criteria"] == ["year_gap"]
+    # une règle de numéro sur un numéro bien formé (t01) libère aussi l'écart
+    after = fake("r-u00002", "cc", "soc.", 2015, 3, 12, "16-10.002", rules=("R-H1",))
+    pool = _a1_pool({date(2015, 3, 12): [("soc.", "13-20.002")]})
+    (pair,), _ = match_reals([after], pool, seed=0, windows=WINDOWS, corpus_date=CORPUS)
+    assert year_gap_class("cc", 2015, pair.real.number) == "2"
+    assert year_gap_class("cc", 2015, after.number) == "0"
+
+
+def test_a1_incoherent_formation_free_jurisdiction_kept():
+    chamber = fake("r-u00001", "cc", "civ. 4e", 2015, 3, 12, "14-10.001", rules=("R-O1",))
+    pool = _a1_pool({date(2015, 3, 12): [("crim.", "14-30.001")]})
+    (pair,), unmatched = match_reals([chamber], pool, seed=0, windows=WINDOWS, corpus_date=CORPUS)
+    assert unmatched == [] and pair.real.formation == "crim." and pair.real.jurisdiction == "cc"
+    assert pair.notes["unmatched_criteria"] == ["formation"]
+
+
+def test_a1_t12_day_kind_free_year_kept():
+    sunday = fake("r-u00001", "cc", "civ. 1re", 2015, 3, 15, "14-10.001", rules=("R-C4",))
+    pool = _a1_pool({date(2015, 3, 16): [("civ. 1re", "14-30.001")]})
+    (pair,), unmatched = match_reals([sunday], pool, seed=0, windows=WINDOWS, corpus_date=CORPUS)
+    assert (
+        unmatched == []
+        and pair.real.day == date(2015, 3, 16)
+        and day_kind(pair.real.day) == "ouvre"
+    )
+    assert pair.notes["unmatched_criteria"] == ["day_kind"] and pair.notes["day_offset"] == 1
+
+
+def test_a1_c00_matched_on_every_criterion():
+    c00 = fake("r-u00001", "cc", "civ. 1re", 2015, 3, 12, "14-10.001")
+    assert c00.type_id == "c00" and c00.match_gap and c00.match_day_kind and c00.formation_exists
+    wrong = {
+        date(2015, 3, 12): [("soc.", "14-30.001"), ("civ. 1re", "11-30.002")],  # formation, écart
+        date(2015, 3, 14): [("civ. 1re", "14-30.003")],  # samedi
+    }
+    pairs, unmatched = match_reals(
+        [c00], _a1_pool(wrong), seed=0, windows=WINDOWS, corpus_date=CORPUS
+    )
+    assert pairs == [] and unmatched == ["r-u00001"]
+    good = {**wrong, date(2015, 3, 13): [("civ. 1re", "14-30.004")]}
+    (pair,), _ = match_reals([c00], _a1_pool(good), seed=0, windows=WINDOWS, corpus_date=CORPUS)
+    assert pair.real.number == "14-30.004" and pair.notes["unmatched_criteria"] == []
 
 
 # --- AC7 : découpage -----------------------------------------------------------------------

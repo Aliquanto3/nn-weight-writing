@@ -47,6 +47,9 @@ MAX_DAY_TRIES = 15  # jours interrogés au plus par fausse (le jour visé compri
 GATE_CLASSES = ("incoherent", "coherent_absent")
 FORMATION_RULES = frozenset({"R-O1", "R-O2", "R-O4", "R-O5"})
 FUTURE_RULE = "R-C3"
+# Amendement A1 (Anaël, 2026-11-07) : l'appariement ne porte jamais sur le champ incohérent.
+NUMBER_RULES = frozenset({"R-H1", "R-H2", "R-H3", "R-H4", "R-F1", "R-F2", "R-A1"})
+DATE_RULES = frozenset({"R-C1", "R-C2", "R-C3", "R-C4"})
 COHERENT_TYPE = "c00"
 OTHER_TYPE = "x01"
 REAL_TYPE = "real"
@@ -115,6 +118,18 @@ class FakeRow:
     @property
     def formation_exists(self) -> bool:
         return not set(self.rules) & FORMATION_RULES
+
+    @property
+    def match_gap(self) -> bool:
+        """A1 : classe d'écart appariée sauf numéro incohérent ou non canonisable (`none`)."""
+        return not set(self.rules) & NUMBER_RULES and (
+            year_gap_class(self.jurisdiction, self.year, self.number) != "none"
+        )
+
+    @property
+    def match_day_kind(self) -> bool:
+        """A1 : type de jour apparié sauf date incohérente (impossible, future, t12)."""
+        return not set(self.rules) & DATE_RULES and self.valid_date is not None
 
 
 RealRow = RealCandidate  # une vraie retenue est une candidate tirée (D3)
@@ -389,8 +404,9 @@ def _target_day(fake: FakeRow, year: int) -> date:
     return date(year, fake.month, min(fake.day, last))
 
 
-def _days_around(target: date, kind: str, low: date, high: date) -> list[date]:
-    """Jour visé puis voisins de même type de jour, dans l'année et dans [low, high] (S10)."""
+def _days_around(target: date, kind: str | None, low: date, high: date) -> list[date]:
+    """Jour visé puis voisins de même type de jour (de tout type si `kind` est nul, A1), dans
+    l'année et dans [low, high] (S10)."""
     out: list[date] = []
     first, last = max(low, date(target.year, 1, 1)), min(high, date(target.year, 12, 31))
     if first > last:
@@ -398,20 +414,11 @@ def _days_around(target: date, kind: str, low: date, high: date) -> list[date]:
     start = min(max(target, first), last)
     for offset in range(0, 366):
         for day in (start + timedelta(offset), start - timedelta(offset)) if offset else (start,):
-            if first <= day <= last and day_kind(day) == kind and day not in out:
+            if first <= day <= last and kind in (None, day_kind(day)) and day not in out:
                 out.append(day)
                 if len(out) == MAX_DAY_TRIES:
                     return out
     return out
-
-
-def _formation_pools(fakes: Sequence[FakeRow]) -> dict[tuple[str, str], list[tuple[str, int]]]:
-    counts: dict[tuple[str, str], Counter] = {}
-    for f in fakes:
-        if f.formation_exists:
-            key = (f.jurisdiction, period_of(f.year, f.future))
-            counts.setdefault(key, Counter())[f.formation] += 1
-    return {k: sorted(c.items()) for k, c in counts.items()}
 
 
 def match_reals(
@@ -426,19 +433,16 @@ def match_reals(
     """Une vraie par fausse (ordre des `unit_id`) ; rend les paires et les fausses sans vraie.
 
     Strate d'une fausse : juridiction, jour (le jour cité, sinon un voisin de même type de jour
-    dans la même année), formation (la sienne si elle existe, sinon tirée parmi les formations
-    existantes des fausses de même juridiction et période), classe d'écart d'année du numéro.
-    Tirage uniforme sans remise par `default_rng([seed, 0, i])`.
+    dans la même année), formation, classe d'écart d'année du numéro. Amendement A1 : un critère
+    qui porte le champ incohérent de la fausse n'est pas apparié (type de jour pour une règle de
+    date, formation pour une règle de formation, écart pour une règle de numéro ou un numéro
+    `none`) ; l'année d'une fausse future est la plus proche dans la fenêtre. Tirage uniforme
+    sans remise par `default_rng([seed, 0, i])`.
     """
     ordered = sorted(fakes, key=lambda f: f.unit_id)
     fake_numbers = {(f.jurisdiction, f.number) for f in ordered}
     used = set(forbidden_raws) | {f.raw for f in ordered}
     used_numbers: set[tuple[str, str]] = set()  # numéros des vraies déjà tirées (D5)
-    years_by_jur: dict[str, list[int]] = {}
-    for f in ordered:
-        if not f.future:
-            years_by_jur.setdefault(f.jurisdiction, []).append(f.year)
-    formations = _formation_pools(ordered)
     pairs: list[Pair] = []
     unmatched: list[str] = []
     for i, fake in enumerate(ordered):
@@ -447,22 +451,15 @@ def match_reals(
         high = min(window.end, corpus_date)
         notes: dict = {}
         year = fake.year
-        if fake.future:
-            years = sorted(set(years_by_jur.get(fake.jurisdiction, []))) or [high.year]
-            year = int(years[int(rng.integers(len(years)))])
-            notes["year_drawn"] = year
-        valid = fake.valid_date
-        kind = day_kind(valid) if valid is not None else "ouvre"
+        if year > high.year or year < window.start.year:
+            year = min(max(year, window.start.year), high.year)  # année la plus proche (A1)
+            notes["year_nearest"] = year
+        kind = day_kind(fake.valid_date) if fake.match_day_kind else None
         target = _target_day(fake, year)
         formation = fake.formation if fake.formation_exists else None
-        if formation is None:
-            choices = formations.get((fake.jurisdiction, period_of(fake.year, fake.future)), [])
-            if choices:
-                weights = np.array([n for _, n in choices], dtype=float)
-                pick = int(rng.choice(len(choices), p=weights / weights.sum()))
-                formation = choices[pick][0]
-            notes["formation_drawn"] = formation
-        gap = year_gap_class(fake.jurisdiction, fake.year, fake.number)
+        gap = year_gap_class(fake.jurisdiction, fake.year, fake.number) if fake.match_gap else None
+        free = {"day_kind": kind is None, "formation": formation is None, "year_gap": gap is None}
+        notes["unmatched_criteria"] = [name for name, is_free in free.items() if is_free]
         chosen = None
         for day in _days_around(target, kind, window.start, high):
             candidates = sorted(
@@ -470,7 +467,7 @@ def match_reals(
                     c
                     for c in pool(fake.jurisdiction, day)
                     if (formation is None or c.formation == formation)
-                    and year_gap_class(c.jurisdiction, c.day.year, c.number) == gap
+                    and (gap is None or year_gap_class(c.jurisdiction, c.day.year, c.number) == gap)
                     and c.raw not in used
                     and not any((c.jurisdiction, n) in fake_numbers for n in c.numbers)
                     and not any((c.jurisdiction, n) in used_numbers for n in c.numbers)

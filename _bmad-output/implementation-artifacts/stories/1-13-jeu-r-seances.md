@@ -29,12 +29,12 @@ Références : SPEC.md (CAP-7, CAP-11, CAP-12) ; `jeux-de-donnees.md` (R) ; `met
 
 Prises par l'orchestrateur le 2026-11-07, **avant la porte de 1-12**, et non revues après. Elles priment sur les sections D1 à D12 et les critères ci-dessous là où elles les contredisent.
 
-- **S1 — Écart d'année du numéro.** Les vraies sont appariées aussi sur l'écart entre l'année de la décision et l'année du pourvoi ou de la requête lue dans le numéro (classes `0`, `1`, `2`, `3+`, et `none` pour un numéro sans année). La distribution de cet écart est publiée par classe (`dataset.json`, `year_gap`). Deux témoins triviaux sont entraînés sur l'entraînement de R et évalués sur son réservé : une régression logistique sur l'écart seul, une autre sur la longueur du `raw` seule ; leurs exactitudes réservées sont publiées comme **plancher d'indice** (une méthode qui ne fait pas mieux n'a rien appris au-delà de ces indices).
+- **S1 — Écart d'année du numéro** (amendé par A1 : pas d'appariement sur l'écart pour un numéro `none` ou une règle de numéro). Les vraies sont appariées aussi sur l'écart entre l'année de la décision et l'année du pourvoi ou de la requête lue dans le numéro (classes `0`, `1`, `2`, `3+`, et `none` pour un numéro sans année). La distribution de cet écart est publiée par classe (`dataset.json`, `year_gap`). Deux témoins triviaux sont entraînés sur l'entraînement de R et évalués sur son réservé : une régression logistique sur l'écart seul, une autre sur la longueur du `raw` seule ; leurs exactitudes réservées sont publiées comme **plancher d'indice** (une méthode qui ne fait pas mieux n'a rien appris au-delà de ces indices).
 - **S2 — Trois tentatives par case dans les deux issues.** Comme au lot 1 (`methodes-et-lots.md`) : la colonne « mesure de plafond » de D8 passe de 3 à **9 séances Sonnet** (graines 0, 1, 2). Seule la lecture change entre les issues.
 - **S3 — Points d'Anaël tranchés maintenant.** (1) incohérentes datées avant la fenêtre de couverture exclues (défaut) ; (2) MiMo en B seulement, plafond 2 $ facturés ; (3) 3 tentatives (S2) ; (4) amendements de CAP-7, CAP-11, de la section R de `jeux-de-donnees.md` et d'AD-17 rédigés dans la PR de cette story ; (5) vocabulaire et description de R de D6 ; (6) seuil d'arrêt à 80 fausses.
 - **S4 — R4.** La porte sur p_d1 est déjà amendée dans `methodes-et-lots.md` par la PR d'état de l'orchestrateur : cette story la cite et ne la réécrit pas.
 - **S5 — `corpus_date`.** `corpus_date` = date d'extraction des vraies (jour du tirage Judilibre et de l'index du CE), et non plus la date la plus ancienne de la collecte (D6 remplacé sur ce point). Garde et test : aucune vraie postérieure à `corpus_date` ; une fausse postérieure reste une date future (incohérente).
-- **S6 — Type de jour.** Les vraies sont aussi appariées sur le type de jour de la date (`ouvre`, `samedi`, `dimanche_ou_ferie`). Une fausse sans vraie possible dans sa strate est exclue (`no_real_in_stratum`) et comptée dans l'entonnoir publié.
+- **S6 — Type de jour** (amendé par A1 : pas d'appariement sur le type de jour pour une règle de date). Les vraies sont aussi appariées sur le type de jour de la date (`ouvre`, `samedi`, `dimanche_ou_ferie`). Une fausse sans vraie possible dans sa strate est exclue (`no_real_in_stratum`) et comptée dans l'entonnoir publié.
 - **S7 — Aucun `raw` partagé avec S.** Aucun `raw` de R, vrai ou faux, n'égale un `raw` de S ou de S-réservé : garde sur les deux classes (une fausse égale est exclue, `raw_in_s`), test.
 - **S8 — Mélange réel.** AC8 est renforcé par un test de mélange réel : l'ordre des classes n'est pas trié et la plus longue suite d'une même classe ne dépasse pas celle d'une permutation de graine fixée de même composition (borne calculée dans le test), en plus du critère des 4 premiers.
 - **S9 — « Serrée ».** Au sens de `methodes-et-lots.md` amendé ; D8 ne dépend que de la décision (comparatif ou plafond), « serrée » ne change que le rapport.
@@ -403,3 +403,43 @@ Correctifs de la passe 1 seuls (diff `ba67579..28be85e`), sans rebase.
 - **Refus `too_few_fakes`** : 66 fausses (< 80), rien d'écrit. Entonnoir : 1 099 unités ; `not_in_gate` 662, `not_d1` 277, `span_context` 3, `before_window` 4 (CE), `number_repeated` 13 → 140 retenues (c00 81, t10 29, t05 18, t12 5, t01 2, t03 2, t08, t11, t14 1) ; revérification : 0 trouvée ; `no_real_in_stratum` 74 (cc 70, ce 4 ; t10 27, c00 21, t05 16, t12 5, t01 2, t03, t08, t11 1) → **F = 66, dont 60 `c00`** (p_R ≈ 0,09 contre p_d1 = 0,675).
 - **Cause** : l'appariement de S1 et S6 (jour du même type ± 15 jours, formation, classe d'écart d'année du numéro). Un numéro malformé (t10) a la classe `none`, qu'aucune vraie de la Cour de cassation n'a : toutes les t10 tombent ; t05 et t12 aussi presque toutes. R ne garderait que des cohérentes absentes.
 - **Décision qui revient à Anaël** (point 6) : par exemple ne pas apparier sur l'écart quand la fausse est `none` (ou sur la formation quand elle est tirée), élargir les jours essayés, ou accepter un R de cohérentes absentes sous le seuil. Aucune séance, aucun témoin, aucune évaluation lancés.
+
+## Amendement A1 (Anaël, 2026-11-07)
+
+Décision d'Anaël, prise dans la session principale avant toute séance (aucune séance vue). Elle prime sur S1, S6 et D3 là où elle les contredit.
+
+**Motif.** Avec l'appariement de S1 et S6, `construire` ne retient que 66 fausses, dont 60 `c00` : p_R ≈ 0,09 contre p_d1 = 0,675 (entonnoir de la section « Phase B — arrêt »). L'appariement exigeait de la vraie le champ même qui porte l'incohérence de la fausse : aucune vraie n'a un numéro malformé, un dimanche ou une chambre inexistante.
+
+**Principe.** L'appariement neutralise les variables de nuisance (année, type de jour, formation, écart d'année du numéro) ; il ne porte jamais sur le champ qui porte l'incohérence de la fausse.
+
+- Numéro malformé ou non canonisable (classe d'écart `none`), ou règle déclenchée sur le numéro : pas d'appariement sur la classe d'écart.
+- Règle déclenchée sur la formation, ou formation absente ou inconnue : pas d'appariement sur la formation ; la juridiction reste appariée. Le tirage d'une formation de remplacement (D3, point 2) est supprimé.
+- Règle déclenchée sur la date : pas d'appariement sur le type de jour ; l'année est gardée, sauf si elle est l'incohérence (fausse future, R-C3), auquel cas l'année la plus proche dans la fenêtre (au plus `corpus_date`) remplace le tirage parmi les années des fausses (D3, point 1).
+- Les autres critères restent appariés ; 15 jours essayés au plus (inchangé) ; seuil de 80 fausses maintenu (point 6).
+- Les critères libérés sont notés par paire (`unmatched_criteria`).
+
+**Table règle → critère neutralisé** (grille figée de 1-12, `grid.py`) :
+
+| Règle | Type | Champ de l'incohérence | Critère non apparié |
+|---|---|---|---|
+| R-C1 | t02 | date (jour au-delà du mois) | type de jour (année gardée) |
+| R-C2 | t15 | date (29 février) | type de jour (année gardée) |
+| R-C3 | t06 | date (future) | type de jour ; année la plus proche dans la fenêtre |
+| R-C4 | t12 | date (dimanche, fête) | type de jour (année gardée) |
+| R-H1 | t01 | numéro (pourvoi après la décision) | écart d'année |
+| R-H2 | t08 | numéro (écart ≥ 10 ans) | écart d'année |
+| R-H3, R-H4 | t09, t13 | numéro (cours d'appel, absentes de R) | écart d'année |
+| R-F1 | t10 | numéro (aucun motif, classe `none`) | écart d'année |
+| R-F2 | t11 | numéro (motif d'une autre juridiction) | écart d'année |
+| R-A1 | t14 | numéro (série incompatible avec la chambre) | écart d'année (formation gardée) |
+| R-O1 | t03 | formation (chambre inexistante) | formation |
+| R-O2 | t05 | formation (de l'autre ordre) | formation |
+| R-O3 | t04 | formation (cours d'appel, absentes de R) | — |
+| R-O4 | t07 | formation (renommage de 2016) | formation |
+| R-O5 | x01 | formation (rang hors de [1, 10]) | formation |
+| R-E1 à R-E5 | — | ECLI, hors du `raw` | aucun |
+| aucune | c00 | — | aucun : tous les critères appariés |
+
+Une fausse à plusieurs règles cumule les critères libérés. Le numéro du CE est toujours de classe `none` (vraies comme fausses) : l'écart n'y est jamais apparié, sans effet sur le tirage.
+
+Code : `FakeRow.match_gap`, `FakeRow.match_day_kind`, `NUMBER_RULES`, `DATE_RULES`, `match_reals` (`datasets/legal_r/dataset.py`). Tests : `test_a1_number_none_not_matched_on_gap`, `test_a1_incoherent_formation_free_jurisdiction_kept`, `test_a1_t12_day_kind_free_year_kept`, `test_a1_c00_matched_on_every_criterion`, `test_match_reals_follows_fakes` et `test_neighbour_days_and_empty_stratum` réalignés.
