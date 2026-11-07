@@ -1,7 +1,7 @@
 ---
 story: "1-14"
 title: Mesures, rapport du lot 1 et v0.1.0
-status: ready-for-dev (1-14a) ; en attente de 1-13 (1-14b)
+status: review (1-14a partie 1) ; partie 2 à faire ; en attente de 1-13 (1-14b)
 branch: feat/1-14-mesures-publication
 ---
 
@@ -337,7 +337,7 @@ Ces décisions priment sur le texte ci-dessus quand elles le contredisent.
 - **Q3 — Toute sortie publiée est contrôlée.** Les mêmes contrôles (secret, réservé, R) portent sur `docs/mesures/lot1.{md,json}`, `docs/mesures/decisions-lot1.toml`, puis en 1-14b `docs/rapport-lot1.md`, les notes de release et le billet. Une commande (`nnww publish --check PATH...`) le fait ; `nnww table` l'appelle sur ce qu'il écrit et échoue s'il refuse.
 - **Q4 — Recherche du réservé normalisée.** Chaînes JSON décodées récursivement, échappements Python et JSON décodés, casse et espaces normalisés, puis recherche du `raw` complet normalisé. Tests : double échappement, littéral Python, retour à la ligne.
 - **Q5 — `secret_value`.** Charge `.env` en plus de l'environnement ; liste = les 5 variables ci-dessus + `CLAUDE_CODE_OAUTH_TOKEN` + toute variable d'environnement dont le nom finit par `_KEY`, `_SECRET` ou `_TOKEN`. Affiche le nombre de valeurs contrôlées (jamais les valeurs) ; avertissement si aucune.
-- **Q6 — Décisions et tableau.** Le fichier de décisions est admis (jugements consignés, `invoke_dev_with` de 1-14). Le tableau donne pour chaque case l'agrégat de toutes les séances **et** l'agrégat après décisions, et liste chaque séance exclue ou mise en annexe avec son motif. « Rien d'autre » est remplacé par la liste exacte des entrées : journaux, `run.json`, `eval.json`, `eval-cross-*.json`, `frozen/manifest.json`, `frozen/freeze.json`, le fichier de décisions, `budget/ledger.csv`.
+- **Q6 — Décisions et tableau.** Le fichier de décisions est admis (jugements consignés, `invoke_dev_with` de 1-14). Le tableau donne pour chaque case l'agrégat de toutes les séances **et** l'agrégat après décisions, et liste chaque séance exclue ou mise en annexe avec son motif. « Rien d'autre » est remplacé par la liste exacte des entrées : journaux, `run.json`, `eval.json`, `eval-cross-*.json`, `frozen/manifest.json` (témoins), le fichier de décisions, `budget/ledger.csv`.
 - **Q7 — Moyenne d'exactitude.** Une tentative non gelée (échec de budget, erreur, gel invalide) compte 0 dans la moyenne principale d'exactitude réservée ; la moyenne sur les seules gelées, avec `k/n`, vient en colonne secondaire. (Remplace le point 3 de « Points revenant à Anaël ».)
 - **Q8 — Lisibilité.** Une unité est lisible si son extinction fait baisser l'exactitude sur un type déclaré par son bloc d'au moins 5 points **et** d'au moins le double de la plus forte baisse sur un autre type ; égalité = non lisible. Comptes en entiers, part écrite en fraction exacte. Tests : `forward_masked` sans masque égale `layers.forward` ; un cas intermédiaire. (Remplace la règle « touche surtout le type déclaré ».)
 - **Q9 — Réservé explicite.** Les mesures demandent `--heldout-root` explicite ; aucune lecture implicite de `heldout/` du répertoire courant. Tests existants inchangés dans leur attente.
@@ -345,3 +345,28 @@ Ces décisions priment sur le texte ci-dessus quand elles le contredisent.
 - **Q11 — Chemins refusés.** `publish` refuse aussi tout chemin sous `interne/`, `collecte/` ou `cache/` (contrat de 1-12) et toute collecte brute de 1-12a (non publiée au lot 1).
 - **Q12 — Registre et tentatives.** Le total facturé se compare au plafond de 100 $ du lot sur `billed_usd` ; l'équivalent API (`cost_equiv_usd`) est donné à part. Règle de tentative : la dernière séance gelée d'une tentative compte si elle existe, sinon la dernière.
 - **Q13 — Rebase avec 1-13.** 1-13 ajoute ses commandes à `cli.py` et sa configuration à `config.py` : les ajouts de 1-14 y restent groupés en blocs délimités. Emplacement des artefacts rassemblés : `C:\Users\Utilisateur\nnww-artefacts\` (validé).
+
+## Réalisé : 1-14a, partie 1 (mesures, ablation, `nnww table`, décisions)
+
+Livré : `EvalRecord` v2 (`target`, constantes de fichiers dans `evaluation/schema.py`, réexportées par `verify.py`), `evaluation/measures.py`, `evaluation/ablation.py`, `verify.evaluate(run_dir, heldout_root=None, *, dataset, on)` et `verify.lot_dirs`, `nnww evaluate` étendu, `report/` (`collect`, `decisions`, `table`, `render`), `nnww table`, `docs/mesures/decisions-lot1.toml`, `docs/mesures/lot1.{md,json}`. Tests : `tests/test_evaluation_measures.py`, `tests/test_report_table.py` (aides dans `tests/artefacts.py`) ; `test_evaluation.py` et `test_toy_witnesses.py` passent sans changement (Q9 : sans `--heldout-root`, vérification seule).
+
+Écarts à la spec, assumés :
+
+- `measure` et `measure_cross` rendent `(target, metrics)`. Le nouveau fichier `report/render.py` porte le rendu Markdown (`table.py` garde l'agrégation).
+- Lisibilité (Q8) : `ablation.units[]` porte `declared_drop`, `other_drop` et `legible` en fractions exactes (`"1/20"`) ; `legibility = {units, legible, neutral, score: "k/n" non réduit, rate}`. « Le double » se lit au sens strict : une baisse déclarée égale à 2 × l'autre n'est pas lisible ; 5 points pile est lisible. Une unité hors de tout bloc compte au dénominateur, jamais lisible.
+- Q7 : une tentative en erreur d'évaluation (`metrics.error`) compte 0, comme une non gelée ; une tentative gelée non évaluée rend la moyenne principale indéfinie (et fait échouer `--strict`).
+- Décisions : statut `pending` ajouté (question « à juger », sans effet sur les agrégats, `--strict` échoue) ; section `[[group]]` (clés `task`, `config` pour les séances, `path` pour les témoins), une entrée `[[session]]` primant sur un groupe ; un groupe qui ne vise rien est une erreur, comme un `id` inconnu. `--decisions` vaut par défaut `<out>/decisions-lot<N>.toml` (donc `docs/mesures/…` par défaut, et jamais le fichier réel dans les tests).
+- Le tableau ajoute la colonne « Par graine (correct/n) » aux témoins et au « même réseau », et le compte `correct/n` dans la section Séances, pour recouper les comptes rendus.
+- `lot_dirs` classe un journal illisible parmi les gelées : `evaluate` le refuse alors (`no_freeze_record`) au lieu de le taire.
+
+Vérification sur les artefacts (copie de lecture des worktrees 1-8, 1-8s, 1-10s, 1-10m, 1-11 dans un dossier temporaire, sans `bundle/` ni `eval*.json` ; aucune écriture dans les worktrees) : 190 dossiers évalués (46 séances gelées : 9 + 9 jouet, 28 S ; 144 témoins), 29 non gelées listées, croisée `legal_s → legal_s_reserved:eval` sans refus. Valeurs retrouvées : 2744/4000, 3935/4000 (Fable A-programme 10⁵), 3589 et 3600/4000, 3968/4000 (config `d4523fc4`, effort par défaut), C `legal_s` N = 64 s0 2073/4000, réentraînement s0 3489/4000. Les deux séances `fragment_overlap` de 1-10 sont « à juger ». Coûts : 1,2651 $ facturés (plafond 100 $), 34,5542 $ d'équivalent API ; registre : écart −0,0085 $, 3 lignes sans journal (`live-1-6-*`, `probe-1-2`).
+
+Constats pour 1-14b : `heldout/legal_s/eval` et `heldout/legal_s_reserved/eval` ont les mêmes `examples.jsonl` et `labels.jsonl` (seul `dataset.json` diffère) : l'évaluation croisée S → S-réservé redonne l'exactitude native, avec en plus le groupe des types tenus à l'écart. Plusieurs réentraînements « même réseau » donnent les mêmes comptes (vraisemblablement : même architecture, même graine).
+
+À faire en partie 2 (`nnww publish`, `scripts/rassembler_runs.py`) :
+
+- Q3 : `publish/checks.py` expose les contrôles sur une liste de chemins (`nnww publish --check PATH...`) et `_table` (`cli.py`, bloc table) les appelle sur `lot<N>.md`, `lot<N>.json` et le fichier de décisions avant de rendre 0 ; aujourd'hui `nnww table` n'appelle aucun contrôle.
+- Q1 : amender AD-18 du spine (R2, R6, `system_prompt.md`, `eval-cross-*.json`, `r_tasks`) et les flèches `report → evaluation.schema`, `report → config` (plafond du lot, lu par `config.load_protocol`), `publish → evaluation.schema`.
+- Le test de frontière de `report/` est `test_report_follows_dependency_graph` (`tests/test_report_table.py`) ; `test_report_and_publish_follow_dependency_graph` reste à écrire pour `publish/`.
+- `config.py` et `config/publish.toml` ne sont pas touchés en partie 1 (`PublishConfig`, `r_tasks` : partie 2) ; les ajouts à `cli.py` sont dans des blocs délimités (`# --- evaluate`, `# --- table`) pour le rebase avec 1-13 (Q13).
+- Régénérer `docs/mesures/lot1.{md,json}` sur `C:\Users\Utilisateur\nnww-artefacts\` une fois le rassemblement fait (mêmes octets attendus si les entrées sont les mêmes ; l'empreinte comprend `budget/ledger.csv`).

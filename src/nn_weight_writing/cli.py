@@ -11,17 +11,60 @@ import sys
 from collections.abc import Sequence
 from pathlib import Path
 
+# --- evaluate (story 1-14 : mesures, --lot-dir, évaluation croisée) ---------------------------
+
 
 def _evaluate(args: argparse.Namespace) -> int:
-    from nn_weight_writing.evaluation.verify import EvaluationRefused, evaluate
+    from nn_weight_writing.evaluation.score import run_task
+    from nn_weight_writing.evaluation.verify import EvaluationRefused, evaluate, lot_dirs
 
-    try:
-        out = evaluate(Path(args.run_dir))
-    except EvaluationRefused as exc:
-        print(f"évaluation refusée : {exc.code} ({exc.detail})", file=sys.stderr)
-        return 1
-    print(out)
-    return 0
+    if bool(args.run_dirs) == bool(args.lot_dir):
+        print("evaluate : RUN_DIR ou --lot-dir, l'un des deux seulement", file=sys.stderr)
+        return 2
+    on = None
+    if args.on:
+        task, sep, dataset = args.on.partition(":")
+        if not sep or not task or not dataset:
+            print("--on attend TASK:DATASET", file=sys.stderr)
+            return 2
+        on = (task, dataset)
+    heldout_root = Path(args.heldout_root) if args.heldout_root else None
+    if on and heldout_root is None:
+        print("--on demande --heldout-root", file=sys.stderr)
+        return 2
+    if heldout_root is None:
+        print(
+            "avertissement : sans --heldout-root, vérification seule (metrics vide)",
+            file=sys.stderr,
+        )
+    if args.lot_dir:
+        frozen, unfrozen, baselines = lot_dirs(Path(args.lot_dir))
+        for path in unfrozen:
+            print(f"non gelée : {path.name}", file=sys.stderr)
+        targets = frozen + baselines
+    else:
+        targets = [Path(d) for d in args.run_dirs]
+    status = 0
+    for run_dir in targets:
+        try:
+            if args.from_task and run_task(run_dir) != args.from_task:
+                continue
+            out = evaluate(run_dir, heldout_root, dataset=args.dataset, on=on)
+        except EvaluationRefused as exc:
+            print(
+                f"évaluation refusée : {run_dir.name} : {exc.code} ({exc.detail})", file=sys.stderr
+            )
+            status = 1
+            continue
+        except ValueError as exc:
+            print(f"évaluation refusée : {run_dir.name} : {exc}", file=sys.stderr)
+            status = 1
+            continue
+        print(out)
+    return status
+
+
+# --- fin du bloc evaluate ------------------------------------------------------------------------
 
 
 def _datagen_legal(args: argparse.Namespace) -> int:
@@ -201,12 +244,53 @@ def _ledger_reconcile(args: argparse.Namespace) -> int:
     return 0
 
 
+# --- table (story 1-14) -----------------------------------------------------------------------
+
+
+def _table(args: argparse.Namespace) -> int:
+    from nn_weight_writing.budget.ledger import LEDGER_PATH
+    from nn_weight_writing.report.decisions import DecisionsError
+    from nn_weight_writing.report.table import build, write
+
+    decisions = Path(args.decisions or Path(args.out) / f"decisions-lot{args.lot}.toml")
+    try:
+        result = build(
+            Path(args.root),
+            args.lot,
+            decisions_path=decisions,
+            ledger_path=Path(args.ledger) if args.ledger else LEDGER_PATH,
+        )
+    except DecisionsError as exc:
+        print(f"table refusée : {exc}", file=sys.stderr)
+        return 1
+    except FileNotFoundError as exc:
+        print(f"table refusée : {exc}", file=sys.stderr)
+        return 2
+    for path in write(result, Path(args.out), args.lot):
+        print(path)
+    for issue in result.issues:
+        print(issue, file=sys.stderr)
+    return 1 if args.strict and result.issues else 0
+
+
+# --- fin du bloc table -------------------------------------------------------------------------
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="nnww", description="nn-weight-writing")
     sub = parser.add_subparsers(dest="command", required=True)
-    evaluate = sub.add_parser("evaluate", help="évalue un dossier gelé, hors séance (AD-9)")
-    evaluate.add_argument("run_dir", help="runs/<lot>/<session_id> ou runs/<lot>/train/<run_id>")
+    # --- evaluate (story 1-14) ---
+    evaluate = sub.add_parser("evaluate", help="évalue des dossiers gelés, hors séance (AD-9)")
+    evaluate.add_argument(
+        "run_dirs", nargs="*", help="runs/<lot>/<session_id> ou runs/<lot>/train/<run_id>"
+    )
+    evaluate.add_argument("--lot-dir", help="évalue chaque dossier gelé de runs/<lot>/")
+    evaluate.add_argument("--heldout-root", help="racine des jeux réservés : mesures obligatoires")
+    evaluate.add_argument("--dataset", help="jeu réservé natif, si la tâche en a plusieurs")
+    evaluate.add_argument("--on", help="évaluation croisée TASK:DATASET")
+    evaluate.add_argument("--from-task", help="seulement les réseaux écrits pour cette tâche")
     evaluate.set_defaults(handler=_evaluate)
+    # --- fin evaluate ---
     datagen = sub.add_parser(
         "datagen", help="génère les jeux jouet ou ceux de S et S-réservé (AD-16)"
     )
@@ -267,6 +351,17 @@ def build_parser() -> argparse.ArgumentParser:
     reconcile.add_argument("--runs-dir", help="défaut : runs/")
     reconcile.add_argument("--ledger", help="défaut : budget/ledger.csv")
     reconcile.set_defaults(handler=_ledger_reconcile)
+
+    # --- table (story 1-14) ---
+    table = sub.add_parser("table", help="tableau des mesures d'un lot, depuis les artefacts")
+    table.add_argument("--lot", type=int, required=True)
+    table.add_argument("--root", default=".", help="racine qui contient runs/<lot>/")
+    table.add_argument("--out", default="docs/mesures", help="dossier de lot<N>.md et .json")
+    table.add_argument("--decisions", help="défaut : <out>/decisions-lot<N>.toml")
+    table.add_argument("--ledger", help="défaut : budget/ledger.csv")
+    table.add_argument("--strict", action="store_true", help="code 1 s'il reste un point ouvert")
+    table.set_defaults(handler=_table)
+    # --- fin table ---
     return parser
 
 

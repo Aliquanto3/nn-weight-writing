@@ -1,0 +1,84 @@
+# Décisions du lot 1 (story 1-14) : jugements datés, jamais des mesures.
+# Lu par `nnww table --lot 1` (format : src/nn_weight_writing/report/decisions.py).
+# status = "pending" : question laissée à 1-14b, « à juger » ; `--strict` échoue tant qu'il en reste.
+
+[[session]]
+id = "legal_s-A-program-1e5-fable-5.1-t1-20261106T074549Z"
+status = "pending"
+date = "2026-11-07"
+reason = "à juger en 1-14b : fragment_overlap (2 script_run, 4 fragments) : vocabulaire de format ou recopie d'exemples ?"
+ref = "spec 1-14, jugements à rendre (1-14b)"
+
+[[session]]
+id = "legal_s_reserved-A-program-1e5-sonnet-5.5-t2-20261106T070402Z"
+status = "pending"
+date = "2026-11-07"
+reason = "à juger en 1-14b : fragment_overlap (2 script_run, 4 fragments) : vocabulaire de format ou recopie d'exemples ?"
+ref = "spec 1-14, jugements à rendre (1-14b)"
+
+[[session]]
+id = "legal_s-A-program-1e4-mimo-v2.6-pro-t1-20261106T213133Z"
+status = "pending"
+date = "2026-11-07"
+reason = "à juger en 1-14b : la règle « dernière séance » compte l'essai de l'étape 3 à la place de l'étape 2 (même config, max_tokens non journalisé) : confirmer"
+ref = "spec 1-14, jugements à rendre (1-14b)"
+
+[[group]]
+task = "legal_s"
+config = "d4523fc4"
+status = "pending"
+date = "2026-11-07"
+reason = "à juger en 1-14b : MiMo étape 1 (64000 jetons, effort par défaut) : annexe ou case ?"
+ref = "spec 1-14, jugements à rendre (1-14b)"
+
+[[group]]
+task = "legal_s"
+config = "a52ba2e6"
+status = "pending"
+date = "2026-11-07"
+reason = "à juger en 1-14b : MiMo étape 2 (64000 jetons, effort medium) : annexe ou case ?"
+ref = "spec 1-14, jugements à rendre (1-14b)"
+
+[[group]]
+task = "legal_s_reserved"
+config = "d4523fc4"
+status = "pending"
+date = "2026-11-07"
+reason = "à juger en 1-14b : MiMo étape 1 (64000 jetons, effort par défaut) : annexe ou case ?"
+ref = "spec 1-14, jugements à rendre (1-14b)"
+
+[[group]]
+task = "legal_s_reserved"
+config = "a52ba2e6"
+status = "pending"
+date = "2026-11-07"
+reason = "à juger en 1-14b : MiMo étape 2 (64000 jetons, effort medium) : annexe ou case ?"
+ref = "spec 1-14, jugements à rendre (1-14b)"
+
+[[group]]
+path = "annexe-fields1"
+status = "pending"
+date = "2026-11-07"
+reason = "à juger en 1-14b : F legal.fields@1 de 1-11 : annexe"
+ref = "spec 1-14, jugements à rendre (1-14b)"
+
+[[group]]
+task = "automaton"
+status = "pending"
+date = "2026-11-07"
+reason = "à juger en 1-14b : séances jouet de 1-8 (calibrage, hors conclusions) : annexe ou section à part ?"
+ref = "spec 1-14, jugements à rendre (1-14b)"
+
+[[group]]
+task = "compare"
+status = "pending"
+date = "2026-11-07"
+reason = "à juger en 1-14b : séances jouet de 1-8 (calibrage, hors conclusions) : annexe ou section à part ?"
+ref = "spec 1-14, jugements à rendre (1-14b)"
+
+[[group]]
+task = "parity"
+status = "pending"
+date = "2026-11-07"
+reason = "à juger en 1-14b : séances jouet de 1-8 (calibrage, hors conclusions) : annexe ou section à part ?"
+ref = "spec 1-14, jugements à rendre (1-14b)"

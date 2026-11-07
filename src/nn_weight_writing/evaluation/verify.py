@@ -1,8 +1,9 @@
 """Évaluation hors séance (AD-9) : enregistrement de gel, empreintes, `eval.json`.
 
-Lit le journal sans y écrire. Les mesures sur le jeu réservé arrivent en 1-14 ; ici, la
-commande refuse tout dossier sans gel ou à l'empreinte divergente, puis écrit un
-`eval.json` déterministe (au champ `ts` près).
+Lit le journal sans y écrire. La commande refuse tout dossier sans gel ou à l'empreinte
+divergente, puis écrit un `eval.json` déterministe (au champ `ts` près). Avec une racine de
+jeux réservés explicite (`heldout_root`, décision Q9 de 1-14), il porte les mesures
+(`evaluation/measures.py`) ; sans elle, vérification seule et `metrics` vide.
 """
 
 from __future__ import annotations
@@ -13,15 +14,20 @@ from enum import StrEnum
 from pathlib import Path
 
 from nn_weight_writing import network
-from nn_weight_writing.evaluation.schema import EvalRecord, RunRecord
+from nn_weight_writing.evaluation.schema import (
+    EVAL_CROSS_PREFIX,
+    EVAL_FILE,
+    FROZEN_DIR,
+    JOURNAL_FILE,
+    RUN_FILE,
+    EvalRecord,
+    RunRecord,
+)
 from nn_weight_writing.journal.reader import JournalError, find_last
 from nn_weight_writing.journal.writer import utc_now
 from nn_weight_writing.network import io as netio
 
-JOURNAL_FILE = "journal.jsonl"
-RUN_FILE = "run.json"
-FROZEN_DIR = "frozen"
-EVAL_FILE = "eval.json"
+# JOURNAL_FILE, RUN_FILE, FROZEN_DIR, EVAL_FILE : définis dans schema, importés d ici aussi.
 
 
 class EvalRefusalCode(StrEnum):
@@ -30,6 +36,13 @@ class EvalRefusalCode(StrEnum):
     UNEXPECTED_FILE = "unexpected_file"
     FINGERPRINT_MISMATCH = "fingerprint_mismatch"
     UNLOADABLE = "unloadable"
+    # Mesures sur le jeu réservé (story 1-14).
+    NO_HELDOUT = "no_heldout"
+    AMBIGUOUS_DATASET = "ambiguous_dataset"
+    HELDOUT_FINGERPRINT = "heldout_fingerprint"
+    CROSS_SAME_TASK = "cross_same_task"
+    ENCODER_MISMATCH = "encoder_mismatch"
+    TASK_MISMATCH = "task_mismatch"
 
 
 class EvaluationRefused(Exception):
@@ -83,14 +96,79 @@ def verify_frozen(run_dir: Path) -> tuple[str, dict, str, bool | None]:
     return kind, files, tree, valid
 
 
-def evaluate(run_dir: Path) -> Path:
-    """Vérifie le gel puis écrit `eval.json` à côté du dossier gelé."""
+def cross_file(task: str, dataset: str) -> str:
+    """`eval-cross-<tâche>-<jeu>.json` (noms validés : le tiret sépare sans ambiguïté)."""
+    return f"{EVAL_CROSS_PREFIX}{task}-{dataset}.json"
+
+
+def evaluate(
+    run_dir: Path,
+    heldout_root: Path | None = None,
+    *,
+    dataset: str | None = None,
+    on: tuple[str, str] | None = None,
+) -> Path:
+    """Vérifie le gel puis écrit `eval.json` (ou `eval-cross-*.json` avec `on`) à côté.
+
+    `heldout_root` absent : vérification seule, `metrics` et `target` vides. `on` exige
+    `heldout_root`.
+    """
+    from nn_weight_writing.evaluation import measures
+
     run_dir = Path(run_dir)
     kind, files, tree, valid = verify_frozen(run_dir)
+    target: dict = {}
+    metrics: dict = {}
+    name = EVAL_FILE
+    if on is not None:
+        if heldout_root is None:
+            raise ValueError("évaluation croisée : --heldout-root requis")
+        task, cross_dataset = on
+        heldout_dir = measures.resolve_heldout(heldout_root, task, cross_dataset)
+        target, metrics = measures.measure_cross(run_dir, task, heldout_dir)
+        name = cross_file(task, heldout_dir.name)
+    elif heldout_root is not None:
+        from nn_weight_writing.evaluation.score import run_task
+
+        heldout_dir = measures.resolve_heldout(heldout_root, run_task(run_dir), dataset)
+        target, metrics = measures.measure(run_dir, heldout_dir)
     record = EvalRecord(
-        run=run_dir.name, kind=kind, files=files, tree_sha256=tree, valid=valid, ts=utc_now()
+        run=run_dir.name,
+        kind=kind,
+        files=files,
+        tree_sha256=tree,
+        valid=valid,
+        ts=utc_now(),
+        metrics=_rounded(metrics),
+        target=target,
     )
-    out = run_dir / EVAL_FILE
+    out = run_dir / name
     data = json.dumps(asdict(record), ensure_ascii=False, indent=2, sort_keys=True) + "\n"
     netio.atomic_write_bytes(out, data.encode("utf-8"))
     return out
+
+
+def _rounded(value):
+    """Flottants arrondis à 6 décimales (déterminisme d'AD-9) ; le reste tel quel."""
+    if isinstance(value, float):
+        return round(value, 6)
+    if isinstance(value, dict):
+        return {k: _rounded(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_rounded(v) for v in value]
+    return value
+
+
+def lot_dirs(lot_dir: Path) -> tuple[list[Path], list[Path], list[Path]]:
+    """Dossiers d'un lot (AD-12) : séances gelées, séances non gelées, témoins (`**/train/*`)."""
+    lot_dir = Path(lot_dir)
+    frozen: list[Path] = []
+    unfrozen: list[Path] = []
+    for path in sorted(p for p in lot_dir.iterdir() if (p / JOURNAL_FILE).is_file()):
+        try:
+            record = find_last(path / JOURNAL_FILE, "freeze")
+        except JournalError, json.JSONDecodeError:
+            record = {}  # journal illisible : evaluate le refusera (no_freeze_record)
+        (frozen if record is not None else unfrozen).append(path)
+    baselines = sorted(p.parent for p in lot_dir.glob(f"**/train/*/{RUN_FILE}"))
+    return frozen, unfrozen, baselines
