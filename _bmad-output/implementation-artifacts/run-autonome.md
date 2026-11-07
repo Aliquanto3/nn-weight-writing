@@ -419,3 +419,5 @@ Plafond global : 5 agents actifs à la fois sous Windows (développement, revue 
 - 2026-11-07 18:36 · 1.14b · décision · annexes : MiMo étapes 1 et 2 (groupes d4523fc4, a52ba2e6, et 8e081aa1 non listé par la spec), F legal.fields@1, séances jouet de 1-8 · 6337931
 - 2026-11-07 18:36 · 1.14b · attente humaine · classement de 1-12 non mis en asset : publish --check le refuse (87 reserved_example, fausses du réservé de R) ; publication laissée à Anaël (point 7), release faite sans lui · 6337931
 - 2026-11-07 18:36 · 1.14b · second-avis · lancé sur 08b9ff8..6337931 · 6337931
+- 2026-11-07 18:42 · 1.14b · second-avis · 1 high (« A fait mieux que C à données comparables » contredit la réserve sur les petits N du même rapport), 2 medium (empreinte des entrées du rapport absente de lot1.md, écart MiMo B R 72,8 contre 72,4 % qui ne tient qu'au jugement de t2), 5 low ; réservé de R absent des fichiers suivis, chiffres et reports vérifiés · 6337931
+- 2026-11-07 18:42 · 1.14b · review · passe 1 lancée (reviewer Opus) avec la liste du second avis · 6337931
