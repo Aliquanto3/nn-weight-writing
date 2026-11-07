@@ -355,6 +355,28 @@ Une fausse de R reprend `unit_id` et `canonical` du classement.
 
 **Pour 1-14** : `nnww publish` joint `classement.jsonl` et `resume.json`. Il refuse `data/r/pre_etude/interne/`, `data/r/collecte/` et `data/r/cache/`.
 
+## Décisions après second avis (P0-P12)
+
+Décisions de l'orchestrateur du 2026-11-07, prises avant le gel de la grille et sans avoir vu `data/r/collecte/`. Elles priment sur les sections D1 à D8 et sur les critères d'acceptation là où elles s'en écartent.
+
+- **P0 (Anaël) — porte sur p_d1.** La porte se décide sur **p_d1** : p sans les unités dont toutes les règles sont des règles ECLI (R-E1 à R-E5), puisque l'ECLI est absent du format D1 de R. p, p_window et les autres sensibilités sont publiées sans effet sur la décision. Si p_d1 et p_window tombent de part et d'autre de 30 %, la décision suit p_d1 et devient « serrée », avec réserve. Remplace le point 2 des « Points qui reviennent à Anaël ».
+- **P1 — ordre de la phase B.** `classer` écrit le classement sans calculer aucune part. Le reviewer fait le contrôle de qualité de D7 sur ce classement. Au plus un tour de correction (extracteur, normaliseur ou vérificateur d'existence), consigné. Ensuite seulement, `porte` calcule les parts, une seule fois. `porte` refuse de tourner (code 2) sans le verdict du contrôle consigné dans un fichier daté qui cite le sha256 du classement. Aucune part n'est calculée ni affichée avant ce verdict, pas même par `classer`. Tout le code de la phase B est donc écrit en phase A.
+- **P2 — numéros canonisés.** Le normaliseur canonise les variantes de format sans ambiguïté, fixées ici et testées. Seule une forme non canonisable compte en R-F1. La vérification d'existence porte sur la forme canonique. Remplace la puce « Numéro » de D3 et AC6. Variantes, après remplacement des tirets typographiques (`‐ ‑ ‒ – — −`) par `-` et retrait des espaces :
+  - `cc` : deux chiffres, `-` ou `.` ou rien, deux chiffres, `.` ou rien, trois chiffres → `AA-NN.NNN` (`99-13701`, `9913701`, `99 13.701`, `99 - 13.701`, `99.13.701` → `99-13.701`) ;
+  - `ce` : espaces retirés seulement (`428 409` → `428409`) ; les points restent (`108.243` reste mal formé) ;
+  - `ca` : espaces retirés seulement ; aucun zéro ajouté.
+  Toute autre forme garde son texte sans espaces et la grille la juge.
+- **P3 — partielles.** Les `partial` restent hors du numérateur et du dénominateur (l'unité de R4 demande la clé complète). Le nombre de partielles que la grille trouverait incohérentes est publié à part.
+- **P4 — fenêtre.** La fenêtre de couverture reste celle de R4 : seules les cohérentes hors fenêtre sont non vérifiables. p_window est publié comme sensibilité (voir P0).
+- **P5 — champ de l'étude.** Cour de cassation et Conseil d'État, les deux juridictions du jeu de requêtes figé. Les cours d'appel citées sont `out_of_scope`, comptées et publiées à part ; le rapport ne généralise pas aux cours d'appel. Le client Judilibre garde le code `ca` (1-13 peut s'en servir), mais `classer` ne vérifie aucune cour d'appel. Les règles propres aux cours d'appel (R-H3, R-H4, R-O3) restent dans la grille pour 1-13 et ne jouent pas dans p.
+- **P6 — rappel de la vérification.** 60 vraies références par juridiction (`cc`, `ce`), tirées avec la graine `[0, 5]`, au moins 57 retrouvées (borne basse de Wilson ≈ 0,86) ; sinon, les cohérentes de la juridiction sont `unverifiable` (`verification_unreliable`). Remplace « 20 références, 19 sur 20 » de D4.
+- **P7 — fausses absences.** Le contrôle est fait par le reviewer avec Judilibre `/search` (plein texte, lecture humaine des résultats) et l'open data du CE, pas par Anaël, avant `porte`. S'il trouve plus d'une décision existante parmi 30 « cohérentes absentes », le tour de correction de P1 porte sur le vérificateur. Remplace la dernière phrase de « Fausses absences » (D7) et le point 4 des « Points qui reviennent à Anaël ».
+- **P8 — pas de repli.** Aucun repli sur le miroir Hugging Face en phase B (retire le dernier point de « Fenêtres de couverture », D5). Si plus de 1 % des requêtes d'existence finissent en `api_error` après les nouvelles tentatives prévues, `classer` s'arrête sans écrire de classement et le dit (code 3).
+- **P9 — clé et journal.** La commande charge la ligne `JUDILIBRE_KEY_ID=` de `--env-file` dans `os.environ` du processus, pour que `redact()` du journal masque la clé dans tout ce que le script écrit. Un test prouve que la valeur n'apparaît dans aucun fichier écrit. Remplace « sans l'exporter dans `os.environ` » (D2).
+- **P10 — contrat avec 1-13.** Le contrat de D8 liste aussi `incoherences`, `RULES`, `GRID_VERSION`, `load_r_facts` et `r_facts_sha256` (dont `disabled_rules`), et `read_collection`. Le refus de `interne/`, `collecte/` et `cache/` par `nnww publish` revient à 1-14a ; 1-12 n'implémente pas `publish`.
+- **P11 — spécificité de toute règle mesurable.** Le seuil de 0,5 % sur les vraies vaut pour toute règle qui peut se mesurer sur des références réelles, pas seulement pour R-E2, R-E4 et R-E5 : `mesurer-base` passe toutes les règles sur toutes les vraies. Une règle sans aucun contrôle sur le réel est retirée ou justifiée par écrit dans la spec avant le gel.
+- **P12 — emplacement de la décision.** La décision va dans `config/r_gate.toml`, pas dans `protocol.toml`. La table « Capability → Architecture » du spine est amendée dans la PR de 1-12. Règle le point 3 des « Points qui reviennent à Anaël ».
+
 ## Critères d'acceptation
 
 **AC1 — sha256 avant lecture.** Given une collecte dont `collecte.jsonl` diffère d'un octet de son manifeste, ou un manifeste d'empreinte autre que `--manifeste-sha256`, When `read_collection` ou `pre_etude_r.py classer`, Then `CollectionError` ou code 2, avant qu'une ligne soit décodée.
