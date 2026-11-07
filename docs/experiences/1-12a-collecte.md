@@ -26,8 +26,14 @@ nemotron-3-nano:4b 6cc467f05439 (complets dans `manifest.json`).
 - `scripts/collecte/requetes.json` (160 requêtes, figé avant toute génération) :
   `ee1e6749b51edaba9340644c6433fdc50fb59cbadfeaa5095b066f9f1c36efb4`
 - `pilote.jsonl` : `b4a03eaf2100dd12b2768757276e2b7e861331a83d1f9b2d6016e8d9926d2392`
-- `collecte.jsonl` : `2fffdf02a6a2b1672059f8e339c61e56e5d84db31875ca3ab9697c8997c9f999`
-- `manifest.json` : `2f64eb8fc5113ac8f7fda2c7f868a0447763ae0b830649e6add7a33de76462be`
+- Noyau seul (état figé du 2026-11-07, conservé dans `manifest-noyau.json`) : `collecte.jsonl`
+  `2fffdf02a6a2b1672059f8e339c61e56e5d84db31875ca3ab9697c8997c9f999` (800 lignes), `manifest.json`
+  `2f64eb8fc5113ac8f7fda2c7f868a0447763ae0b830649e6add7a33de76462be`.
+- État final, noyau + réserve (voir « Réserve ») : `collecte.jsonl`
+  `5aae29d69b568ba97243b83552aec1a0236a98853e033c0cf8b4506e309c9b73` (1 600 lignes, 4 051 136
+  octets) ; `manifest.json`
+  `32434a5fd9a55de06226cfa4a1d7e10c910c9ff6a17870f5f9f80c6dc48e56b8`. Les 800 premières lignes sont
+  celles du noyau, inchangées (même sha256 sur les 2 012 985 premiers octets).
 
 ## Requêtes
 
@@ -89,11 +95,73 @@ Comptes du compteur grossier (générations ; motifs ; distincts ; part distinct
 Le rendement réel (574 motifs distincts tous types confondus, dates comprises) est inférieur à
 l'estimation du pilote (1 280) : la part distincte baisse avec le nombre de générations et le pilote
 surestimait les motifs par génération. La règle a été appliquée sans retouche ; le noyau a été
-retenu, et la réserve (800 générations de plus, ~2 h) n'a pas été collectée. Les 574 distincts
+retenu. La réserve a ensuite été collectée sur décision d'Anaël (section suivante). Les 574 distincts
 mélangent pourvois, numéros de requête, ECLI, « Cass. … chambre » et dates : le nombre de références
 complètes (juridiction, numéro, date) sera connu à l'extraction de 1-12, probablement inférieur à
 600. À décider par l'orchestrateur : la consigne interdit une collecte supplémentaire après
 mesure de p, mais n'a pas prévu ce cas pour la taille.
+
+## Réserve (décision d'Anaël)
+
+**Motif.** La règle de taille a choisi le noyau, mais son estimation était trop haute (574 motifs
+distincts au lieu de 1 280). Le 2026-11-07, Anaël a décidé de collecter aussi la réserve (les 80
+requêtes `ensemble: reserve` de `requetes.json`, sha256 inchangé `ee1e6749…6efb4`) × les mêmes 10
+modèles, mêmes réglages. **C'est un écart à la règle de taille pré-enregistrée**, décidé sur le
+rendement seul : aucune classification ni aucune part n'avait été calculée. L'état figé du noyau
+reste dans `manifest-noyau.json`.
+
+**Déroulé.** 800 générations de plus, environ 1 h 45 de mur (6 284 s, sur la seconde exécution).
+`manifest.json` porte désormais `ensemble: tout`, le motif de l'écart et `manifest_noyau`. 6
+nouvelles erreurs HTTP 500 déterministes, toutes nemotron-3-nano:4b, consignées comme pour le noyau
+(`done_reason: "error"`). Total : 1 600 générations, `done_reason` 960 `length`, 630 `stop`,
+10 `error` (4 du noyau + 6 de la réserve).
+
+**Incident.** Un premier lancement, sans `--sortie`, a écrit dans `data/r/collecte/` du worktree
+(le script ne voyait pas le noyau figé) et a regénéré qwen3.5:0.8b : 81 lignes du noyau + 80 de la
+réserve. Arrêté, fichier écarté (hors dépôt, jamais utilisé). Contrôle de reproductibilité gratuit
+(`temperature 0`, `seed 0`) : les 81 lignes du noyau regénérées ont une réponse et un `done_reason`
+identiques à l'octet à celles du fichier figé, 0 différence. La collecte retenue est la seconde
+exécution, avec `--sortie` sur le dépôt principal ; les 80 lignes de réserve de qwen3.5:0.8b y ont
+été regénérées.
+
+Comptes de la réserve (compteur grossier ; les distincts sont comptés au sein de la réserve) :
+
+| Modèle | gén. | motifs | distincts | part | sans motif |
+|---|---|---|---|---|---|
+| qwen3.5:0.8b | 80 | 123 | 74 | 0,60 | 34 |
+| qwen3.5:2b | 80 | 145 | 90 | 0,62 | 32 |
+| qwen3.5:4b | 80 | 96 | 62 | 0,65 | 31 |
+| gemma4:e2b-it-qat | 80 | 19 | 8 | 0,42 | 67 |
+| gemma4:e4b-it-qat | 80 | 48 | 16 | 0,33 | 55 |
+| ministral-3:3b | 80 | 260 | 143 | 0,55 | 19 |
+| phi4-mini:3.8b | 80 | 40 | 27 | 0,68 | 57 |
+| granite4.2:3b | 80 | 167 | 69 | 0,41 | 26 |
+| lfm3:1.7b-q4_K_M | 80 | 140 | 80 | 0,57 | 16 |
+| nemotron-3-nano:4b | 80 | 251 | 69 | 0,27 | 18 |
+| Cour de cassation | 400 | 700 | 326 | 0,47 | 173 |
+| Conseil d'État | 400 | 589 | 298 | 0,51 | 182 |
+| Réserve | 800 | 1 289 | 574 | 0,45 | 355 |
+
+Total noyau + réserve (distincts sur l'ensemble) :
+
+| Modèle | gén. | motifs | distincts | part | sans motif | erreurs |
+|---|---|---|---|---|---|---|
+| qwen3.5:0.8b | 160 | 225 | 130 | 0,58 | 68 | 0 |
+| qwen3.5:2b | 160 | 292 | 143 | 0,49 | 65 | 0 |
+| qwen3.5:4b | 160 | 203 | 115 | 0,57 | 57 | 0 |
+| gemma4:e2b-it-qat | 160 | 55 | 15 | 0,27 | 128 | 0 |
+| gemma4:e4b-it-qat | 160 | 88 | 22 | 0,25 | 111 | 0 |
+| ministral-3:3b | 160 | 490 | 243 | 0,50 | 38 | 0 |
+| phi4-mini:3.8b | 160 | 158 | 70 | 0,44 | 109 | 0 |
+| granite4.2:3b | 160 | 315 | 111 | 0,35 | 58 | 0 |
+| lfm3:1.7b-q4_K_M | 160 | 271 | 128 | 0,47 | 38 | 0 |
+| nemotron-3-nano:4b | 160 | 640 | 129 | 0,20 | 29 | 10 |
+| Cour de cassation | 800 | 1 593 | 564 | 0,35 | 337 | |
+| Conseil d'État | 800 | 1 144 | 534 | 0,47 | 364 | |
+| Total | 1 600 | 2 737 | 1 007 | 0,37 | 701 | 10 |
+
+Le nombre de références complètes reste à mesurer à l'extraction de 1-12 (les 1 007 distincts
+mélangent toujours pourvois, numéros, ECLI, « Cass. … chambre » et dates).
 
 ## Compteur de rendement : grossier
 
@@ -108,7 +176,7 @@ références de décisions, et il peut rater des formes inhabituelles.
 - Compteur grossier (ci-dessus) ; le rendement en références complètes reste à mesurer.
 - Licences des sorties : non relues modèle par modèle.
 - Noms de parties inventés présents dans le brut, à retirer par le normaliseur de 1-12/1-13.
-- 482 réponses sur 800 tronquées à 512 tokens (`length`) : une référence peut être coupée.
+- 960 réponses sur 1 600 tronquées (482 sur 800 pour le noyau seul) à 512 tokens (`length`) : une référence peut être coupée.
 - `num_predict` 512 et mêmes réglages pour tous ; les modèles à raisonnement sont en `think: false`.
 - Le pilote a été lancé avec la version initiale du script (sans gestion de l'erreur 500) ; il n'a
   eu aucune erreur.
