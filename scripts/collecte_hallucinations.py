@@ -20,6 +20,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import http.client
 import json
 import os
 import re
@@ -283,8 +284,9 @@ def generer(modele: str, prompt: str) -> dict:
             # une génération sans réponse plutôt que de bloquer la collecte.
             if e.code == 500 and essai == 2:
                 try:
-                    msg = json.loads(e.read().decode("utf-8")).get("error", "")
-                except ValueError, OSError:
+                    donnees = json.loads(e.read().decode("utf-8"))
+                    msg = donnees.get("error", "") if isinstance(donnees, dict) else ""
+                except ValueError, OSError, http.client.HTTPException:
                     msg = ""
                 return {"error": msg or "HTTP 500", "done_reason": "error"}
             if essai == 2:

@@ -4,6 +4,8 @@ Phase A (méthode et faits de la base réelle) et phase B (classement, contrôle
 
 ## Références
 
+Les renvois P0-P12, D1-D8 et E15 sont des sections de la spec de story citée ci-dessous. ECLI : identifiant européen de jurisprudence. SLM : petit modèle de langage. p : part d'incohérentes parmi les références vérifiables ; p_d1 : la même part sans les unités dont toutes les règles sont des règles ECLI, celle qui décide de la porte. Intervalle de Wilson : intervalle de confiance à 95 % d'une proportion, adapté aux petits effectifs.
+
 - Spec (pré-enregistrement) : `_bmad-output/implementation-artifacts/stories/1-12-pre-etude-r.md`, commit `9e05ec1`, décisions P0-P12 reportées en `0aa98d8`.
 - Spec à la porte : même fichier au commit `ab8e60d` (`spec_commit` de `config/r_gate.toml`). Ce commit ajoute la note E15 du tour de correction, sans changer ni règle, ni seuil, ni fenêtre.
 - Commit « grille figée » initial : `1a672a13ebaf693865998707db729a098500c3a8` (tour 0). Code corrigé par le tour de correction : `ab8e60d225b28201cf87d114d0ef87e7465f968b` (tour 1 et porte, `grid_commit` de `config/r_gate.toml`). `classer` refuse de tourner sur un autre `HEAD` ou sur un arbre modifié.
@@ -31,7 +33,7 @@ Phase A (méthode et faits de la base réelle) et phase B (classement, contrôle
 
 Écrits dans `src/nn_weight_writing/datasets/legal_r/r_facts.toml` (`status = "sample"`).
 
-**Échantillons.** Cour de cassation : `/scan` abrégé, `date_type=creation`, 12 lots mensuels de 84 pour 2005, 2012, 2019 et 2024 (3 862 décisions, des mois en ont moins de 84). Cours d'appel : arrêts (`type=arret`) de 2023 et 2025, mêmes lots (2 016). Conseil d'État : les 40 134 décisions de l'index. Champs de la version abrégée de `/scan` : `chamber`, `decision_date`, `ecli`, `formation`, `id`, `jurisdiction`, `location`, `number`, `numbers`, `publication`, `type` (ni texte, ni résumé ; pas d'`update_date`). Le test `live` confirme Perruche (`cc`, `pl`, 2000-11-17, `99-13.701`) par `/scan` abrégé et l'absence de `99-99.999` par égalité de champ.
+**Échantillons.** Cour de cassation : `/scan` abrégé, `date_type=creation`, 12 lots mensuels de 84 pour 2005, 2012, 2019 et 2024 (3 862 décisions, des mois en ont moins de 84). Cours d'appel : arrêts (`type=arret`) de 2023 et 2025, mêmes lots (2 016). Conseil d'État : les 40 134 décisions de l'index. Champs de la version abrégée de `/scan` : `chamber`, `decision_date`, `ecli`, `formation`, `id`, `jurisdiction`, `location`, `number`, `numbers`, `publication`, `type` (ni texte, ni résumé ; pas d'`update_date`). Le test `live` confirme un arrêt connu de l'assemblée plénière (`cc`, `pl`, 2000-11-17, `99-13.701`) par `/scan` abrégé et l'absence de `99-99.999` par égalité de champ.
 
 **Index du Conseil d'État.** `scripts/index_ce_opendata.py` : 63 archives mensuelles (`CE_202109.zip` à `CE_202611.zip`, `opendata.justice-administrative.fr/DCE/`, Licence Ouverte 2.0), **119,6 Mo téléchargés** (le premier mois mesuré pesait 0,1 Mo ; estimation initiale « quelques centaines de Mo » non atteinte), 40 134 décisions, dernière lecture 2026-11-06. Archives supprimées après lecture. Des XML de janvier 2024 déclarent un préfixe `xsi` non lié : ils sont lus par un repli qui ne garde que les balises de métadonnées.
 
@@ -68,7 +70,7 @@ Ligne de journal écrite par `porte` : `1.12 · décision · porte R : p = 0,68 
 | 0 (avant correction) | `1a672a1` | `5e3769b6…67aa` | 209 | 111 | 0,653 (209/320) | [0,599 ; 0,703] |
 | 1 (après correction, porte) | `ab8e60d` | `527869b5…62de` | 295 | 142 | 0,675 (295/437) | [0,630 ; 0,717] |
 
-Le p du tour 0 est calculé après coup par `compute_gate` du script, sur le classement gardé dans `tour0/`, sans rien écrire dans `resume.json`, `journal.jsonl` ni `config/r_gate.toml`. Il est publié seul et ne change pas la décision. Au tour 0, p_window valait 0,586 [0,526 ; 0,643] sur 268 ; Cour de cassation 0,590 [0,524 ; 0,653] sur 222 ; Conseil d'État 0,796 [0,706 ; 0,864] sur 98. La correction a fait entrer 117 unités de plus au dénominateur, dont 86 incohérentes (74 %).
+Le p du tour 0 est calculé après coup par `compute_gate` du script, sur le classement gardé dans `tour0/`, sans rien écrire dans `resume.json`, `journal.jsonl` ni `config/r_gate.toml`. Il est publié seul et ne change pas la décision. Au tour 0, p_window valait 0,586 [0,526 ; 0,643] sur 268 ; Cour de cassation 0,590 [0,524 ; 0,653] sur 222 ; Conseil d'État 0,796 [0,706 ; 0,864] sur 98. La correction a fait entrer 117 unités de plus au dénominateur, dont 86 incohérentes (74 %) : c'est un solde net. En brut, 124 unités sont entrées, dont 91 incohérentes (73 %), et 7 sont sorties, dont 6 incohérentes.
 
 ### Entonnoir
 
@@ -98,7 +100,7 @@ Tirages par `pre_etude_r.py echantillons`, graine `[0, k]` au tour 0 et `[0, k +
 | Classe des unités du dénominateur (k = 1) | 60 | ≤ 2 erreurs de classe ; ≤ 6 de champ | 2 et 3 : accepté, à la limite |
 | Unités exclues (k = 2) | 20 | ≤ 2 qui auraient dû entrer | 3 : **échec** |
 | Rappel de l'extraction (k = 3) | 30 réponses avec référence, 10 sans | ≤ 3 références complètes manquées | 17 : **échec** |
-| Fausses absences (k = 4) | 30 | ≤ 1 trouvée | 0 : accepté |
+| Fausses absences (k = 4) | 30 | ≤ 1 trouvée | 0 : accepté (CE : non indépendant, voir Limites) |
 | Revue exhaustive (`grid_false_positive`, `partial_match = "formation"`) | 0 unité | jugement unité par unité | vide |
 
 Causes relevées : juridiction donnée dans l'introduction ou un titre, puis bloc « Date / Numéro » ; date écrite avant l'ancre ; tirets typographiques dans un numéro ; date lue dans un numéro. Le tour de correction (E15 de la spec) a porté sur l'extracteur et le normaliseur seulement.
@@ -110,7 +112,7 @@ Causes relevées : juridiction donnée dans l'introduction ou un titre, puis blo
 | Classe des unités du dénominateur (k = 11) | 60 | ≤ 2 erreurs de classe ; ≤ 6 de champ | 1 et 5 : accepté |
 | Unités exclues (k = 12) | 20 | ≤ 2 qui auraient dû entrer | 4, dont 2 à la limite : **échec** |
 | Rappel de l'extraction (k = 13) | 30 réponses avec référence, 10 sans | ≤ 3 références complètes manquées | 4 : **échec** |
-| Fausses absences (k = 14) | 30 | ≤ 1 trouvée | 0 : accepté |
+| Fausses absences (k = 14) | 30 | ≤ 1 trouvée | 0 : accepté (CE : non indépendant, voir Limites) |
 | Revue exhaustive | 0 unité | jugement unité par unité | vide |
 
 ### La réserve forte, expliquée
@@ -121,7 +123,7 @@ Causes relevées : juridiction donnée dans l'introduction ou un titre, puis blo
 2. une référence hérite de la mauvaise juridiction, nommée dans le récit : elle passe `out_of_scope` ;
 3. la formation est écrite sur une ligne de bloc avant la date : elle n'est pas rattachée.
 
-**Sens du biais.** Ces erreurs font surtout sortir du dénominateur des unités qui auraient dû y entrer. D'après le contrôle, ces unités sont surtout des incohérentes, si bien que p est plutôt **sous-estimé** :
+**Sens du biais : non établi.** Les erreurs observées dans les échantillons vont plutôt vers le haut (des unités exclues à tort seraient surtout des incohérentes), mais le rappel n'en dit rien et l'effectif est faible (4 exclusions, dont 2 à la limite, et 1 erreur de classe). La direction n'est donc pas établie. Observations :
 
 - 3 des 4 unités exclues à tort du tirage k = 12 auraient été incohérentes : numéro mal formé (R-F1), formation inexistante (R-O2) ou date tombée un dimanche (R-C4). La quatrième porte un numéro de six chiffres, qui n'a pas la forme d'un numéro de pourvoi ;
 - la seule erreur de classe du tirage k = 11 classe en `coherent_absent` une unité qui, formation rattachée, serait incohérente ;
@@ -133,7 +135,7 @@ Causes relevées : juridiction donnée dans l'introduction ou un titre, puis blo
 - Deux des quatre exclues à tort sont « à la limite » : ce sont des exemples donnés comme fictifs par le modèle, comptés comme au tour 0.
 - Le contrôle ne dit pas combien d'unités manquent. 4 sur 20 donnent une part de 20 % [8 % ; 42 %] des exclues. Rapportée aux 585 exclues `partial` et `out_of_scope`, c'est de l'ordre de 120 unités [50 ; 245]. Ce n'est qu'un ordre de grandeur : le tirage k = 12 porte aussi sur les `unverifiable`.
 
-**Effet sur la décision.** Pour que p_d1 passe sous 30 %, il faudrait ajouter au moins 547 cohérentes absentes sans aucune incohérente (295 / (437 + 547) < 0,30). C'est bien au-delà de la borne haute ci-dessus, et contraire au sens observé. Le chiffre de p est donc incertain de quelques points, plutôt vers le haut, mais la décision « comparatif » n'en dépend pas.
+**Effet sur la décision.** Pour que p_d1 passe sous 30 %, il faudrait ajouter au moins 547 cohérentes absentes sans aucune incohérente (295 / (437 + 547) < 0,30). C'est bien au-delà de la borne haute ci-dessus, et contraire au sens observé. Le chiffre de p est donc incertain, sans direction établie (les erreurs observées vont plutôt vers le haut, le rappel n'en dit rien), mais la décision « comparatif » n'en dépend pas.
 
 ### Sensibilités (sans effet sur la décision)
 
@@ -143,7 +145,7 @@ Causes relevées : juridiction donnée dans l'introduction ou un titre, puis blo
 | p_window (unités datées dans la fenêtre de leur juridiction) | 0,588 [0,536 ; 0,639], n = 345 | même |
 | p_corr (fausses absences) | non calculé : 0 trouvée sur 30 (f = 0) | — |
 | Incohérentes dont la seule règle est de format (R-F1, R-F2) | 80,3 % | — |
-| Incohérentes qui ne tiennent qu'à une règle empirique (R-H2, R-H4) | 0,7 % | — |
+| Incohérentes qui ne tiennent qu'à une règle empirique (R-H2) | 0,7 % (2 sur 295) | — |
 
 **Recouvrement avec les 15 types de Nuss.** Toutes les incohérentes ont au moins un type `tXX` ; 1,4 % portent un des types attestés t01 à t03. Règles violées : R-F1 256, R-C4 35, R-O2 20, R-F2 11, R-H2 3, R-A1 2, R-H1 2, R-O1 2, R-O4 2. Types : t10 256, t12 35, t05 20, t11 11, t08 3, t01 2, t03 2, t07 2, t14 2.
 
