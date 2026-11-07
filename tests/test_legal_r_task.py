@@ -54,12 +54,12 @@ def test_legal_r_task_registered():
     text = spec.description
     assert "exactement une incohérence" not in text and "cour d'appel" not in text.lower()
     assert "CA " not in text and "AA/NNNNN" not in text
-    assert "Le corpus est arrêté au (date d'arrêt du corpus non fixée)." in text
+    assert "Le corpus est arrêté au 7 novembre 2026." in text
     assert "aucune incohérence visible" in text and "petits modèles de langage" in text
     assert "juge des référés" in text and "ch. réunies" in text
     assert text.endswith(task_module.TAIL)
     t06 = next(v for v in spec.vocabulary if v["id"] == "t06")
-    assert "(date d'arrêt du corpus non fixée)" in t06["description"]
+    assert "7 novembre 2026" in t06["description"]
     s_types = {v["id"]: v["description"] for v in get_task("legal_s").vocabulary}
     for entry in spec.vocabulary:
         if entry["id"] not in {"t06", "x01"}:
@@ -99,7 +99,7 @@ def _session_argv(tmp_path, dataset):
     ]
 
 
-def test_legal_r_session_dataset_whitelist(tmp_path, capsys):
+def test_legal_r_session_dataset_whitelist(tmp_path, capsys, monkeypatch):
     examples = tmp_path / "data" / "legal_r" / "session" / "examples.jsonl"
     examples.parent.mkdir(parents=True)
     examples.write_text('{"id": "jr-s00001", "raw": "CE, Sect., 1er mars 2023, n° 470001"}\n')
@@ -107,6 +107,7 @@ def test_legal_r_session_dataset_whitelist(tmp_path, capsys):
     assert "jeu de séance inconnu : eval ; autorisés : session" in capsys.readouterr().err
     assert cli.main(_session_argv(tmp_path, "train")) == 2
     assert "pas un jeu de séance" in capsys.readouterr().err
+    monkeypatch.setattr(task_module, "R_CORPUS_DATE", None)  # garde d'avant le jeu figé
     assert cli.main(_session_argv(tmp_path, "session")) == 2
     assert "R_CORPUS_DATE non fixée" in capsys.readouterr().err
     assert not (tmp_path / "runs").exists() and not (tmp_path / "ledger.csv").exists()

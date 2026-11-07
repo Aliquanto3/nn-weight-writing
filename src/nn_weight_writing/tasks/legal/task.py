@@ -61,7 +61,7 @@ def _vocabulary(
 # --- Jeu R (story 1-13, D6) ---------------------------------------------------------------
 # `R_CORPUS_DATE` : date d'extraction des vraies (S5), posée par le commit « jeu R figé ». Tant
 # qu'elle vaut None, le prompt de R n'existe pas et `nnww session --task legal_r` est refusé.
-R_CORPUS_DATE: date | None = None
+R_CORPUS_DATE: date | None = date(2026, 11, 7)  # jeu R figé (1-13 phase B)
 R_CORPUS_PENDING = "(date d'arrêt du corpus non fixée)"
 
 
