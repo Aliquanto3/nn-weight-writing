@@ -11,6 +11,19 @@ Sources à l'origine du projet et travaux voisins, classés par proximité avec 
 
 Points à vérifier avant d'y croire (détail dans [`PISTES.md`](PISTES.md)) : il manque un témoin à règles écrites en Python ; les données sont peut-être circulaires (le générateur de fausses références et le détecteur partent des mêmes 15 types d'erreurs) ; la ligne de base entraînée a pu être désavantagée (arithmétique sur des dates apprise à partir de caractères bruts) ; l'avantage disparaît quand on entraîne plus longtemps.
 
+### Réseaux écrits de zéro dans « Sparks of Weight-Space Programming » (à exploiter)
+
+Relevé du 2026-11-14. Le [billet du MIT CSAIL](https://rikiyat.github.io/blog/weight-space-programming/) (Takehi, Teoh, Zhang et Khattab, 2026-11-02) n'était cité ici que pour l'édition de Qwen3.5-0.8B (section 3). Deux de ses expériences portent pourtant sur l'écriture de tous les poids, sans gradient, par GPT-6 Astra :
+
+| Expérience | Protocole | Résultat déclaré |
+|---|---|---|
+| Politiques MinAtar | Poids initialisés à 0, une seule réponse, aucun entraînement | Breakout : 517,4 contre 25,3 pour PPO à 500 M de pas. Seaquest : 53,1 contre 88,9. Asterix : 53,2 contre 55,2. |
+| Go 9×9, 1,48 M de poids | Poids initialisés à 0, bac à sable Python, 0 à 50 passes avant (128 parties par passe) | 0 passe : plus de la moitié des parties gagnées contre deux petits PPO. 50 passes : bat un PPO de taille égale entraîné sur 20 M de parties. |
+
+Ce qu'il faudrait en tirer (détail dans [`PISTES.md`](PISTES.md)) : une tâche de contrôle, hors règles textuelles, avec un cas publié où l'écriture perd (Seaquest) ; un axe « budget de passes » (0, 10, 25, 50) ; un point de taille au-delà de 10⁶ paramètres.
+
+Réserves : les auteurs écrivent que leurs comparaisons à PPO ne visent pas l'équité, et qu'il s'agit d'indices de capacité, pas d'une méthode validée. Il n'y a pas de témoin à règles codées. Le billet cite aussi un banc, IWIBench, et des transformers écrits de zéro : non vérifiés, à lire.
+
 ## 2. Programmer des réseaux sans gradient : la lignée « compilation »
 
 - **KBANN**, G. Towell et J. Shavlik, « Knowledge-Based Artificial Neural Networks », *Artificial Intelligence* 70, 1994. Traduit un jeu de règles propositionnelles en poids initiaux, puis affine par rétropropagation. C'est l'ancêtre direct de la méthode « poids écrits puis affinés ».
@@ -24,6 +37,8 @@ La nouveauté de novembre 2026 tient au compilateur : ce n'est plus un outil dé
 
 - **Weight-space programming**, MIT CSAIL, novembre 2026 : un LLM de pointe trouve dans Qwen3.5-0.8B la direction qui fait boucler le raisonnement, puis la retire de 0,016 % des poids. [Billet](https://rikiyat.github.io/blog/weight-space-programming/), [modèle](https://huggingface.co/RikiyaT/Qwen3.5-0.8B-weight-space-programming). C'est la base de [slm-weight-editing](https://github.com/Aliquanto3/slm-weight-editing).
 - **ROME**, K. Meng et al., « Locating and Editing Factual Associations in GPT », 2022, [arXiv:2202.05262](https://arxiv.org/abs/2202.05262), et **MEMIT**, « Mass-Editing Memory in a Transformer », 2022, [arXiv:2210.07229](https://arxiv.org/abs/2210.07229) : éditions de faits en forme close dans les couches MLP.
+
+- **Édition en forme close d'une décision**, embedding.in, « [A decision skill written into the weights](https://www.embedding.in/blog/a-decision-skill-written-into-the-weights) » (relevé du 2026-11-14, à exploiter). Résolution de type MEMIT sur une couche MLP de Qwen3.5-0.8B (262 000 poids), calculée à partir d'un petit modèle enseignant ajusté sur 300 lignes annotées, puis comparée à un LoRA de rang 16. Le savoir vient donc de données annotées, pas du raisonnement d'un LLM. Intérêt pour ce dépôt : c'est une variante de la méthode E (écriture en forme close, puis comparaison à l'affinage par gradient), et son protocole donne des témoins à reprendre (édition aléatoire de même taille, mesures d'oubli). Détail dans [slm-weight-editing](https://github.com/Aliquanto3/slm-weight-editing), `docs/CADRAGE.md`.
 
 ## 4. Agir sur les activations, sans toucher aux poids (dépôt voisin)
 

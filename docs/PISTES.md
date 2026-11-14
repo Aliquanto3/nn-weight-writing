@@ -45,6 +45,15 @@ Différence de nature avec l'édition : en édition, le LLM *découvre* quelque 
 4. **Tâche perceptive** : chiffres manuscrits ou une petite classification de textes sans règle évidente. C'est là que la méthode devrait montrer ses limites.
 5. **Taille croissante** : même tâche avec 10⁴, 10⁵, 10⁶, 10⁷ paramètres, pour voir où l'écriture cesse d'être faisable ou rentable.
 
+### Ajouts du 2026-11-14, d'après le billet du MIT (à exploiter)
+
+Source : expériences MinAtar et Go 9×9 de « Sparks of Weight-Space Programming », relevées dans [`SOURCES.md`](SOURCES.md), section 1. Rien n'est décidé.
+
+- **Tâche de contrôle** : une politique MinAtar écrite de zéro (Breakout, Seaquest, Asterix). Ce n'est ni une tâche à règles textuelles ni une tâche perceptive : le LLM connaît les règles du jeu, mais pas la politique. Le billet y publie un succès net (Breakout) et un échec (Seaquest), ce qui en fait un bon test de l'hypothèse de travail.
+- **Axe « budget de passes »** : mesurer la méthode A à 0, 10, 25 et 50 passes du harnais, comme le billet. Le résultat à 0 passe isole ce que le LLM sait déjà ; l'écart avec 50 passes mesure ce que l'essai-erreur ajoute.
+- **Taille** : le réseau de Go compte 1,48 M de poids, au-delà de la borne de 10⁶ prévue ici pour le CPU. À regarder avant de fixer l'échelle de la tâche 5.
+- **Témoins à ajouter là où le billet n'en a pas** : la méthode B (règles codées par le LLM, ici une politique en Python) et une ligne de base entraînée à budget comparable, puisque les auteurs disent que leurs comparaisons à PPO ne sont pas équitables.
+
 ## Durcir l'expérience juridique
 
 - **Casser la circularité** : de vraies références tirées de Judilibre ; de fausses références tirées de vraies hallucinations de SLM (via slm-quality-bench), et pas d'un générateur qui suit les 15 types d'erreurs connus du détecteur.
